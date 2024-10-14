@@ -4,6 +4,7 @@ import Navbar from "@/components/navbar";
 import Sidebar from "@/components/sidebar"
 import {SocketProvider} from "@/context/socketContext";
 import React from "react";
+import {Toaster} from "@/components/ui/toaster";
 
 export default function MainLayout({children}: { children: React.ReactNode }) {
     return (
@@ -20,6 +21,7 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
                 </div>
             </div>
         </SocketProvider>
+        <Toaster/>
         </body>
         </html>
     );
