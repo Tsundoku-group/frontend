@@ -57,7 +57,6 @@ export const fetchOneConversationById = async (conversationId: string): Promise<
     }
 };
 
-
 export const fetchMessagesFromConversationId = async (conversationId: string, page = 1, limit = 20) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/message/get/${conversationId}?page=${page}&limit=${limit}`, {
@@ -69,21 +68,7 @@ export const fetchMessagesFromConversationId = async (conversationId: string, pa
 
         const messages = response.data;
 
-        if (Array.isArray(messages)) {
-            return messages.map(message => {
-                if (message.image) {
-                    message.imageUrl = `${symfonyUrl}${message.image}`;
-                }
-
-                return {
-                    ...message,
-                    hasImage: !!message.imageUrl,
-                };
-            });
-        } else {
-            console.error("La réponse des messages n'est pas au format attendu : ", messages);
-            return [];
-        }
+        return Array.isArray(messages) ? messages : [];
     } catch (error) {
         console.error("Erreur lors du fetch des messages :", error);
         return [];

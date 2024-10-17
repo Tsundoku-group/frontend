@@ -9,19 +9,17 @@ type Props = {
     fromCurrentUser: boolean;
     lastByUser: boolean;
     lastByMessages: boolean;
-    content: string[];
+    content: string;
     sent_at: string;
-    type: string;
     imageUrl?: string;
     isRead?: boolean;
 };
 
-const Message = ({fromCurrentUser, lastByUser, lastByMessages, content, sent_at, type, imageUrl, isRead}: Props) => {
+const Message = ({fromCurrentUser, lastByUser, lastByMessages, content, sent_at, imageUrl, isRead}: Props) => {
 
     const formatTime = (timestamp: string) => {
         const date = new Date(timestamp);
         if (isNaN(date.getTime())) {
-            console.error('Date invalide:', timestamp);
             return 'Date invalide';
         }
 
@@ -49,18 +47,10 @@ const Message = ({fromCurrentUser, lastByUser, lastByMessages, content, sent_at,
                     "rounded-br-none": lastByUser && fromCurrentUser,
                     "rounded-bl-none": lastByUser && !fromCurrentUser
                 })}>
-                    {type === "text" && (
-                        <p className="text-wrap break-words whitespace-pre-wrap">
-                            {content}
-                        </p>
-                    )}
+                    <p className="text-wrap break-words whitespace-pre-wrap">
+                        {content}
+                    </p>
 
-                    {type === "image" && imageUrl && (
-                        <div className="mt-2">
-                            <Image src={imageUrl} alt="Image du message" className="max-w-full h-auto rounded-lg"
-                                   width={48} height={48}/>
-                        </div>
-                    )}
                 </div>
 
                 <span className={cn("text-xs ml-4 mr-4", {

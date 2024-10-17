@@ -13,6 +13,7 @@ import {useAuthContext} from "@/context/authContext";
 import EmojiPicker, {EmojiClickData} from 'emoji-picker-react';
 import {Smile} from "lucide-react";
 import {useSocket} from "@/context/socketContext";
+import {v4 as uuidv4} from 'uuid';
 
 const chatMessageSchema = z.object({
     content: z.string().optional(),
@@ -26,6 +27,7 @@ const ChatInput = ({conversationId}: Props) => {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+
     const {user} = useAuthContext();
     const socket = useSocket();
     const userEmail = user?.email;
@@ -33,15 +35,20 @@ const ChatInput = ({conversationId}: Props) => {
 
     const createMessage = async (payload: any) => {
         try {
+            const uuid = uuidv4();
             if (socket) {
+                const isCurrentUser = payload.userEmail === userEmail;
+
                 socket.emit('send_msg', {
                     roomId: conversationId,
+                    id: uuid,
                     isRead: true,
-                    userId: user?.userId,
+                    userId: userId,
                     content: payload.message,
                     sender_email: userEmail,
                     sent_by: payload.userEmail,
                     sent_at: new Date().toISOString(),
+                    isCurrentUser: isCurrentUser,
                 });
 
                 socket.on('typing', (userId));
@@ -49,7 +56,7 @@ const ChatInput = ({conversationId}: Props) => {
                 socket.on('stopTyping', (userId));
             }
 
-            return await sendMessage(payload, conversationId);
+            return await sendMessage({...payload, id: uuid}, conversationId);
         } catch (error) {
             throw error;
         }
