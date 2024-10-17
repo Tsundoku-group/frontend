@@ -1,36 +1,11 @@
 'use server';
 
 import {fetchWithAuth} from "@/services/fetchWithAuth";
+import {ChatConversation, ChatParticipant} from "@/models/ChatConversation";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
-type Participant = {
-    id: string;
-    userName: string;
-    imageUrl?: string;
-    email: string;
-};
-
-type Conversation = {
-    id: string;
-    isGroup: boolean;
-    lastMessage: {
-        content: string;
-        sender: {
-            id: string;
-            userName: string;
-        };
-    };
-    participants: Participant[];
-    isArchived: boolean;
-    isMutedUntil: {
-        date: string;
-        timezone: string;
-        timezone_type: number;
-    } | null;
-};
-
-export const fetchUserConversations = async (userId: string): Promise<Conversation[]> => {
+export const fetchUserConversations = async (userId: unknown): Promise<ChatConversation[]> => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/conversation/get-all/${userId}`, {
             method: 'GET',
@@ -38,15 +13,11 @@ export const fetchUserConversations = async (userId: string): Promise<Conversati
                 'Content-Type': 'application/json',
             },
         });
-        if (!response.response) {
-            throw new Error('Erreur lors de la récupération des conversations');
-        }
 
         const data = response.data;
 
         if (data && data.conversations && Array.isArray(data.conversations)) {
-            const flattenedConversations = data.conversations.flat();
-            return flattenedConversations;
+            return data.conversations.flat();
         } else {
             return [];
         }
@@ -55,7 +26,7 @@ export const fetchUserConversations = async (userId: string): Promise<Conversati
     }
 };
 
-export const fetchOneConversationById = async (conversationId: string): Promise<Participant[]> => {
+export const fetchOneConversationById = async (conversationId: string): Promise<ChatParticipant[]> => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/conversation/get-one/${conversationId}`, {
             method: 'GET',
@@ -63,10 +34,6 @@ export const fetchOneConversationById = async (conversationId: string): Promise<
                 'Content-Type': 'application/json',
             },
         });
-
-        if (!response.response) {
-            throw new Error('Erreur lors de la récupération de la conversation');
-        }
 
         const data = response.data;
 
@@ -100,10 +67,6 @@ export const fetchMessagesFromConversationId = async (conversationId: string, pa
             },
         });
 
-        if (!response.response) {
-            throw new Error('Erreur lors de la récupération des messages');
-        }
-
         const messages = response.data;
 
         if (Array.isArray(messages)) {
@@ -127,39 +90,15 @@ export const fetchMessagesFromConversationId = async (conversationId: string, pa
     }
 };
 
-export const getLastMessageFromUser = async (conversationId: string) => {
-    try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/message/get-last-messages/${conversationId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.response) {
-            throw new Error('Erreur lors de la récupération des derniers messages');
-        }
-
-        return response;
-    } catch (error) {
-        return null;
-    }
-};
-
 export const sendMessage = async (payload: any, conversationId: string) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/message/send/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/message/send/${conversationId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(payload),
         });
-
-        if (!response.response) {
-            throw new Error('Failed to send message');
-        }
-        return response;
     } catch (error) {
         throw error;
     }
@@ -167,74 +106,54 @@ export const sendMessage = async (payload: any, conversationId: string) => {
 
 export const fetchMarkMessagesAsRead = async (conversationId: string, userEmail: string) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/message/mark-messages-read/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/message/mark-messages-read/${conversationId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({userEmail}),
         });
-
-        if (!response.response) {
-            throw new Error(`Erreur : ${response.statusText}`);
-        }
-
-        return response;
     } catch (error) {
         throw error;
     }
 };
 
 export const startNewConversation = async (userEmail: string, friendId: string) => {
+    const body = {
+        title: "Nouvelle conversation",
+        participants: [friendId],
+        email: userEmail
+    };
+
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/conversation/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                title: "Nouvelle conversation",
-                participants: [friendId],
-                email: userEmail
-            })
+            body: JSON.stringify(body),
         });
-
-        if (response.response.success === false) {
-            return {
-                succes: false,
-                status: response.status,
-            }
-        }
-
-        const data = response.data;
 
         return {
             success: true,
-            status: response.status,
-            conversationId: data.conversationId,
+            conversationId: response.data.conversationId,
         };
     } catch (error) {
         return {
             success: false,
-            status: (error as any).status,
-            error: (error as Error).message,
+            error: "Erreur inconnue. Veuillez réessayer plus tard.",
         };
     }
 };
 
 export const handleDeleteConversation = async (conversationId: string) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/conversation/delete/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/conversation/delete/${conversationId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
             },
         });
-
-        if (!response.response) {
-            throw new Error('Erreur lors de la suppression de la conversation.');
-        }
-
     } catch (error) {
         throw error;
     }
@@ -242,16 +161,12 @@ export const handleDeleteConversation = async (conversationId: string) => {
 
 export const handleArchiveConversation = async (conversationId: string) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/conversation/archive/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/conversation/archive/${conversationId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-        })
-        if (!response.response) {
-            throw new Error('Erreur lors de l\'archivage de la conversation.');
-        }
-        return response;
+        });
     } catch (error) {
         throw error;
     }
@@ -259,18 +174,13 @@ export const handleArchiveConversation = async (conversationId: string) => {
 
 export const handleMuteConversationDuration = async (conversationId: string, duration: any) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/conversation/mute/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/conversation/mute/${conversationId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({duration})
-        })
-        if (!response.response) {
-            throw new Error('Erreur lors du mute de la conversation.');
-        }
-
-        return response;
+        });
     } catch (error) {
         throw error;
     }
@@ -278,16 +188,12 @@ export const handleMuteConversationDuration = async (conversationId: string, dur
 
 export const handleUnmuteConversation = async (conversationId: string) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/conversation/unmute/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/conversation/unmute/${conversationId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-        })
-        if (!response.response) {
-            throw new Error('Erreur lors du unmute de la conversation.');
-        }
-        return response;
+        });
     } catch (error) {
         throw error;
     }
