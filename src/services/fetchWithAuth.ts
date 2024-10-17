@@ -20,7 +20,20 @@ async function getToken() {
     return token;
 }
 
+const cache = new Map();
+
 export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
+    const cacheKey = url;
+
+    if (cache.has(cacheKey)) {
+        const cachedEntry = cache.get(cacheKey);
+        const { data, timestamp } = cachedEntry;
+
+        if (Date.now() - timestamp < 5 * 60 * 1000) {
+            return { response: true, status: 200, data };
+        }
+    }
+
     const token = await getToken();
     const headers: { [key: string]: string } = {
         'Content-Type': 'application/json',
@@ -49,17 +62,11 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
     }
 
     try {
-        return {
-            response: response.ok,
-            status: response.status,
-            data: JSON.parse(responseData)
-        };
+        const data = JSON.parse(responseData);
+
+        cache.set(cacheKey, { data, timestamp: Date.now() });
+        return { response: true, status: response.status, data };
     } catch (error) {
-        return {
-            response: response.ok,
-            status: response.status,
-            data: responseData
-        };
+        return { response: true, status: response.status, data: responseData };
     }
-    return response.json();
 }
