@@ -3,18 +3,31 @@
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 
-type SearchBarProps = {
+type SearchBarProps<T> = {
     placeholder?: string;
-    onSearch: (searchTerm: string) => void;
+    items: T[];
+    setFilteredItems: (filtered: T[]) => void;
+    getLabel: (item: T) => string;
+    resetItems: () => void;
 };
 
-const SearchBar: React.FC<SearchBarProps> = ({ placeholder = "Rechercher...", onSearch }) => {
+const SearchBar = <T extends {}>({ placeholder = "Rechercher...", items, setFilteredItems, getLabel, resetItems, }: SearchBarProps<T>) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newSearchTerm = e.target.value;
         setSearchTerm(newSearchTerm);
-        onSearch(newSearchTerm);
+
+        if (!newSearchTerm) {
+            resetItems();
+            return;
+        }
+
+        const filteredItems = items.filter(item =>
+            getLabel(item).toLowerCase().includes(newSearchTerm.toLowerCase())
+        );
+
+        setFilteredItems(filteredItems);
     };
 
     return (
