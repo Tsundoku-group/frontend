@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, {useState} from "react";
 import {
     Dialog,
     DialogContent,
@@ -10,17 +10,17 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {Button} from "@/components/ui/button";
 import {Check, SquarePen} from "lucide-react";
-import { useAuthContext } from "@/context/authContext";
-import { toast } from "@/components/ui/use-toast";
-import { fetchFriendsList } from "@/app/(main)/(chat)/friends/actions";
-import { startNewConversation } from "@/app/(main)/(chat)/conversations/actions";
-import { Loader2 } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+import {useAuthContext} from "@/context/authContext";
+import {toast} from "@/components/ui/use-toast";
+import {fetchFriendsList} from "@/app/(main)/(chat)/friends/actions";
+import {startNewConversation} from "@/app/(main)/(chat)/conversations/actions";
+import {Loader2} from "lucide-react";
+import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
+import {Input} from "@/components/ui/input";
+import {useRouter} from "next/navigation";
 
 type Friend = {
     id: string;
@@ -30,82 +30,51 @@ type Friend = {
 };
 
 const StartNewConversation = () => {
-    const [friends, setFriends] = useState<Friend[]>([]);
     const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-    const { user } = useAuthContext();
+    const {user} = useAuthContext();
     const userId = user?.userId;
     const router = useRouter();
 
-    useEffect(() => {
-        const loadFriends = async () => {
-            if (!userId) {
-                setLoading(false);
-                return;
-            }
+    const loadFriends = async () => {
+        if (!userId) return;
 
-            try {
-                const fetchedFriends = await fetchFriendsList(userId);
-                setFriends(fetchedFriends);
-                setFilteredFriends(fetchedFriends);
-            } catch (error) {
-                console.error("Erreur lors de la récupération des amis :", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadFriends();
-    }, [userId]);
-
-    useEffect(() => {
-        const filtered = friends.filter((friend) =>
-            friend.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            friend.email.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredFriends(filtered);
-    }, [searchTerm, friends]);
+        setLoading(true);
+        try {
+            const fetchedFriends = await fetchFriendsList(userId);
+            setFilteredFriends(fetchedFriends);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des amis :", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleStartConversation = async () => {
         if (!selectedFriend) {
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: "Veuillez sélectionner un(e) ami(e) pour commencer une conversation.",
-            });
+            showToast("destructive", "Erreur", "Veuillez sélectionner un(e) ami(e) pour commencer une conversation.");
             return;
         }
 
+        const userEmail = user.email;
+        const friendId = selectedFriend.id;
+
         try {
-            const response = await startNewConversation(user.email, selectedFriend.id);
+            const response = await startNewConversation(userEmail, friendId);
 
             if (response.success) {
-                toast({
-                    variant: "default",
-                    description: "Nouvelle conversation démarrée !",
-                });
-                const conversationId = response?.conversationId;
+                showToast("default", "Nouvelle conversation démarrée !", "");
                 setIsDialogOpen(false);
-                router.push(`/conversations/${conversationId}`);
-            } else if (response.error === "Conversation already exists") {
-                toast({
-                    variant: "destructive",
-                    title: "Erreur",
-                    description: "Une conversation avec cet ami existe déjà.",
-                });
+                router.push(`/conversations/${response.conversationId}`);
             } else {
-                throw new Error(response.error || "Erreur lors de la création de la conversation.");
+                showToast("destructive", "Erreur", response.error || "Erreur lors de la création de la conversation.");
             }
         } catch (error) {
             const errorMessage = (error as Error).message || "Il y a eu un problème avec votre demande.";
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: errorMessage,
-            });
+            showToast("destructive", "Erreur", errorMessage);
         }
     };
 
@@ -117,13 +86,29 @@ const StartNewConversation = () => {
         }
     };
 
+    const handleDialogOpenChange = (open: boolean) => {
+        setIsDialogOpen(open);
+        if (open) {
+            loadFriends();
+        }
+        setSelectedFriend(null);
+    };
+
+    const showToast = (variant: "default" | "destructive", title: string, description: string) => {
+        toast({
+            variant,
+            title,
+            description,
+        });
+    };
+
     return (
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
             <Tooltip>
                 <TooltipTrigger asChild>
                     <DialogTrigger asChild>
                         <Button size="icon" variant="ghost">
-                            <SquarePen />
+                            <SquarePen/>
                         </Button>
                     </DialogTrigger>
                 </TooltipTrigger>
@@ -147,7 +132,7 @@ const StartNewConversation = () => {
 
                 {loading ? (
                     <div className="flex justify-center py-4">
-                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <Loader2 className="h-5 w-5 animate-spin"/>
                     </div>
                 ) : (
                     <div className="space-y-2 max-h-60 overflow-y-auto">
@@ -161,7 +146,8 @@ const StartNewConversation = () => {
                                     }`}
                                 >
                                     <Avatar className="w-8 h-8 mr-4">
-                                        <AvatarImage src={friend.imageUrl || "/default-avatar.png"} alt={friend.userName} />
+                                        <AvatarImage src={friend.imageUrl || "/default-avatar.png"}
+                                                     alt={friend.userName}/>
                                         <AvatarFallback>{friend.userName.charAt(0)}</AvatarFallback>
                                     </Avatar>
 
@@ -170,7 +156,8 @@ const StartNewConversation = () => {
                                         <span className="text-xs text-gray-500">{friend.email}</span>
                                     </div>
 
-                                    {selectedFriend?.id === friend.id && <Check className="ml-auto w-4 h-4 text-blue-500" />}
+                                    {selectedFriend?.id === friend.id &&
+                                        <Check className="ml-auto w-4 h-4 text-blue-500"/>}
                                 </div>
                             ))
                         ) : (
@@ -181,7 +168,7 @@ const StartNewConversation = () => {
 
                 <DialogFooter>
                     <Button onClick={handleStartConversation} disabled={loading}>
-                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Commencer la conversation"}
+                        {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : "Commencer la conversation"}
                     </Button>
                 </DialogFooter>
             </DialogContent>
