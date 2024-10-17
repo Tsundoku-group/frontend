@@ -2,7 +2,6 @@ import React from "react";
 import {format, isToday, isYesterday} from "date-fns";
 import {fr} from "date-fns/locale";
 import {cn} from "@/lib/utils";
-import Image from "next/image";
 import {CheckCheck} from "lucide-react";
 
 type Props = {
@@ -11,11 +10,10 @@ type Props = {
     lastByMessages: boolean;
     content: string;
     sent_at: string;
-    imageUrl?: string;
     isRead?: boolean;
 };
 
-const Message = ({fromCurrentUser, lastByUser, lastByMessages, content, sent_at, imageUrl, isRead}: Props) => {
+const Message = ({fromCurrentUser, lastByUser, lastByMessages, content, sent_at, isRead}: Props) => {
 
     const formatTime = (timestamp: string) => {
         const date = new Date(timestamp);
