@@ -2,9 +2,7 @@ import { isTokenExpired, refreshAuthToken } from "@/services/refreshService";
 import { getSession } from "@/app/_lib/session";
 
 interface FetchOptions extends RequestInit {
-    headers?: {
-        [key: string]: string;
-    };
+    headers?: { [key: string]: string };
 }
 
 async function getToken() {
@@ -20,18 +18,18 @@ async function getToken() {
     return token;
 }
 
-const cache = new Map();
+const cache = new Map<string, { data: any, timestamp: number }>();
+
+function isCacheValid(timestamp: number, duration: number = 5 * 60 * 1000) {
+    return Date.now() - timestamp < duration;
+}
 
 export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
     const cacheKey = url;
 
-    if (cache.has(cacheKey)) {
-        const cachedEntry = cache.get(cacheKey);
-        const { data, timestamp } = cachedEntry;
-
-        if (Date.now() - timestamp < 5 * 60 * 1000) {
-            return { response: true, status: 200, data };
-        }
+    const cachedEntry = cache.get(cacheKey);
+    if (cachedEntry && isCacheValid(cachedEntry.timestamp)) {
+        return { response: true, status: 200, data: cachedEntry.data };
     }
 
     const token = await getToken();
@@ -39,34 +37,39 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
         'Content-Type': 'application/json',
         ...options.headers,
     };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const config: RequestInit = {
-        ...options,
-        headers,
-    };
-
-    const response = await fetch(url, config);
-    const responseData = await response.text();
-
-    if (!response.ok) {
-        return {
-            response: false,
-            status: response.status,
-            message: response.statusText,
-            error: responseData || 'Unknown error occurred'
-        };
-    }
+    const config: RequestInit = { ...options, headers };
 
     try {
-        const data = JSON.parse(responseData);
+        const response = await fetch(url, config);
+        const responseData = await response.text();
+
+        if (!response.ok) {
+            return {
+                response: false,
+                status: response.status,
+                message: response.statusText,
+                error: responseData || 'Unknown error occurred',
+            };
+        }
+
+        let data;
+        try {
+            data = JSON.parse(responseData);
+        } catch {
+            data = responseData;
+        }
 
         cache.set(cacheKey, { data, timestamp: Date.now() });
         return { response: true, status: response.status, data };
+
     } catch (error) {
-        return { response: true, status: response.status, data: responseData };
+        return {
+            response: false,
+            status: 500,
+            message: 'Network error',
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
     }
 }
