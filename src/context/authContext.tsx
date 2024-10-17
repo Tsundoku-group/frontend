@@ -1,6 +1,6 @@
 'use client';
 
-import {createContext, useContext, useEffect, useState} from "react";
+import React, {createContext, useContext, useEffect, useMemo, useState} from "react";
 import {getSession, deleteSession} from "@/app/_lib/session";
 import {useRouter} from "next/navigation";
 
@@ -62,8 +62,12 @@ export function AuthProvider({children}: {
         router.push('/login');
     };
 
+    const value = useMemo(() =>({
+        isAuthenticated, setIsAuthenticated, token, setToken, user, setUser, logout
+    }), [isAuthenticated, token, user, error])
+
     return (
-        <AuthContext.Provider value={{isAuthenticated, setIsAuthenticated, token, setToken, user, setUser, logout}}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     )
