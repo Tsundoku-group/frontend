@@ -1,20 +1,24 @@
-import React, { useState } from "react";
-import { Card } from "@/components/ui/card";
+'use client';
+
+import React, {useState, useCallback, useMemo} from "react";
+import {Card} from "@/components/ui/card";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArchiveRestore, BellOff, EllipsisVertical, Trash2, User } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { formatDistanceToNow, parseISO } from "date-fns";
-import { fr } from "date-fns/locale";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {ArchiveRestore, BellOff, EllipsisVertical, Trash2, User} from "lucide-react";
+import {Badge} from "@/components/ui/badge";
+import {formatDistanceToNow, parseISO} from "date-fns";
+import {fr} from "date-fns/locale";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {
     handleArchiveConversation,
-    handleDeleteConversation, handleMuteConversationDuration, handleUnmuteConversation,
+    handleDeleteConversation,
+    handleMuteConversationDuration,
+    handleUnmuteConversation
 } from "@/app/(main)/(chat)/conversations/actions";
-import { toast } from "@/components/ui/use-toast";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {toast} from "@/components/ui/use-toast";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import {Button} from "@/components/ui/button";
+import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 
 type Props = {
     id: string;
@@ -31,38 +35,32 @@ type Props = {
     } | null;
 };
 
-const DMConversationItem = ({ id, imageUrl, username, lastMessageContent, lastMessageSender, sentAt, isRead, isMutedUntil }: Props) => {
+const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageContent, lastMessageSender, sentAt, isRead, isMutedUntil}: Props) => {
     const [openMuteDialog, setOpenMuteDialog] = useState(false);
 
-    const parsedDate = sentAt ? parseISO(sentAt) : null;
-    const timeAgo = parsedDate ? formatDistanceToNow(parsedDate, { addSuffix: true, locale: fr }) : "";
-
+    const parsedDate = useMemo(() => sentAt ? parseISO(sentAt) : null, [sentAt]);
+    const timeAgo = useMemo(() => parsedDate ? formatDistanceToNow(parsedDate, {
+        addSuffix: true,
+        locale: fr
+    }) : "", [parsedDate]);
     const isLastMessageFromCurrentUser = lastMessageSender === "Vous : ";
-    const displayReadStatus = isLastMessageFromCurrentUser ? true : isRead;
+    const displayReadStatus = isLastMessageFromCurrentUser || isRead;
 
-    const isMuted = isMutedUntil && new Date(isMutedUntil.date) > new Date();
-    const muteDuration = isMutedUntil ? new Date(isMutedUntil.date).toLocaleString() : "Inconnue";
+    const isMuted = useMemo(() => isMutedUntil && new Date(isMutedUntil.date) > new Date(), [isMutedUntil]);
+    const muteDuration = useMemo(() => isMutedUntil ? new Date(isMutedUntil.date).toLocaleString() : "Inconnue", [isMutedUntil]);
 
-    const handleMutedClick = () => {
-        setOpenMuteDialog(true);
-    };
+    const handleMutedClick = useCallback(() => setOpenMuteDialog(true), []);
 
-    const handleMuteDurationSelect = async (duration: any) => {
+    const handleMuteDurationSelect = async (duration: number | string) => {
         try {
             await handleMuteConversationDuration(id, duration);
-            toast({
-                variant: "default",
-                description: "Conversation mise en sourdine !"
-            })
+            toast({variant: "default", description: "Conversation mise en sourdine !"});
             setOpenMuteDialog(false);
-
         } catch (error) {
-            const errorMessage = (error as Error).message || "Il y a eu un problème avec votre demande.";
-
             toast({
                 variant: "destructive",
                 title: "Erreur",
-                description: errorMessage
+                description: (error as Error).message || "Il y a eu un problème avec votre demande."
             });
         }
     };
@@ -70,57 +68,42 @@ const DMConversationItem = ({ id, imageUrl, username, lastMessageContent, lastMe
     const handleUnmute = async () => {
         try {
             await handleUnmuteConversation(id);
-            toast({
-                variant: "default",
-                description: "Cette conversation n'est plus en sourdine !"
-            })
+            toast({variant: "default", description: "Cette conversation n'est plus en sourdine !"});
             setOpenMuteDialog(false);
         } catch (error) {
-            const errorMessage = (error as Error).message || "Il y a eu un problème avec votre demande.";
-
             toast({
                 variant: "destructive",
                 title: "Erreur",
-                description: errorMessage
+                description: (error as Error).message || "Il y a eu un problème avec votre demande."
             });
         }
-    }
+    };
 
-    const handleDeleteClick = async () => {
+    const handleDeleteClick = useCallback(async () => {
         try {
             await handleDeleteConversation(id);
-            toast({
-                variant: "default",
-                description: "Conversation supprimée !",
-            });
-        } catch (error) {
+            toast({variant: "default", description: "Conversation supprimée !"});
+        } catch {
             toast({
                 variant: "destructive",
                 title: "Erreur",
-                description: "Une conversation n'a pas pu être supprimée.",
+                description: "Une conversation n'a pas pu être supprimée."
             });
         }
-    };
+    }, [id]);
 
-    const handleArchiveClick = async () => {
+    const handleArchiveClick = useCallback(async () => {
         try {
             await handleArchiveConversation(id);
-            toast({
-                variant: "default",
-                description: "Conversation archivée !",
-            });
-        } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: "Une conversation n'a pas pu être archivée.",
-            });
+            toast({variant: "default", description: "Conversation archivée !"});
+        } catch {
+            toast({variant: "destructive", title: "Erreur", description: "Une conversation n'a pas pu être archivée."});
         }
-    };
+    }, [id]);
 
     return (
         <Link href={`/conversations/${id}`} className="w-full">
-            <Card className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition">
+            <Card className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition mb-2">
                 <Avatar className="w-12 h-12">
                     <AvatarImage src={imageUrl}/>
                     <AvatarFallback>
@@ -128,28 +111,17 @@ const DMConversationItem = ({ id, imageUrl, username, lastMessageContent, lastMe
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col flex-grow overflow-hidden">
-                    {lastMessageSender && lastMessageContent ? (
-                        <>
-                            <h4 className={`truncate font-semibold text-sm ${isMuted ? 'text-black' : displayReadStatus ? 'text-black' : 'text-red-500'}`}>
-                                {username}
-                            </h4>
-                            <span className={`text-xs ${isMuted ? 'text-gray-400' : 'text-gray-400'} truncate overflow-hidden max-w-[200px]`}>
-                                {isLastMessageFromCurrentUser ? (
-                                    <span className="font-semibold">{lastMessageSender}</span>
-                                ) : (
-                                    <span>{lastMessageSender}: </span>
-                                )}
-                                <span className="truncate">{lastMessageContent}</span>
-                            </span>
-                        </>
-                    ) : (
-                        <>
-                            <h4 className="truncate font-semibold text-sm text-black">{username}</h4>
-                            <span className="text-xs text-gray-400 truncate overflow-hidden max-w-[200px]">
-                                Envoie un message !
-                            </span>
-                        </>
-                    )}
+                    <h4 className={`truncate font-semibold text-sm ${isMuted ? 'text-black' : displayReadStatus ? 'text-black' : 'text-red-500'}`}>
+                        {username}
+                    </h4>
+                    <span className={`text-xs text-gray-400 truncate overflow-hidden max-w-[200px]`}>
+                        {isLastMessageFromCurrentUser ? (
+                            <span className="font-semibold">{lastMessageSender}</span>
+                        ) : (
+                            <span>{lastMessageSender}: </span>
+                        )}
+                        <span className="truncate">{lastMessageContent}</span>
+                    </span>
                 </div>
                 <div className="ml-auto flex-shrink-0">
                     <div className="flex items-center space-x-1">
@@ -161,14 +133,7 @@ const DMConversationItem = ({ id, imageUrl, username, lastMessageContent, lastMe
                                     </span>
                                 </HoverCardTrigger>
                                 <HoverCardContent className="text-xs">
-                                    Sourdine jusqu&apos;au : {new Date(muteDuration).toLocaleString('fr-FR', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: false,
-                                })}
+                                    Sourdine jusqu&apos;au : {muteDuration}
                                 </HoverCardContent>
                             </HoverCard>
                         )}
@@ -182,7 +147,8 @@ const DMConversationItem = ({ id, imageUrl, username, lastMessageContent, lastMe
                         )}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <span className="text-xs cursor-pointer" onPointerDown={(event) => event.stopPropagation()}>
+                                <span className="text-xs cursor-pointer"
+                                      onPointerDown={(event) => event.stopPropagation()}>
                                     <EllipsisVertical className="h-4 w-4"/>
                                 </span>
                             </DropdownMenuTrigger>
@@ -205,12 +171,11 @@ const DMConversationItem = ({ id, imageUrl, username, lastMessageContent, lastMe
                                 <DialogTitle>Choisir la durée de la sourdine</DialogTitle>
                             </DialogHeader>
                             <div className="space-y-4">
-                                <Button onClick={() => handleMuteDurationSelect(1)}>1 heure</Button>
-                                <Button onClick={() => handleMuteDurationSelect(3)}>3 heure</Button>
-                                <Button onClick={() => handleMuteDurationSelect(8)}>8 heures</Button>
-                                <Button onClick={() => handleMuteDurationSelect(24)}>24 heures</Button>
-                                <Button onClick={() => handleMuteDurationSelect('eternal')}>Jusqu&apos;à ce que je le
-                                    change</Button>
+                                {[1, 3, 8, 24, 'eternal'].map((duration) => (
+                                    <Button key={duration} onClick={() => handleMuteDurationSelect(duration)}>
+                                        {duration === 'eternal' ? 'Jusqu’à ce que je le change' : `${duration} heure${typeof duration === 'number' && duration > 1 ? 's' : ''}`}
+                                    </Button>
+                                ))}
                             </div>
                             {isMuted && (
                                 <Button onClick={handleUnmute} variant="secondary">
@@ -226,6 +191,6 @@ const DMConversationItem = ({ id, imageUrl, username, lastMessageContent, lastMe
             </Card>
         </Link>
     );
-};
+});
 
 export default DMConversationItem;
