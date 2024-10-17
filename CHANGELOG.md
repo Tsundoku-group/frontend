@@ -15,3 +15,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-6] Chat: optimisation find conversation [#6](https://trello.com/c/IYKu4STA/6-t-6-chat-optimisation-find-conversation)
 - [t-8] Chat: optimisation de conversationView + message [#8](https://trello.com/c/Iduut354/8-t-8-chat-optimisation-de-conversationview-message)
 - [t-9] Amélioration du authContext [#9](https://trello.com/c/VymescMe/9-t-9-am%C3%A9lioration-du-authcontext)
+- [t-11] Chat: optimisation itemList + itemSearchBar [#11](https://trello.com/c/PIPspC9x/11-t-11-chat-optimisation-itemlist-itemsearchbar)
