@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Message from "@/app/(main)/(chat)/conversations/[conversationId]/components/message/Message";
 import { Loader2 } from "lucide-react";
-import { fetchMessagesFromConversationId } from "@/app/(main)/(chat)/conversations/actions";
 import ScrollToBottomButton from "@/components/ScrollToBottomButton";
 import { useSocket } from "@/context/socketContext";
+import {fetchMessagesFromConversationId} from "@/app/(main)/(chat)/conversations/actions";
 
 type Props = {
     messages: MessageType[];
     conversationId: string;
-    setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
     userEmail: string;
 };
 
@@ -22,7 +21,8 @@ type MessageType = {
     isRead?: boolean;
 };
 
-const Body = ({ messages, conversationId, setMessages, userEmail }: Props) => {
+const Body = ({ messages, conversationId, userEmail }: Props) => {
+    const [localMessages, setLocalMessages] = useState<MessageType[]>(messages);
     const [loading, setLoading] = useState<boolean>(false);
     const [isAtBottom, setIsAtBottom] = useState<boolean>(true);
     const [isOtherUserTyping, setIsOtherUserTyping] = useState<boolean>(false);
@@ -32,15 +32,17 @@ const Body = ({ messages, conversationId, setMessages, userEmail }: Props) => {
 
     const lastMessageByUser = useMemo(() => {
         const lastMessages: Record<string, number> = {};
-        messages.forEach((message, index) => {
-            lastMessages[message.sender_id] = index;
-        });
+        if (Array.isArray(localMessages)) {
+            localMessages.forEach((message, index) => {
+                lastMessages[message.sender_id] = index;
+            });
+        }
         return lastMessages;
-    }, [messages]);
+    }, [localMessages]);
 
     const firstUnreadMessageIndex = useMemo(() => {
-        return messages.findIndex((message) => message.sender_id !== userEmail && !message.isRead);
-    }, [messages, userEmail]);
+        return localMessages.findIndex((message) => message.sender_id !== userEmail && !message.isRead);
+    }, [localMessages, userEmail]);
 
     useEffect(() => {
         if (socket && conversationId) {
@@ -49,7 +51,7 @@ const Body = ({ messages, conversationId, setMessages, userEmail }: Props) => {
             socket.on('receive_msg', (data: any) => {
                 const { roomId } = data;
                 if (roomId === conversationId) {
-                    setMessages((prevMessages) => [...prevMessages, data]);
+                    setLocalMessages((prevMessages) => [...prevMessages, data]);
                 }
             });
 
@@ -71,7 +73,7 @@ const Body = ({ messages, conversationId, setMessages, userEmail }: Props) => {
                 socket.off('stopTyping');
             };
         }
-    }, [socket, conversationId, userEmail, setMessages]);
+    }, [socket, conversationId, userEmail]);
 
     const loadMoreMessages = useCallback(async () => {
         if (loading) return;
@@ -80,7 +82,7 @@ const Body = ({ messages, conversationId, setMessages, userEmail }: Props) => {
         try {
             const newMessages = await fetchMessagesFromConversationId(conversationId, page + 1);
             if (newMessages.length > 0) {
-                setMessages((prevMessages) => [...newMessages, ...prevMessages]);
+                setLocalMessages((prevMessages) => [...newMessages, ...prevMessages]);
                 setPage((prevPage) => prevPage + 1);
             }
         } catch (error) {
@@ -88,7 +90,7 @@ const Body = ({ messages, conversationId, setMessages, userEmail }: Props) => {
         } finally {
             setLoading(false);
         }
-    }, [loading, conversationId, page, setMessages]);
+    }, [loading, conversationId, page]);
 
     useEffect(() => {
         const handleScroll = async () => {
@@ -116,19 +118,21 @@ const Body = ({ messages, conversationId, setMessages, userEmail }: Props) => {
     }, [loading, loadMoreMessages]);
 
     useEffect(() => {
-        if (messageContainerRef.current && messages.length > 0 && isAtBottom) {
+        if (messageContainerRef.current && localMessages.length > 0 && isAtBottom) {
             messageContainerRef.current.scrollTo({
                 top: messageContainerRef.current.scrollHeight,
                 behavior: 'smooth',
             });
         }
-    }, [messages, isAtBottom]);
+    }, [localMessages, isAtBottom]);
+
+    // Met à jour localMessages si les props `messages` changent
+    useEffect(() => {
+        setLocalMessages(messages);
+    }, [messages]);
 
     return (
-        <div
-            ref={messageContainerRef}
-            className="flex-1 w-full flex overflow-y-scroll flex-col gap-2 p-3 no-scrollbar"
-        >
+        <div ref={messageContainerRef} className="flex-1 w-full flex overflow-y-scroll flex-col gap-2 p-3 no-scrollbar">
             {loading && (
                 <div className="flex justify-center mb-2">
                     <Loader2 className="h-5 w-5 animate-spin" />
@@ -149,9 +153,9 @@ const Body = ({ messages, conversationId, setMessages, userEmail }: Props) => {
                 />
             )}
 
-            {messages.map((message, index) => {
+            {localMessages.map((message, index) => {
                 const isLastByUser = lastMessageByUser[message.sender_id] === index;
-                const isLastByMessages = index === messages.length - 1;
+                const isLastByMessages = index === localMessages.length - 1;
                 const isRead = message.isRead;
 
                 return (
