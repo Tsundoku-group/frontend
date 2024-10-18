@@ -55,8 +55,6 @@ const FriendsPage = React.memo(() => {
         const friend = friendList.find((f) => f.id === friendId);
         if (!friend) return;
 
-        setSelectedFriend(friend);
-
         try {
             const response = await startNewConversation(user.email as string, friendId);
 
@@ -80,7 +78,6 @@ const FriendsPage = React.memo(() => {
             description,
         });
     };
-
 
     const resetSearchBarFriends = () => {
         setFilteredFriends(allFriends);
