@@ -25,7 +25,6 @@ const FriendsPage = React.memo(() => {
     const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
     const [allFriends, setAllFriends] = useState<Friend[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
 
     const router = useRouter();
     const {user} = useAuthContext();
