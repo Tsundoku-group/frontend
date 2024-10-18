@@ -119,7 +119,7 @@ export const startNewConversation = async (userEmail: string, friendId: string) 
             body: JSON.stringify(body),
         });
 
-        if (response.status === 409) {
+        if (409 === response.status) {
             return {
                 success: false,
                 error: "La conversation existe déjà.",
