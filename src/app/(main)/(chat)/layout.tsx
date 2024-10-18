@@ -3,7 +3,7 @@ import SidebarWrapper from "@/app/(main)/(chat)/components/sidebar/SidebarWrappe
 
 type Props = React.PropsWithChildren<{}>;
 
-const Layout = ({children}: Props) => {
+const Layout: React.FC<Props> = React.memo(({children}) => {
     return (
         <>
             <SidebarWrapper>
@@ -11,6 +11,6 @@ const Layout = ({children}: Props) => {
             </SidebarWrapper>
         </>
     );
-};
+});
 
 export default Layout;

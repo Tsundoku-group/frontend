@@ -9,12 +9,12 @@ type Props = {
     }
 };
 
-const ConversationPage = ({ params: { conversationId } }: Props) => {
+const ConversationPage = React.memo(({ params: { conversationId } }: Props) => {
     return (
         <div>
             <ConversationView conversationId={conversationId} context="active" />
         </div>
     );
-};
+});
 
 export default ConversationPage;

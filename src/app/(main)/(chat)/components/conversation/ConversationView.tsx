@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, {useEffect, useState, useRef, useMemo, useCallback} from "react";
 import ConversationContainer from "@/app/(main)/(chat)/components/conversation/ConversationContainer";
-import { Loader2 } from "lucide-react";
+import {Loader2} from "lucide-react";
 import Header from "@/app/(main)/(chat)/conversations/[conversationId]/components/header/Header";
 import ChatInput from "@/app/(main)/(chat)/conversations/[conversationId]/components/Input/Input";
 import {
@@ -11,9 +11,9 @@ import {
     fetchOneConversationById
 } from "@/app/(main)/(chat)/conversations/actions";
 import Body from "@/app/(main)/(chat)/conversations/[conversationId]/components/body/Body";
-import { useAuthContext } from "@/context/authContext";
-import { useSocket } from "@/context/socketContext";
-import { ChatParticipant } from "@/models/ChatConversation";
+import {useAuthContext} from "@/context/authContext";
+import {useSocket} from "@/context/socketContext";
+import {ChatParticipant} from "@/models/ChatConversation";
 
 type Props = {
     conversationId: string;
@@ -31,12 +31,16 @@ type Message = {
     isCurrentUser: boolean;
 };
 
-const ConversationView = React.memo(({ conversationId, context = "active" }: Props) => {
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [participants, setParticipants] = useState<ChatParticipant[]>([]);
+const ConversationView = React.memo(({conversationId, context = "active"}: Props) => {
+    const [state, setState] = useState({
+        messages: [] as Message[],
+        participants: [] as ChatParticipant[],
+        loading: true,
+    });
 
-    const { user } = useAuthContext();
+    const {messages, participants, loading} = state;
+
+    const {user} = useAuthContext();
     const socket = useSocket();
     const userEmail = user?.email as string;
     const messageContainerRef = useRef<HTMLDivElement | null>(null);
@@ -47,26 +51,27 @@ const ConversationView = React.memo(({ conversationId, context = "active" }: Pro
 
     const otherParticipantName = otherParticipant?.userName || "";
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const [messagesData, participantsData] = await Promise.all([
-                    fetchMessagesFromConversationId(conversationId),
-                    fetchOneConversationById(conversationId)
-                ]);
+    const fetchData = useCallback(async () => {
+        setState(prev => ({ ...prev, loading: true }));
 
-                setMessages(Array.isArray(messagesData) ? messagesData : []);
-                setParticipants(participantsData || []);
-            } catch (error) {
-                console.error("Erreur lors du chargement des données :", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
+        try {
+            const [messagesData, participantsData] = await Promise.all([
+                fetchMessagesFromConversationId(conversationId),
+                fetchOneConversationById(conversationId)
+            ]);
+            setState({
+                messages: Array.isArray(messagesData) ? messagesData : [],
+                participants: participantsData || [],
+                loading: false,
+            });
+        } catch (error) {
+            setState(prev => ({ ...prev, loading: false }));
+        }
     }, [conversationId]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     useEffect(() => {
         const markUnreadMessagesAsRead = async () => {
@@ -84,13 +89,14 @@ const ConversationView = React.memo(({ conversationId, context = "active" }: Pro
                 const response = await fetchMarkMessagesAsRead(conversationId, otherUserEmail);
 
                 if (response.response) {
-                    setMessages((prevMessages) =>
-                        prevMessages.map((message) =>
+                    setState(prev => ({
+                        ...prev,
+                        messages: prev.messages.map((message) =>
                             message.sender_email === otherUserEmail && !message.isRead
-                                ? { ...message, isRead: true }
+                                ? {...message, isRead: true}
                                 : message
-                        )
-                    );
+                        ),
+                    }));
 
                     socket?.emit('markAsRead', {
                         conversationId,
@@ -112,10 +118,10 @@ const ConversationView = React.memo(({ conversationId, context = "active" }: Pro
     return (
         <div className="ml-80">
             <ConversationContainer>
-                <Header name={otherParticipantName} imageUrl={otherParticipant?.imageUrl} />
+                <Header name={otherParticipantName} imageUrl={otherParticipant?.imageUrl}/>
                 {loading ? (
                     <div className="flex justify-center py-4">
-                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <Loader2 className="h-5 w-5 animate-spin"/>
                     </div>
                 ) : (
                     <>
@@ -124,10 +130,13 @@ const ConversationView = React.memo(({ conversationId, context = "active" }: Pro
                                 userEmail={userEmail}
                                 messages={messages}
                                 conversationId={conversationId}
-                                setMessages={(newMessages) => setMessages(newMessages as unknown as Message[])}
+                                setMessages={(newMessages) => setState(prev => ({
+                                    ...prev,
+                                    messages: newMessages as unknown as Message[],
+                                }))}
                             />
                         </div>
-                        <ChatInput conversationId={conversationId} />
+                        <ChatInput conversationId={conversationId}/>
                     </>
                 )}
             </ConversationContainer>

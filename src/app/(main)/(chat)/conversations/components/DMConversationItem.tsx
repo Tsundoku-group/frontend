@@ -102,7 +102,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
     }, [id]);
 
     return (
-        <Link href={`/conversations/${id}`} className="w-full">
+        <Link href={`/conversations/${id}`} as={`/conversations/${id}`} className="w-full" passHref>
             <Card className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition mb-2">
                 <Avatar className="w-12 h-12">
                     <AvatarImage src={imageUrl}/>
