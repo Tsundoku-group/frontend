@@ -3,7 +3,7 @@ import DesktopNav from "@/app/(main)/(chat)/components/sidebar/nav/DesktopNav";
 
 type Props = React.PropsWithChildren<{}>;
 
-const SidebarWrapper = ({ children }: Props) => {
+const SidebarWrapper = React.memo(({ children }: Props) => {
     return (
         <div className="h-full w-full p-4 flex flex-col lg:flex-row gap-4 -ml-20">
             <DesktopNav />
@@ -12,6 +12,6 @@ const SidebarWrapper = ({ children }: Props) => {
             </main>
         </div>
     );
-};
+});
 
 export default SidebarWrapper;
