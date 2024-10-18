@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import ItemList from "../components/item/ItemList";
 import ConversationFallBack from "../components/conversation/ConversationFallBack";
 import AddFriends from "./components/AddFriends";
-import { Loader2 } from "lucide-react";
+import {Loader2} from "lucide-react";
 import FriendsList from "@/app/(main)/(chat)/friends/components/FriendsList";
-import { fetchFriendsList } from "./actions";
-import { useAuthContext } from "@/context/authContext";
+import {fetchFriendsList} from "./actions";
+import {useAuthContext} from "@/context/authContext";
 import SearchBar from "@/app/(main)/(chat)/components/item/ItemSearchBar";
 import {useRouter} from "next/navigation";
 import {startNewConversation} from "@/app/(main)/(chat)/conversations/actions";
@@ -20,26 +20,26 @@ type Friend = {
     imageUrl?: string;
 };
 
-const FriendsPage = () => {
+const FriendsPage = React.memo(() => {
     const [friendList, setFriendList] = useState<Friend[]>([]);
     const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
+    const [allFriends, setAllFriends] = useState<Friend[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
+
     const router = useRouter();
-    const { user } = useAuthContext();
-    const userId = user?.userId;
+    const {user} = useAuthContext();
+    const userId = user?.userId as string;
 
     useEffect(() => {
         const fetchFriendsData = async () => {
-            if (!userId) {
-                setLoading(false);
-                return;
-            }
+            if (!userId) return;
 
+            setLoading(true);
             try {
                 const data = await fetchFriendsList(userId);
                 setFriendList(data);
                 setFilteredFriends(data);
+                setAllFriends(data);
             } catch (error) {
                 console.error("Erreur lors du chargement des amis", error);
             } finally {
@@ -52,74 +52,63 @@ const FriendsPage = () => {
 
     const onStartConversation = async (friendId: string) => {
         const friend = friendList.find((f) => f.id === friendId);
-        if (friend) {
-            setSelectedFriend(friend);
-            try {
-                const response = await startNewConversation(user.email, friendId);
+        if (!friend) return;
 
-                if (response.success) {
-                    const newConversationId = response.conversationId;
-                    toast({
-                        variant: "default",
-                        description: "Conversation créée !"
-                    })
-                    router.push(`/conversations/${newConversationId}`);
-                } else {
-                    if (409 === response.status) {
-                        toast({
-                            variant: "destructive",
-                            title: "Erreur",
-                            description: "Une conversation existe déjà avec cet(te) ami(e)...",
-                        });
-                    } else {
-                        toast({
-                            variant: "destructive",
-                            title: "Erreur",
-                            description: "Erreur lors de la création de la conversation. Veuillez essayer ultérieurement..",
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error("Erreur lors du démarrage de la conversation :", error);
+        try {
+            const response = await startNewConversation(user.email as string, friendId);
+
+            if (response.success) {
+                const newConversationId = response.conversationId;
+                showToast("default", "Conversation créée !", "");
+                router.push(`/conversations/${newConversationId}`);
+            } else {
+                showToast("destructive", "Erreur", response.error || "Erreur lors de la création de la conversation.");
             }
-        } else {
-            console.error("Ami non trouvé pour l'ID :", friendId);
+        } catch (error) {
+            const errorMessage = (error as Error).message || "Il y a eu un problème avec votre demande.";
+            showToast("destructive", "Erreur", errorMessage);
         }
     };
 
-    const handleSearch = (searchTerm: string) => {
-        if (searchTerm) {
-            const filtered = friendList.filter(friend =>
-                friend.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                friend.email.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setFilteredFriends(filtered);
-        } else {
-            setFilteredFriends(friendList);
-        }
+    const showToast = (variant: "default" | "destructive", title: string, description: string) => {
+        toast({
+            variant,
+            title,
+            description,
+        });
+    };
+
+    const resetSearchBarFriends = () => {
+        setFilteredFriends(allFriends);
     };
 
     return (
         <div className="flex mt-16 h-full">
             <div className="w-1/3">
-                <ItemList title="Friends" action={<AddFriends />}>
-                    <SearchBar placeholder="Rechercher un(e) ami(e)..." onSearch={handleSearch} />
+                <ItemList title="Friends" action={<AddFriends/>}>
+                    <SearchBar
+                        placeholder="Rechercher un(e) ami(e)..."
+                        items={friendList}
+                        setFilteredItems={setFilteredFriends}
+                        getLabel={(friend) => friend.userName || friend.email}
+                        resetItems={resetSearchBarFriends}
+                    />
                     {loading ? (
-                        <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+                        <Loader2 className="h-8 w-8 animate-spin mx-auto"/>
                     ) : filteredFriends.length === 0 ? (
                         <p className="w-full h-full flex items-center justify-center text-center mb-20">
                             Ajoute des amis pour commencer à chatter
                         </p>
                     ) : (
-                        <FriendsList friends={filteredFriends} loading={loading} onStartConversation={onStartConversation} />
+                        <FriendsList friends={filteredFriends} loading={loading} onStartConversation={onStartConversation}/>
                     )}
                 </ItemList>
             </div>
             <div className="ml-80 w-2/3">
-                <ConversationFallBack />
+                <ConversationFallBack/>
             </div>
         </div>
     );
-};
+});
 
 export default FriendsPage;

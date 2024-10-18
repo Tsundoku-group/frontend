@@ -11,13 +11,13 @@ interface Friend {
     imageUrl?: string;
 }
 
-export async function fetchFriendsList(userId: number): Promise<Friend[]> {
+export async function fetchFriendsList(userId: string): Promise<Friend[]> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/chat-friendship/list/${userId}`, {
             method: 'GET',
         });
 
-        if (response.response && Array.isArray(response.data)) {
+        if (200 === response.status) {
             return response.data;
         } else {
             return [];
