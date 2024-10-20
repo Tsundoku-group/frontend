@@ -11,10 +11,12 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
         <html lang="en">
         <body>
         <SocketProvider>
-            <div className="container">
-                <Navbar/>
-                <div className="main-content">
+            <div className="grid grid-cols-12">
+                <div className="col-span-2">
                     <Sidebar/>
+                </div>
+                <div className="col-span-10 mr-[4em]">
+                    <Navbar/>
                     <main>
                         {children}
                     </main>

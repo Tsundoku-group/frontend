@@ -3,8 +3,8 @@ import {Home, User, BookOpen, Trophy, MessageCircle, Users, PenTool} from 'lucid
 
 export default function Sidebar() {
     return (
-        <div className="fixed min-h-screen w-52 bg-secondary-black text-white flex flex-col left-0">
-            <div className="flex items-center justify-center h-20 border-b border-gray-900">
+        <div className="fixed min-h-screen bg-secondary-black text-text-white flex flex-col">
+            <div className="flex items-center justify-center h-20">
                 <h1 className="text-2xl">tsundoku</h1>
             </div>
 
@@ -13,15 +13,15 @@ export default function Sidebar() {
                     <input
                         type="text"
                         placeholder="Explorer"
-                        className="ml-3 bg-transparent focus:outline-none text-white p-1"
+                        className="ml-3 bg-transparent focus:outline-none text-text-white p-1"
                     />
                 </div>
                 <div className="flex items-center justify-around mb-4 mt-4">
-                    <div className="bg-gray-700 p-3 rounded-lg cursor-pointer -mr-5">
-                        <Home className="text-white"/>
+                    <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -mr-5">
+                        <Home className="text-text-white"/>
                     </div>
-                    <div className="bg-gray-700 p-3 rounded-lg cursor-pointer -ml-5">
-                        <User className="text-white"/>
+                    <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -ml-5">
+                        <User className="text-text-white"/>
                     </div>
                 </div>
             </div>
@@ -29,19 +29,19 @@ export default function Sidebar() {
             <nav className="flex-grow px-6 mt-6">
                 <ul className="space-y-4">
                     <li>
-                        <a href="#" className="flex items-center text-gray-400 hover:text-white">
+                        <a href="#" className="flex items-center text-text-white hover:text-white">
                             <BookOpen className="mr-3"/>
                             <span>Étagères</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" className="flex items-center text-gray-400 hover:text-white">
+                        <a href="#" className="flex items-center text-text-white hover:text-white">
                             <Trophy className="mr-3"/>
                             <span>Défis</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/conversations" className="flex items-center text-gray-400 hover:text-white">
+                        <a href="/conversations" className="flex items-center text-text-white hover:text-white">
                             <MessageCircle className="mr-3"/>
                             <span>Messages</span>
                             <span
@@ -51,13 +51,13 @@ export default function Sidebar() {
                         </a>
                     </li>
                     <li>
-                        <a href="#" className="flex items-center text-gray-400 hover:text-white">
+                        <a href="#" className="flex items-center text-text-white hover:text-white">
                             <Users className="mr-3"/>
                             <span>Clubs</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" className="flex items-center text-gray-400 hover:text-white">
+                        <a href="#" className="flex items-center text-text-white hover:text-white">
                             <PenTool className="mr-3"/>
                             <span>Articles</span>
                         </a>
