@@ -19,6 +19,17 @@ const config = {
     },
     extend: {
       colors: {
+        'primary-black': '#13181F',
+        'secondary-black': '#171C26',
+        'tertiary-black': '#1D2330',
+
+        'text-white': '#D2D5E9',
+        
+        'green-highlight': '#20D998',
+        'red-highlight': '#FF5C64',
+        'purple-highlight': '#8146FF',
+        'yellow-highlight': '#FFBC33',
+
         primary: {
           DEFAULT: '#353a45',
           foreground: '#ffffff',
