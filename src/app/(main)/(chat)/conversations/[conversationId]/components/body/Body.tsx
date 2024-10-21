@@ -126,7 +126,6 @@ const Body = ({ messages, conversationId, userEmail }: Props) => {
         }
     }, [localMessages, isAtBottom]);
 
-    // Met à jour localMessages si les props `messages` changent
     useEffect(() => {
         setLocalMessages(messages);
     }, [messages]);
