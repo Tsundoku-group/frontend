@@ -19,3 +19,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-12] Chat: optimisation de Friends [#12](https://trello.com/c/7FLSAmTD/12-t-12-chat-optimisation-de-friends)
 - [t-13] Chat: optimisation ConversationView.tsx [#13](https://trello.com/c/5bjHf7pc/13-t-13-chat-optimisation-conversationviewtsx)
 - [t-14] Chat: correction state de message [#14](https://trello.com/c/klvFqyaq/14-t-14-chat-correction-state-de-message)
+- [t-15] Chat: updating Archives messages [#15](https://trello.com/c/s27EwZar/15-t-15-chat-updating-archives-messages)
