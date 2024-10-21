@@ -128,12 +128,8 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
                         <div ref={messageContainerRef} className="flex-1 w-full overflow-y-auto flex flex-col-reverse">
                             <Body
                                 userEmail={userEmail}
-                                messages={messages}
+                                messages={state.messages}
                                 conversationId={conversationId}
-                                setMessages={(newMessages) => setState(prev => ({
-                                    ...prev,
-                                    messages: newMessages as unknown as Message[],
-                                }))}
                             />
                         </div>
                         <ChatInput conversationId={conversationId}/>
