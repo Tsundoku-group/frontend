@@ -14,7 +14,6 @@ import Body from "@/app/(main)/(chat)/conversations/[conversationId]/components/
 import {useAuthContext} from "@/context/authContext";
 import {useSocket} from "@/context/socketContext";
 import {ChatParticipant} from "@/models/ChatConversation";
-import ArchivesConversationItem from "@/app/(main)/(chat)/archives/components/ArchivesConversationItem";
 
 type Props = {
     conversationId: string;

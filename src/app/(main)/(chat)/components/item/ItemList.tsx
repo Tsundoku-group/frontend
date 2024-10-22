@@ -1,6 +1,5 @@
 import React from "react";
 import {Card} from "@/components/ui/card";
-import ConversationView from "@/app/(main)/(chat)/components/conversation/ConversationView";
 
 type Props = React.PropsWithChildren<{
     title: string;
