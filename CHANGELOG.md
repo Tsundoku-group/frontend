@@ -22,3 +22,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-15] Chat: updating Archives messages [#15](https://trello.com/c/s27EwZar/15-t-15-chat-updating-archives-messages)
 - [t-16] Composant ShowToast [#16](https://trello.com/c/N4RWhw9J/16-t-16-composant-showtoast)
 - [t-17] Correction : npm run build [#17](https://trello.com/c/DDrWwtNL/17-t-17-correction-npm-run-build)
+- [t-18] Chat: optimisation DMConversationItem.tsx [#18](https://trello.com/c/tc8l4NVN/18-t-18-chat-optimisation-dmconversationitemtsx)
