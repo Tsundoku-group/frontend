@@ -181,4 +181,6 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
     );
 });
 
+DMConversationItem.displayName = 'DMConversationItem';
+
 export default DMConversationItem;

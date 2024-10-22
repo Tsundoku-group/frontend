@@ -18,4 +18,6 @@ const ItemList = React.memo(({children, title, action: Action}: Props) => {
     );
 });
 
+ItemList.displayName = 'ItemList';
+
 export default ItemList;

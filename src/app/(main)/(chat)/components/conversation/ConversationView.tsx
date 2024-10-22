@@ -140,4 +140,6 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
     );
 });
 
+ConversationView.displayName = 'ConversationView';
+
 export default ConversationView;
