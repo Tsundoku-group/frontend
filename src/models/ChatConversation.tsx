@@ -4,6 +4,7 @@ export type ChatConversation = {
     lastMessage?: LastMessage;
     participants: ChatParticipant[];
     isArchived: boolean;
+    archivedAt?: string;
     isMutedUntil: {
         date: string;
         timezone: string;

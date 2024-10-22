@@ -4,7 +4,6 @@ import {z} from "zod";
 import {useMutationState} from "@/hooks/useMutationState";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {FormProvider, useForm} from "react-hook-form";
-import {toast} from "@/components/ui/use-toast";
 import {FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import TextareaAutosize from "react-textarea-autosize";
 import {Button} from "@/components/ui/button";
@@ -14,6 +13,7 @@ import EmojiPicker, {EmojiClickData} from 'emoji-picker-react';
 import {Smile} from "lucide-react";
 import {useSocket} from "@/context/socketContext";
 import {v4 as uuidv4} from 'uuid';
+import {ShowToast} from "@/components/ShowToast";
 
 const chatMessageSchema = z.object({
     content: z.string().optional(),
@@ -110,11 +110,7 @@ const ChatInput = ({conversationId}: Props) => {
         }).then(() => {
             form.reset();
         }).catch(() => {
-            toast({
-                variant: "destructive",
-                title: "Oh, oh ! Quelque chose a mal tourné.",
-                description: "Il y a eu un problème avec votre demande."
-            });
+            ShowToast("destructive", "Oh, oh ! Quelque chose a mal tourné.", "Il y a eu un problème avec votre demande.");
         });
     };
 

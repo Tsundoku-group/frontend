@@ -19,9 +19,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutationState } from "@/hooks/useMutationState";
-import { toast } from "@/components/ui/use-toast";
 import { createFriendRequest } from "./actions";
 import { useAuthContext } from "@/context/authContext";
+import {ShowToast} from "@/components/ShowToast";
 
 const addFriendFormSchema = z.object({
     receiverEmail: z.string()
@@ -41,36 +41,20 @@ const AddFriends = () => {
 
     const { mutate: createRequest, pending } = useMutationState(async ({ receiverEmail }: { receiverEmail: string }) => {
         if (!user || !user.email) {
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: "Impossible de récupérer l'email de l'utilisateur."
-            });
+            ShowToast("destructive", "Erreur", "Impossible de récupérer l'email de l'utilisateur.");
             return;
         }
 
         try {
+            await createFriendRequest(user.email, receiverEmail);
 
-            const response = await createFriendRequest(user.email, receiverEmail);
-
-            if (!response.success) {
-                throw new Error(response.error || 'Erreur lors de la création de la demande d\'ami');
-            }
-
-            toast({
-                variant: "default",
-                description: "Demande d'ajout envoyée !"
-            });
+            ShowToast("default", "Demande d'ajout envoyée !");
 
             form.reset();
         } catch (error) {
             const errorMessage = (error as Error).message || "Il y a eu un problème avec votre demande.";
 
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: errorMessage
-            });
+            ShowToast("destructive", "Erreur", errorMessage);
         }
     });
 

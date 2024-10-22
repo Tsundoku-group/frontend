@@ -11,7 +11,7 @@ import {useAuthContext} from "@/context/authContext";
 import SearchBar from "@/app/(main)/(chat)/components/item/ItemSearchBar";
 import {useRouter} from "next/navigation";
 import {startNewConversation} from "@/app/(main)/(chat)/conversations/actions";
-import {toast} from "@/components/ui/use-toast";
+import {ShowToast} from "@/components/ShowToast";
 
 type Friend = {
     id: string;
@@ -59,23 +59,15 @@ const FriendsPage = React.memo(() => {
 
             if (response.success) {
                 const newConversationId = response.conversationId;
-                showToast("default", "Conversation créée !", "");
+                ShowToast("default", "Conversation créée !", "");
                 router.push(`/conversations/${newConversationId}`);
             } else {
-                showToast("destructive", "Erreur", response.error || "Erreur lors de la création de la conversation.");
+                ShowToast("destructive", "Erreur", response.error || "Erreur lors de la création de la conversation.");
             }
         } catch (error) {
             const errorMessage = (error as Error).message || "Il y a eu un problème avec votre demande.";
-            showToast("destructive", "Erreur", errorMessage);
+            ShowToast("destructive", "Erreur", errorMessage);
         }
-    };
-
-    const showToast = (variant: "default" | "destructive", title: string, description: string) => {
-        toast({
-            variant,
-            title,
-            description,
-        });
     };
 
     const resetSearchBarFriends = () => {

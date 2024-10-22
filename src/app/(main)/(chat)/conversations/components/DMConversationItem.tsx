@@ -15,10 +15,10 @@ import {
     handleMuteConversationDuration,
     handleUnmuteConversation
 } from "@/app/(main)/(chat)/conversations/actions";
-import {toast} from "@/components/ui/use-toast";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
+import {ShowToast} from "@/components/ShowToast";
 
 type Props = {
     id: string;
@@ -54,50 +54,38 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
     const handleMuteDurationSelect = async (duration: number | string) => {
         try {
             await handleMuteConversationDuration(id, duration);
-            toast({variant: "default", description: "Conversation mise en sourdine !"});
+            ShowToast("default", "Conversation mise en sourdine !");
             setOpenMuteDialog(false);
         } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: (error as Error).message || "Il y a eu un problème avec votre demande."
-            });
+            ShowToast("destructive", (error as Error).message || "Il y a eu un problème avec votre demande.", "Erreur");
         }
     };
 
     const handleUnmute = async () => {
         try {
             await handleUnmuteConversation(id);
-            toast({variant: "default", description: "Cette conversation n'est plus en sourdine !"});
+            ShowToast("default", "Cette conversation n'est plus en sourdine !");
             setOpenMuteDialog(false);
         } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: (error as Error).message || "Il y a eu un problème avec votre demande."
-            });
+            ShowToast("destructive", (error as Error).message || "Il y a eu un problème avec votre demande.", "Erreur");
         }
     };
 
     const handleDeleteClick = useCallback(async () => {
         try {
             await handleDeleteConversation(id);
-            toast({variant: "default", description: "Conversation supprimée !"});
+            ShowToast("default", "Conversation supprimée !");
         } catch {
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: "Une conversation n'a pas pu être supprimée."
-            });
+            ShowToast("destructive", "Une conversation n'a pas pu être supprimée.", "Erreur");
         }
     }, [id]);
 
     const handleArchiveClick = useCallback(async () => {
         try {
             await handleArchiveConversation(id);
-            toast({variant: "default", description: "Conversation archivée !"});
+            ShowToast("default", "Conversation archivée !");
         } catch {
-            toast({variant: "destructive", title: "Erreur", description: "Une conversation n'a pas pu être archivée."});
+            ShowToast("destructive", "Erreur", "Une conversation n'a pas pu être archivée.");
         }
     }, [id]);
 

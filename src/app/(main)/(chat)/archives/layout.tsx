@@ -9,8 +9,8 @@ import {useAuthContext} from '@/context/authContext';
 import SearchBar from '@/app/(main)/(chat)/components/item/ItemSearchBar';
 import {Checkbox} from "@/components/ui/checkbox";
 import {CheckedState} from "@radix-ui/react-checkbox";
-import {toast} from "@/components/ui/use-toast";
 import {ChatConversation, LastMessage} from "@/models/ChatConversation";
+import {ShowToast} from "@/components/ShowToast";
 
 const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
     const [archivesConversation, setArchivesConversation] = useState<ChatConversation[]>([]);
@@ -87,25 +87,16 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
     const handleUnarchiveSelected = async (userId: string) => {
         try {
             await handleUnarchiveAllConversations(userId);
-            showToast('success', 'Toutes les conversations ont bien été désarchivées !');
+            ShowToast('default', 'Toutes les conversations ont bien été désarchivées !');
         } catch (error) {
             const errorMessage = (error as Error).message || 'Il y a eu un problème avec votre demande.';
-            showToast('error', errorMessage);
+            ShowToast('destructive', errorMessage);
         }
     };
 
     const resetSearchBarConversations = () => {
         setFilteredConversations(archivesConversation);
     };
-
-    const showToast = (variant: "default" | "destructive", description: string, title?: string) => {
-        toast({
-            variant,
-            title,
-            description,
-        });
-    };
-
 
     return (
         <div className="mt-16">

@@ -8,7 +8,7 @@ import { handleDeleteConversation } from "@/app/(main)/(chat)/conversations/acti
 import { handleUnarchiveConversation } from "@/app/(main)/(chat)/archives/actions";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import {toast} from "@/components/ui/use-toast";
+import {ShowToast} from "@/components/ShowToast";
 
 type Props = {
     id: string;
@@ -31,29 +31,20 @@ const ArchivesConversationItem = React.memo(({ id, imageUrl, username, lastMessa
     const handleDeleteClick = async () => {
         try {
             await handleDeleteConversation(id);
-            showToast("default", "Conversation supprimée !");
+            ShowToast("default", "Conversation supprimée !");
         } catch (error) {
-            showToast("destructive", "Une conversation n'a pas pu être supprimée.", "Erreur");
+            ShowToast("destructive", "Une conversation n'a pas pu être supprimée.", "Erreur");
         }
     };
 
     const handleRestoreClick = async () => {
         try {
             await handleUnarchiveConversation(id);
-            showToast("default", "Conversation restaurée !");
+            ShowToast("default", "Conversation restaurée !");
         } catch (error) {
-            showToast("destructive", "Une conversation n'a pas pu être restaurée.", "Erreur");
+            ShowToast("destructive", "Une conversation n'a pas pu être restaurée.", "Erreur");
         }
     };
-
-    const showToast = (variant: "default" | "destructive", description: string, title?: string) => {
-        toast({
-            variant,
-            title,
-            description,
-        });
-    };
-
 
     return (
         <Link href={`/archives/${id}`} className="w-full">

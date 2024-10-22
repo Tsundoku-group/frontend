@@ -14,13 +14,13 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {Check, SquarePen} from "lucide-react";
 import {useAuthContext} from "@/context/authContext";
-import {toast} from "@/components/ui/use-toast";
 import {fetchFriendsList} from "@/app/(main)/(chat)/friends/actions";
 import {startNewConversation} from "@/app/(main)/(chat)/conversations/actions";
 import {Loader2} from "lucide-react";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
 import {Input} from "@/components/ui/input";
 import {useRouter} from "next/navigation";
+import {ShowToast} from "@/components/ShowToast";
 
 type Friend = {
     id: string;
@@ -55,7 +55,7 @@ const StartNewConversation = () => {
 
     const handleStartConversation = async () => {
         if (!selectedFriend) {
-            showToast("destructive", "Erreur", "Veuillez sélectionner un(e) ami(e) pour commencer une conversation.");
+            ShowToast("destructive", "Erreur", "Veuillez sélectionner un(e) ami(e) pour commencer une conversation.");
             return;
         }
 
@@ -66,15 +66,15 @@ const StartNewConversation = () => {
             const response = await startNewConversation(userEmail, friendId);
 
             if (response.success) {
-                showToast("default", "Nouvelle conversation démarrée !", "");
+                ShowToast("default", "Nouvelle conversation démarrée !", "");
                 setIsDialogOpen(false);
                 router.push(`/conversations/${response.conversationId}`);
             } else {
-                showToast("destructive", "Erreur", response.error || "Erreur lors de la création de la conversation.");
+                ShowToast("destructive", "Erreur", response.error || "Erreur lors de la création de la conversation.");
             }
         } catch (error) {
             const errorMessage = (error as Error).message || "Il y a eu un problème avec votre demande.";
-            showToast("destructive", "Erreur", errorMessage);
+            ShowToast("destructive", "Erreur", errorMessage);
         }
     };
 
@@ -92,14 +92,6 @@ const StartNewConversation = () => {
             loadFriends();
         }
         setSelectedFriend(null);
-    };
-
-    const showToast = (variant: "default" | "destructive", title: string, description: string) => {
-        toast({
-            variant,
-            title,
-            description,
-        });
     };
 
     return (
