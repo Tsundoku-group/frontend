@@ -1,3 +1,5 @@
+'use server'
+
 import { isTokenExpired, refreshAuthToken } from "@/services/refreshService";
 import { getSession } from "@/app/_lib/session";
 
@@ -5,33 +7,38 @@ interface FetchOptions extends RequestInit {
     headers?: { [key: string]: string };
 }
 
+let cachedToken: { token: string, expirationTime: number } | null = null;
+
+function getExpirationTime(token: string): number {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000;
+}
+
 async function getToken() {
+    if (cachedToken && Date.now() < cachedToken.expirationTime) {
+        return cachedToken.token;
+    }
+
     const session = await getSession();
     let token: unknown = session?.token;
 
-    if (token && await isTokenExpired()) {
-        const newToken = await refreshAuthToken(session?.refreshToken);
-        if (newToken) {
-            token = newToken;
+    if (token) {
+        const expirationTime = getExpirationTime(token as string);
+        if (Date.now() >= expirationTime) {
+            const newToken = await refreshAuthToken(session?.refreshToken);
+            if (newToken) {
+                token = newToken;
+                cachedToken = { token: newToken, expirationTime: getExpirationTime(newToken) };
+            }
+        } else {
+            cachedToken = { token: token as string, expirationTime };
         }
     }
+
     return token;
 }
 
-const cache = new Map<string, { data: any, timestamp: number }>();
-
-function isCacheValid(timestamp: number, duration: number = 5 * 60 * 1000) {
-    return Date.now() - timestamp < duration;
-}
-
 export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
-    const cacheKey = url;
-
-    const cachedEntry = cache.get(cacheKey);
-    if (cachedEntry && isCacheValid(cachedEntry.timestamp)) {
-        return { response: true, status: 200, data: cachedEntry.data };
-    }
-
     const token = await getToken();
     const headers: { [key: string]: string } = {
         'Content-Type': 'application/json',
@@ -45,15 +52,6 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
         const response = await fetch(url, config);
         const responseData = await response.text();
 
-        if (!response.ok) {
-            return {
-                response: false,
-                status: response.status,
-                message: response.statusText,
-                error: responseData || 'Unknown error occurred',
-            };
-        }
-
         let data;
         try {
             data = JSON.parse(responseData);
@@ -61,7 +59,6 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
             data = responseData;
         }
 
-        cache.set(cacheKey, { data, timestamp: Date.now() });
         return { response: true, status: response.status, data };
 
     } catch (error) {
