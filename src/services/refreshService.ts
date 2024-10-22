@@ -19,38 +19,21 @@ export const refreshAuthToken = async (refreshToken: unknown): Promise<string | 
             body: JSON.stringify({ 'refresh_token': refreshToken })
         });
 
-        if (!response.ok) {
-            throw new Error('Failed to refresh token');
-        }
-
         const data = await response.json();
         return data.token;
     } catch (error) {
-        console.error("Error refreshing token:", error);
         return null;
     }
 };
 
-export const isTokenExpired = async (): Promise<unknown> => {
+
+export const isTokenExpired = async (token: string): Promise<boolean> => {
     try {
-        const payload = await verifySession();
-
-        if (!payload || !payload.userData || !payload.userData.token) {
-            return false;
-        }
-
-        const token = payload.userData.token;
-        const refreshToken = payload.userData.refreshToken;
-        const decodedToken: DecodedToken = jwtDecode(token as string);
-
+        const decodedToken: DecodedToken = jwtDecode(token);
         const currentTime = Date.now() / 1000;
-        const isExpired = decodedToken.exp <= currentTime;
-
-        if (isExpired) {
-            return refreshToken;
-        }
+        return decodedToken.exp <= currentTime;
     } catch (error) {
-        console.error("Error checking token expiration:", error);
-        return false;
+        console.error("Error decoding token:", error);
+        return true;
     }
 };

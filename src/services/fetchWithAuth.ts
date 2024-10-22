@@ -20,26 +20,29 @@ async function getToken() {
     }
 
     const session = await getSession();
-    let token: unknown = session?.token;
+    let token: string  = session?.token as string;
 
-    if (token) {
-        const expirationTime = getExpirationTime(token as string);
-        if (Date.now() >= expirationTime) {
-            const newToken = await refreshAuthToken(session?.refreshToken);
-            if (newToken) {
-                token = newToken;
-                cachedToken = { token: newToken, expirationTime: getExpirationTime(newToken) };
-            }
-        } else {
-            cachedToken = { token: token as string, expirationTime };
+    if (token && await isTokenExpired(token)) {
+        const newToken = await refreshAuthToken(session?.refreshToken);
+        if (newToken) {
+            token = newToken;
+            const expirationTime = getExpirationTime(newToken);
+            cachedToken = { token: newToken, expirationTime };
         }
+    } else if (token) {
+        const expirationTime = getExpirationTime(token);
+        cachedToken = { token, expirationTime };
     }
 
     return token;
 }
 
 export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
+    const tokenStartTime = performance.now();
     const token = await getToken();
+    const tokenEndTime = performance.now();
+    console.log(`Token fetch took: ${tokenEndTime - tokenStartTime}ms`);
+
     const headers: { [key: string]: string } = {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -49,7 +52,11 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
     const config: RequestInit = { ...options, headers };
 
     try {
+        const fetchStartTime = performance.now();
         const response = await fetch(url, config);
+        const fetchEndTime = performance.now();
+        console.log(`Fetch took: ${fetchEndTime - fetchStartTime}ms`);
+
         const responseData = await response.text();
 
         let data;
