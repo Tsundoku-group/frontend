@@ -16,8 +16,9 @@ export const fetchUserConversations = async (userId: unknown): Promise<ChatConve
 
         const data = response.data;
 
-        if (data && data.conversations && Array.isArray(data.conversations)) {
-            return data.conversations.flat();
+        if (data && data.conversations && typeof data.conversations === 'object') {
+            const conversationsArray = Object.values(data.conversations);
+            return conversationsArray as ChatConversation[];
         } else {
             return [];
         }
@@ -171,7 +172,7 @@ export const handleMuteConversationDuration = async (conversationId: string, dur
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({duration})
+            body: JSON.stringify({duration}),
         });
     } catch (error) {
         throw error;

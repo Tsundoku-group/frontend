@@ -39,7 +39,7 @@ const ChatInput = ({conversationId}: Props) => {
             if (socket) {
                 const isCurrentUser = payload.userEmail === userEmail;
 
-                socket.emit('send_msg', {
+                socket.emit('send_msg', JSON.stringify({
                     roomId: conversationId,
                     id: uuid,
                     isRead: true,
@@ -49,14 +49,13 @@ const ChatInput = ({conversationId}: Props) => {
                     sent_by: payload.userEmail,
                     sent_at: new Date().toISOString(),
                     isCurrentUser: isCurrentUser,
-                });
+                }));
 
                 socket.on('typing', (userId));
 
                 socket.on('stopTyping', (userId));
             }
-
-            return await sendMessage({...payload, id: uuid}, conversationId);
+          return await sendMessage({...payload, id: uuid}, conversationId);
         } catch (error) {
             throw error;
         }
@@ -104,14 +103,15 @@ const ChatInput = ({conversationId}: Props) => {
     };
 
     const handleSubmit = async (values: z.infer<typeof chatMessageSchema>) => {
-        mutate({
-            message: values.content,
-            userEmail: userEmail,
-        }).then(() => {
+        try {
+            await mutate({
+                message: values.content,
+                userEmail: userEmail,
+            });
             form.reset();
-        }).catch(() => {
+        } catch (error) {
             ShowToast("destructive", "Oh, oh ! Quelque chose a mal tourné.", "Il y a eu un problème avec votre demande.");
-        });
+        }
     };
 
     return (
