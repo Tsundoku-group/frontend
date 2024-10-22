@@ -1,6 +1,6 @@
 'use client';
 
-import React, {createContext, useContext, useEffect, useMemo, useState} from "react";
+import React, {createContext, useContext, useEffect, useMemo, useState, useCallback} from "react";
 import {getSession, deleteSession} from "@/app/_lib/session";
 import {useRouter} from "next/navigation";
 
@@ -22,9 +22,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | any>(undefined);
 
-export function AuthProvider({children}: {
-    children: React.ReactNode;
-}) {
+export function AuthProvider({children}: { children: React.ReactNode; }) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
@@ -54,23 +52,23 @@ export function AuthProvider({children}: {
         checkAuthBySession();
     }, [router]);
 
-    const logout = async () => {
+    const logout = useCallback(async () => {
         await deleteSession();
         setIsAuthenticated(false);
         setUser(null);
         setToken(null);
         router.push('/login');
-    };
+    }, [router]);
 
     const value = useMemo(() =>({
         isAuthenticated, setIsAuthenticated, token, setToken, user, setUser, logout
-    }), [isAuthenticated, token, user, error])
+    }), [isAuthenticated, token, user, logout]);
 
     return (
         <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
-    )
+    );
 }
 
 export function useAuthContext() {

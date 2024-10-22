@@ -64,14 +64,14 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 socket.off('receive_msg');
             };
         }
-    }, [socket]);
+    }, [socket, activeConversationId]);
 
-    const getOtherMember = (conversation: ChatConversation) => {
+    const getOtherMember = useCallback((conversation: ChatConversation) => {
         if (Array.isArray(conversation.participants)) {
             return conversation.participants.find(participant => participant.id !== userId);
         }
         return undefined;
-    };
+    }, [userId]);
 
     const lastMessageDetails = useMemo(() => {
         return conversations.map(conversation => {
@@ -88,7 +88,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 isMutedUntil: conversation.isMutedUntil,
             };
         });
-    }, [conversations]);
+    }, [conversations, getOtherMember]);
 
     const resetSearchBarConversations = () => {
         setConversations(allConversations);

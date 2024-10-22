@@ -103,4 +103,6 @@ const FriendsPage = React.memo(() => {
     );
 });
 
+FriendsPage.displayName = 'FriendsPage';
+
 export default FriendsPage;

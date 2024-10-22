@@ -94,4 +94,6 @@ const ArchivesConversationItem = React.memo(({ id, imageUrl, username, lastMessa
     );
 });
 
+ArchivesConversationItem.displayName = 'ArchivesConversationItem';
+
 export default ArchivesConversationItem;

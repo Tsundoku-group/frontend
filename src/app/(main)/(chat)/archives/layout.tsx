@@ -42,14 +42,14 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
         }
     }, [fetchArchivedConversationsData, userId]);
 
-    const getOtherMember = (conversation: ChatConversation) => {
+    const getOtherMember = useCallback((conversation: ChatConversation) => {
         if (Array.isArray(conversation.participants)) {
             return conversation.participants.find(participant => participant.id !== userId);
         }
         return undefined;
-    };
+    }, [userId]);
 
-    const mutedConversationDetails = useMemo(() => {
+    const archivesConversationDetails = useMemo(() => {
         return archivesConversation.map(conversation => {
             const lastMessage = conversation.lastMessage as LastMessage|| {};
             const otherMember = getOtherMember(conversation);
@@ -63,7 +63,7 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
                 sentAt: lastMessage.sent_at,
             };
         });
-    }, [archivesConversation]);
+    }, [archivesConversation, getOtherMember]);
 
     const toggleSelectAll = (isChecked: CheckedState) => {
         if (isChecked) {
@@ -139,7 +139,7 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
                         Pas de conversation trouvée
                     </p>
                 ) : (
-                    mutedConversationDetails.map(({id, username, imageUrl, lastMessageSender, lastMessageContent, archivedAt}) => {
+                    archivesConversationDetails.map(({id, username, imageUrl, lastMessageSender, lastMessageContent, archivedAt}) => {
                         return (
                             <ArchivesConversationItem
                                 key={id}

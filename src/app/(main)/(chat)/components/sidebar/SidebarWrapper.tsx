@@ -14,4 +14,6 @@ const SidebarWrapper = React.memo(({ children }: Props) => {
     );
 });
 
+SidebarWrapper.displayName = 'SidebarWrapper';
+
 export default SidebarWrapper;

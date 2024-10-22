@@ -17,4 +17,6 @@ const ConversationPage = React.memo(({ params: { conversationId } }: Props) => {
     );
 });
 
+ConversationPage.displayName = 'ConversationPage';
+
 export default ConversationPage;

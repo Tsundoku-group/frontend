@@ -14,6 +14,7 @@ import Body from "@/app/(main)/(chat)/conversations/[conversationId]/components/
 import {useAuthContext} from "@/context/authContext";
 import {useSocket} from "@/context/socketContext";
 import {ChatParticipant} from "@/models/ChatConversation";
+import ArchivesConversationItem from "@/app/(main)/(chat)/archives/components/ArchivesConversationItem";
 
 type Props = {
     conversationId: string;
@@ -139,5 +140,7 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
         </div>
     );
 });
+
+ConversationView.displayName = 'ConversationView';
 
 export default ConversationView;
