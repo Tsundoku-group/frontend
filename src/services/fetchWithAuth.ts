@@ -1,3 +1,5 @@
+'use server'
+
 import { isTokenExpired, refreshAuthToken } from "@/services/refreshService";
 import { getSession } from "@/app/_lib/session";
 
@@ -5,34 +7,42 @@ interface FetchOptions extends RequestInit {
     headers?: { [key: string]: string };
 }
 
-async function getToken() {
-    const session = await getSession();
-    let token: unknown = session?.token;
+let cachedToken: { token: string, expirationTime: number } | null = null;
 
-    if (token && await isTokenExpired()) {
+function getExpirationTime(token: string): number {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000;
+}
+
+async function getToken() {
+    if (cachedToken && Date.now() < cachedToken.expirationTime) {
+        return cachedToken.token;
+    }
+
+    const session = await getSession();
+    let token: string  = session?.token as string;
+
+    if (token && await isTokenExpired(token)) {
         const newToken = await refreshAuthToken(session?.refreshToken);
         if (newToken) {
             token = newToken;
+            const expirationTime = getExpirationTime(newToken);
+            cachedToken = { token: newToken, expirationTime };
         }
+    } else if (token) {
+        const expirationTime = getExpirationTime(token);
+        cachedToken = { token, expirationTime };
     }
+
     return token;
 }
 
-const cache = new Map<string, { data: any, timestamp: number }>();
-
-function isCacheValid(timestamp: number, duration: number = 5 * 60 * 1000) {
-    return Date.now() - timestamp < duration;
-}
-
 export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
-    const cacheKey = url;
-
-    const cachedEntry = cache.get(cacheKey);
-    if (cachedEntry && isCacheValid(cachedEntry.timestamp)) {
-        return { response: true, status: 200, data: cachedEntry.data };
-    }
-
+    const tokenStartTime = performance.now();
     const token = await getToken();
+    const tokenEndTime = performance.now();
+    console.log(`Token fetch took: ${tokenEndTime - tokenStartTime}ms`);
+
     const headers: { [key: string]: string } = {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -42,17 +52,12 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
     const config: RequestInit = { ...options, headers };
 
     try {
+        const fetchStartTime = performance.now();
         const response = await fetch(url, config);
-        const responseData = await response.text();
+        const fetchEndTime = performance.now();
+        console.log(`Fetch took: ${fetchEndTime - fetchStartTime}ms`);
 
-        if (!response.ok) {
-            return {
-                response: false,
-                status: response.status,
-                message: response.statusText,
-                error: responseData || 'Unknown error occurred',
-            };
-        }
+        const responseData = await response.text();
 
         let data;
         try {
@@ -61,7 +66,6 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
             data = responseData;
         }
 
-        cache.set(cacheKey, { data, timestamp: Date.now() });
         return { response: true, status: response.status, data };
 
     } catch (error) {

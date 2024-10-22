@@ -2,7 +2,6 @@
 
 import React, {useState, useCallback, useMemo} from "react";
 import {Card} from "@/components/ui/card";
-import Link from "next/link";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {ArchiveRestore, BellOff, EllipsisVertical, Trash2, User} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
@@ -19,6 +18,7 @@ import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/
 import {Button} from "@/components/ui/button";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 import {ShowToast} from "@/components/ShowToast";
+import {useRouter} from "next/navigation";
 
 type Props = {
     id: string;
@@ -37,6 +37,7 @@ type Props = {
 
 const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageContent, lastMessageSender, sentAt, isRead, isMutedUntil}: Props) => {
     const [openMuteDialog, setOpenMuteDialog] = useState(false);
+    const router = useRouter();
 
     const parsedDate = useMemo(() => sentAt ? parseISO(sentAt) : null, [sentAt]);
     const timeAgo = useMemo(() => parsedDate ? formatDistanceToNow(parsedDate, {
@@ -89,8 +90,12 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
         }
     }, [id]);
 
+    const handleNavigate = () => {
+        router.push(`/conversations/${id}`);
+    };
+
     return (
-        <Link href={`/conversations/${id}`} as={`/conversations/${id}`} className="w-full" passHref>
+        <div className="w-full" onClick={handleNavigate}>
             <Card className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition mb-2">
                 <Avatar className="w-12 h-12">
                     <AvatarImage src={imageUrl}/>
@@ -183,7 +188,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                     </Dialog>
                 </div>
             </Card>
-        </Link>
+        </div>
     );
 });
 
