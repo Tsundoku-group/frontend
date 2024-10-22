@@ -1,6 +1,5 @@
 'use server';
 
-import { verifySession } from "@/app/_lib/session";
 import {jwtDecode} from "jwt-decode";
 
 const symfonyUrl = process.env.SYMFONY_URL;
