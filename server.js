@@ -37,7 +37,10 @@ app.prepare().then(() => {
         });
 
         socket.on("send_msg", (data) => {
-            io.to(data.roomId).emit("receive_msg", data);
+            const parsedData = JSON.parse(data);
+            const roomId = parsedData.roomId;
+
+            io.to(roomId).emit("receive_msg", parsedData);
         });
 
         socket.on('markAsRead', ({conversationId, userId}) => {

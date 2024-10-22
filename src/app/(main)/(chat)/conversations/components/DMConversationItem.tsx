@@ -103,12 +103,18 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                         {username}
                     </h4>
                     <span className={`text-xs text-gray-400 truncate overflow-hidden max-w-[200px]`}>
-                        {isLastMessageFromCurrentUser ? (
-                            <span className="font-semibold">{lastMessageSender}</span>
+                        {lastMessageContent ? (
+                            <>
+                                {isLastMessageFromCurrentUser ? (
+                                    <span className="font-semibold">{lastMessageSender}</span>
+                                ) : (
+                                    <span>{lastMessageSender}: </span>
+                                )}
+                                <span className="truncate">{lastMessageContent}</span>
+                            </>
                         ) : (
-                            <span>{lastMessageSender}: </span>
+                            <span className="text-xs text-gray-400 font-semibold">Envoie un message...</span>
                         )}
-                        <span className="truncate">{lastMessageContent}</span>
                     </span>
                 </div>
                 <div className="ml-auto flex-shrink-0">

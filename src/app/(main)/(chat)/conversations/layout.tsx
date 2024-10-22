@@ -10,7 +10,6 @@ import {fetchUserConversations} from "@/app/(main)/(chat)/conversations/actions"
 import StartNewConversation from "@/app/(main)/(chat)/conversations/components/StartNewConversation";
 import SearchBar from '@/app/(main)/(chat)/components/item/ItemSearchBar';
 import {useSocket} from "@/context/socketContext";
-import {useParams} from 'next/navigation';
 
 const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState<boolean>(true);
@@ -20,9 +19,6 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     const {user} = useAuthContext();
     const socket = useSocket();
     const userId = user?.userId;
-
-    const params = useParams();
-    const activeConversationId = params?.conversationId;
 
     const fetchConversationsData = useCallback(async () => {
         if (!userId) return;
@@ -44,13 +40,12 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     }, [fetchConversationsData]);
 
     useEffect(() => {
-        if (socket) {
-            socket.emit('joinRoom', activeConversationId);
+        if (socket && conversations.length > 0) {
             socket.on('receive_msg', (data) => {
                 const { roomId, ...messageData } = data;
 
                 setConversations(prevConversations => prevConversations.map(conv => {
-                    if (conv.id === roomId) {
+                    if (String(conv.id) === String(roomId)) {
                         return {
                             ...conv,
                             lastMessage: messageData,
@@ -64,7 +59,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 socket.off('receive_msg');
             };
         }
-    }, [socket, activeConversationId]);
+    }, [socket, conversations]);
 
     const getOtherMember = useCallback((conversation: ChatConversation) => {
         if (Array.isArray(conversation.participants)) {
@@ -75,13 +70,13 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
 
     const lastMessageDetails = useMemo(() => {
         return conversations.map(conversation => {
-            const lastMessage = conversation.lastMessage as LastMessage|| {};
+            const lastMessage = conversation.lastMessage as LastMessage || {};
             const otherMember = getOtherMember(conversation);
             return {
                 id: conversation.id,
                 username: otherMember?.userName || "Utilisateur inconnu",
                 imageUrl: otherMember?.imageUrl || "",
-                lastMessageSender: lastMessage.sent_by || "Inconnu",
+                lastMessageSender: lastMessage.sent_by,
                 lastMessageContent: lastMessage.content || "",
                 sentAt: lastMessage.sent_at,
                 isRead: lastMessage.isRead,
