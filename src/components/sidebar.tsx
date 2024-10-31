@@ -1,7 +1,50 @@
-import React from 'react';
-import {Home, User, BookOpen, Trophy, MessageCircle, Users, PenTool} from 'lucide-react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { Home, User, BookOpen, Trophy, MessageCircle, Users, PenTool } from 'lucide-react';
+import { useAuthContext } from "@/context/authContext";
+import {useSocket} from "@/context/socketContext";
 
 export default function Sidebar() {
+    const [unreadMessages, setUnreadMessages] = useState<number>(() => {
+        const savedCount = localStorage.getItem('unreadMessages');
+        return savedCount ? parseInt(savedCount, 10) : 0;
+    });
+    const [isClient, setIsClient] = useState(false);
+    const socket = useSocket();
+    const { user } = useAuthContext();
+    const userId = user?.userId;
+
+    useEffect(() => {
+        setIsClient(true);
+
+        if (isClient) {
+            const savedCount = localStorage.getItem('unreadMessages');
+            setUnreadMessages(savedCount ? parseInt(savedCount, 10) : 0);
+        }
+    }, [isClient]);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('messageAlert', () => {
+                setUnreadMessages((prevCount) => {
+                    const newCount = prevCount + 1;
+                    localStorage.setItem('unreadMessages', newCount.toString());
+                    return newCount;
+                });
+            });
+            socket.on('conversationRead', () => {
+                setUnreadMessages(0);
+                localStorage.setItem('unreadMessages', '0');
+            });
+
+            return () => {
+                socket.off('messageAlert');
+                socket.off('conversationRead');
+            };
+        }
+    }, [userId, socket]);
+
     return (
         <div className="fixed min-h-screen bg-secondary-black text-text-white flex flex-col">
             <div className="flex items-center justify-center h-20">
@@ -44,10 +87,11 @@ export default function Sidebar() {
                         <a href="/conversations" className="flex items-center text-text-white hover:text-white">
                             <MessageCircle className="mr-3"/>
                             <span>Messages</span>
-                            <span
-                                className="ml-auto bg-red-500 text-xs rounded-full h-4 w-4 flex items-center justify-center text-white">
-                                5
-                            </span>
+                            {unreadMessages > 0 && (
+                                <span className="ml-auto bg-red-500 text-xs rounded-full h-4 w-4 flex items-center justify-center text-white">
+                                    {unreadMessages}
+                                </span>
+                            )}
                         </a>
                     </li>
                     <li>
