@@ -25,4 +25,5 @@ export type LastMessage = {
     sent_by: string;
     sent_at: string;
     isRead: boolean;
+    isCurrentUser?: boolean,
 };
