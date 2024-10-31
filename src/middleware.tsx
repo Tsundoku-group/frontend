@@ -3,8 +3,9 @@ import { decrypt } from '@/app/_lib/session';
 
 export default async function middleware(req: NextRequest) {
     const protectedRoutes = ['/', '/home', '/friends', '/conversations', '/archives'];
+    const conversationPattern = /^\/conversations(\/.*)?$/;
     const currentPath = req.nextUrl.pathname;
-    const isProtectedRoute = protectedRoutes.includes(currentPath);
+    const isProtectedRoute = protectedRoutes.includes(currentPath) || conversationPattern.test(currentPath);
 
     const cookie = req.cookies.get('session');
 
