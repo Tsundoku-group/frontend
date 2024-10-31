@@ -24,3 +24,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-17] Correction : npm run build [#17](https://trello.com/c/DDrWwtNL/17-t-17-correction-npm-run-build)
 - [t-18] Chat: optimisation DMConversationItem.tsx [#18](https://trello.com/c/tc8l4NVN/18-t-18-chat-optimisation-dmconversationitemtsx)
 - [t-19] Corrections affichage Messages + changement logique cache [#19](https://trello.com/c/cTPhs2D5/19-t-19-corrections-affichage-messages-changement-logique-cache)
+- [t-20] Chat: optimisation socket des messages reçus dans DMConversationItem.tsx [#20](https://trello.com/c/o2USVIwG/20-t-20-chat-optimisation-socket-des-messages-re%C3%A7us-dans-dmconversationitemtsx)

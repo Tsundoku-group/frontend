@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import { socket as initializeSocket } from '@/socket';
+import { useAuthContext } from "@/context/authContext";
 
 interface SocketProviderProps {
     children: React.ReactNode;
@@ -14,14 +15,17 @@ export const useSocket = () => useContext(SocketContext);
 
 export function SocketProvider({ children }: SocketProviderProps) {
     const [socket, setSocket] = useState<Socket | null>(null);
+    const { user } = useAuthContext();
+    const userId = user?.userId;
 
     useEffect(() => {
         const socketInstance = initializeSocket("http://localhost:3000");
 
         socketInstance.on('connect', () => {
-            console.log('Connecté au serveur');
             setSocket(socketInstance);
-            socketInstance.emit('ping', { message: 'Hello from client' });
+            if (userId) {
+                socketInstance.emit("registerUser", userId);
+            }
         });
 
         socketInstance.on('connect_error', (err) => {
@@ -33,13 +37,12 @@ export function SocketProvider({ children }: SocketProviderProps) {
             setSocket(null);
         });
 
-
         return () => {
             if (socketInstance) {
                 socketInstance.disconnect();
             }
         };
-    }, []);
+    }, [userId]);
 
     return (
         <SocketContext.Provider value={socket}>

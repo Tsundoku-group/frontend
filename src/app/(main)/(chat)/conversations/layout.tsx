@@ -15,6 +15,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [conversations, setConversations] = useState<ChatConversation[]>([]);
     const [allConversations, setAllConversations] = useState<ChatConversation[]>([]);
+    const [activeConversations, setActiveConversations] = useState<Set<string>>(new Set());
 
     const {user} = useAuthContext();
     const socket = useSocket();
@@ -22,12 +23,13 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
 
     const fetchConversationsData = useCallback(async () => {
         if (!userId) return;
-
         setLoading(true);
+
         try {
-            const data = await fetchUserConversations(userId);
+            const data: ChatConversation[] = await fetchUserConversations(userId);
             setConversations(data);
             setAllConversations(data);
+
         } catch (error) {
             console.error("Error fetching conversations:", error);
         } finally {
@@ -40,38 +42,82 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     }, [fetchConversationsData]);
 
     useEffect(() => {
-        if (socket && conversations.length > 0) {
-            socket.on('receive_msg', (data) => {
-                const { roomId, ...messageData } = data;
+        if (socket) {
+            socket.on('bothInConversation', ({roomId}) => {
+                setActiveConversations((prev) => new Set(prev).add(roomId));
+            });
 
-                setConversations(prevConversations => prevConversations.map(conv => {
-                    if (String(conv.id) === String(roomId)) {
-                        return {
-                            ...conv,
-                            lastMessage: messageData,
-                        };
-                    }
-                    return conv;
-                }));
+            socket.on('lastMessageUpdate', ({roomId, ...lastMessage}) => {
+                setConversations((prevConversations) =>
+                    prevConversations.map((conv) =>
+                        String(conv.id) === String(roomId) ? {...conv, lastMessage} : conv
+                    )
+                );
+            });
+
+            const moveConversationToTop = (roomId: any, lastMessage: any) => {
+                setConversations((prevConversations) => {
+                    const updatedConversations = prevConversations.map((conv) =>
+                        String(conv.id) === String(roomId) ? { ...conv, lastMessage } : conv
+                    );
+
+                    const targetConvIndex = updatedConversations.findIndex(conv => String(conv.id) === String(roomId));
+                    const [targetConv] = updatedConversations.splice(targetConvIndex, 1);
+                    updatedConversations.unshift(targetConv);
+
+                    return updatedConversations;
+                });
+            };
+
+            socket.on('messageAlert', ({ roomId, ...lastMessage }) => {
+                moveConversationToTop(roomId, lastMessage);
             });
 
             return () => {
-                socket.off('receive_msg');
+                socket.off('bothInConversation');
+                socket.off('lastMessageUpdate');
+                socket.off('messageAlert');
             };
         }
-    }, [socket, conversations]);
+    }, [socket, activeConversations]);
+
+    useEffect(() => {
+        if (socket && userId) {
+            socket.on('conversationRead', ({conversationId}) => {
+
+                setConversations((prevConversations) =>
+                    prevConversations.map((conv) => {
+                        if (String(conv.id) === String(conversationId) && conv.lastMessage) {
+                            return {
+                                ...conv,
+                                lastMessage: {
+                                    ...conv.lastMessage,
+                                    isRead: true,
+                                },
+                            };
+                        }
+                        return conv;
+                    })
+                );
+            });
+
+            return () => {
+                socket.off('conversationRead');
+            };
+        }
+    }, [socket, userId]);
 
     const getOtherMember = useCallback((conversation: ChatConversation) => {
-        if (Array.isArray(conversation.participants)) {
-            return conversation.participants.find(participant => participant.id !== userId);
-        }
-        return undefined;
+        return conversation.participants.find(participant => participant.id !== userId);
     }, [userId]);
 
     const lastMessageDetails = useMemo(() => {
         return conversations.map(conversation => {
             const lastMessage = conversation.lastMessage as LastMessage || {};
             const otherMember = getOtherMember(conversation);
+
+            const isReadForCurrentUser = lastMessage.sent_by === user?.email || lastMessage.isRead;
+
             return {
                 id: conversation.id,
                 username: otherMember?.userName || "Utilisateur inconnu",
@@ -79,15 +125,15 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 lastMessageSender: lastMessage.sent_by,
                 lastMessageContent: lastMessage.content || "",
                 sentAt: lastMessage.sent_at,
-                isRead: lastMessage.isRead,
+                isRead: isReadForCurrentUser,
                 isMutedUntil: conversation.isMutedUntil,
             };
         });
-    }, [conversations, getOtherMember]);
+    }, [conversations, getOtherMember, user?.email]);
 
-    const resetSearchBarConversations = () => {
+    const resetSearchBarConversations = useCallback(() => {
         setConversations(allConversations);
-    };
+    }, [allConversations]);
 
     return (
         <div className="mt-16">
@@ -125,6 +171,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                                 sentAt={sentAt}
                                 isRead={isRead}
                                 isMutedUntil={isMutedUntil}
+                                setConversations={setConversations}
                             />
                         ))
                     )}

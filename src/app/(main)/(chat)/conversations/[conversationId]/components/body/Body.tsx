@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, {useState, useEffect, useRef, useCallback, useMemo} from "react";
 import Message from "@/app/(main)/(chat)/conversations/[conversationId]/components/message/Message";
-import { Loader2 } from "lucide-react";
+import {Loader2} from "lucide-react";
 import ScrollToBottomButton from "@/components/ScrollToBottomButton";
-import { useSocket } from "@/context/socketContext";
+import {useSocket} from "@/context/socketContext";
 import {fetchMessagesFromConversationId} from "@/app/(main)/(chat)/conversations/actions";
+import {useAuthContext} from "@/context/authContext";
 
 type Props = {
     messages: MessageType[];
@@ -21,7 +22,7 @@ type MessageType = {
     isRead?: boolean;
 };
 
-const Body = ({ messages, conversationId, userEmail }: Props) => {
+const Body = ({messages, conversationId, userEmail}: Props) => {
     const [localMessages, setLocalMessages] = useState<MessageType[]>(messages);
     const [loading, setLoading] = useState<boolean>(false);
     const [isAtBottom, setIsAtBottom] = useState<boolean>(true);
@@ -29,6 +30,8 @@ const Body = ({ messages, conversationId, userEmail }: Props) => {
     const [page, setPage] = useState<number>(1);
     const socket = useSocket();
     const messageContainerRef = useRef<HTMLDivElement | null>(null);
+    const {user} = useAuthContext();
+    const userId = user?.userId;
 
     const lastMessageByUser = useMemo(() => {
         const lastMessages: Record<string, number> = {};
@@ -45,23 +48,25 @@ const Body = ({ messages, conversationId, userEmail }: Props) => {
     }, [localMessages, userEmail]);
 
     useEffect(() => {
-        if (socket && conversationId) {
-            socket.emit('joinRoom', conversationId);
+        if (socket && conversationId && userId) {
+            socket.emit("joinRoom", {roomId: conversationId, userId});
 
             socket.on('receive_msg', (data: any) => {
-                const { roomId } = data;
+                const {roomId, sender_email} = data;
+
                 if (roomId === conversationId) {
-                    setLocalMessages((prevMessages) => [...prevMessages, data]);
+                    const isCurrentUser = sender_email === userEmail;
+                    setLocalMessages((prevMessages) => [...prevMessages, {...data, isCurrentUser}]);
                 }
             });
 
-            socket.on('typing', ({ userId }: { userId: string }) => {
+            socket.on('typing', ({userId}: { userId: string }) => {
                 if (userId !== userEmail) {
                     setIsOtherUserTyping(true);
                 }
             });
 
-            socket.on('stopTyping', ({ userId }: { userId: string }) => {
+            socket.on('stopTyping', ({userId}: { userId: string }) => {
                 if (userId !== userEmail) {
                     setIsOtherUserTyping(false);
                 }
@@ -73,7 +78,7 @@ const Body = ({ messages, conversationId, userEmail }: Props) => {
                 socket.off('stopTyping');
             };
         }
-    }, [socket, conversationId, userEmail]);
+    }, [socket, conversationId, userId]);
 
     const loadMoreMessages = useCallback(async () => {
         if (loading) return;
@@ -95,7 +100,7 @@ const Body = ({ messages, conversationId, userEmail }: Props) => {
     useEffect(() => {
         const handleScroll = async () => {
             if (messageContainerRef.current) {
-                const { scrollTop, scrollHeight, clientHeight } = messageContainerRef.current;
+                const {scrollTop, scrollHeight, clientHeight} = messageContainerRef.current;
 
                 setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 10);
 
@@ -134,7 +139,7 @@ const Body = ({ messages, conversationId, userEmail }: Props) => {
         <div ref={messageContainerRef} className="flex-1 w-full flex overflow-y-scroll flex-col gap-2 p-3 no-scrollbar">
             {loading && (
                 <div className="flex justify-center mb-2">
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin"/>
                 </div>
             )}
 

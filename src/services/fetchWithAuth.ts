@@ -38,10 +38,7 @@ async function getToken() {
 }
 
 export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
-    const tokenStartTime = performance.now();
     const token = await getToken();
-    const tokenEndTime = performance.now();
-    console.log(`Token fetch took: ${tokenEndTime - tokenStartTime}ms`);
 
     const headers: { [key: string]: string } = {
         'Content-Type': 'application/json',
@@ -52,10 +49,7 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
     const config: RequestInit = { ...options, headers };
 
     try {
-        const fetchStartTime = performance.now();
         const response = await fetch(url, config);
-        const fetchEndTime = performance.now();
-        console.log(`Fetch took: ${fetchEndTime - fetchStartTime}ms`);
 
         const responseData = await response.text();
 

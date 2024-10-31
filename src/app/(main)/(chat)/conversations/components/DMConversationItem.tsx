@@ -14,11 +14,19 @@ import {
     handleMuteConversationDuration,
     handleUnmuteConversation
 } from "@/app/(main)/(chat)/conversations/actions";
-import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle
+} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 import {ShowToast} from "@/components/ShowToast";
 import {useRouter} from "next/navigation";
+import {ChatConversation} from "@/models/ChatConversation";
 
 type Props = {
     id: string;
@@ -33,9 +41,10 @@ type Props = {
         timezone: string;
         timezone_type: number;
     } | null;
+    setConversations: React.Dispatch<React.SetStateAction<ChatConversation[]>>;
 };
 
-const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageContent, lastMessageSender, sentAt, isRead, isMutedUntil}: Props) => {
+const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageContent, lastMessageSender, sentAt, isRead, isMutedUntil, setConversations,}: Props) => {
     const [openMuteDialog, setOpenMuteDialog] = useState(false);
     const router = useRouter();
 
@@ -52,34 +61,54 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
 
     const handleMutedClick = useCallback(() => setOpenMuteDialog(true), []);
 
-    const handleMuteDurationSelect = async (duration: number | string) => {
+    const handleMuteDurationSelect = useCallback(async (duration: number | string) => {
         try {
-            await handleMuteConversationDuration(id, duration);
+            const response = await handleMuteConversationDuration(id, duration);
+            const muteUntilDate = response.data.duration as string;
+
             ShowToast("default", "Conversation mise en sourdine !");
             setOpenMuteDialog(false);
-        } catch (error) {
-            ShowToast("destructive", (error as Error).message || "Il y a eu un problème avec votre demande.", "Erreur");
-        }
-    };
 
-    const handleUnmute = async () => {
+            setConversations(prevConversations =>
+                prevConversations.map(conv =>
+                    conv.id === id
+                        ? { ...conv, isMutedUntil: { date: muteUntilDate, timezone: "UTC", timezone_type: 3 } } // Adaptation de la structure
+                        : conv
+                )
+            );
+        } catch (error) {
+            ShowToast("destructive", (error as Error).message || "Erreur lors de la mise en sourdine.", "Erreur");
+        }
+    }, [id, setConversations]);
+
+    const handleUnmute = useCallback(async () => {
         try {
             await handleUnmuteConversation(id);
             ShowToast("default", "Cette conversation n'est plus en sourdine !");
             setOpenMuteDialog(false);
+
+            setConversations(prevConversations =>
+                prevConversations.map(conv =>
+                    conv.id === id
+                        ? { ...conv, isMutedUntil: null }
+                        : conv
+                )
+            );
         } catch (error) {
-            ShowToast("destructive", (error as Error).message || "Il y a eu un problème avec votre demande.", "Erreur");
+            ShowToast("destructive", (error as Error).message || "Erreur lors de la désactivation de la sourdine.", "Erreur");
         }
-    };
+    }, [id, setConversations]);
 
     const handleDeleteClick = useCallback(async () => {
         try {
             await handleDeleteConversation(id);
             ShowToast("default", "Conversation supprimée !");
-        } catch {
-            ShowToast("destructive", "Une conversation n'a pas pu être supprimée.", "Erreur");
+
+            setConversations(prevConversations => prevConversations.filter(conv => conv.id !== id));
+        } catch (error) {
+            ShowToast("destructive", "Erreur lors de la suppression de la conversation.", "Erreur");
         }
-    }, [id]);
+    }, [id, setConversations]);
 
     const handleArchiveClick = useCallback(async () => {
         try {
@@ -168,6 +197,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>Choisir la durée de la sourdine</DialogTitle>
+                                <DialogDescription>Cette action mettra la conversation en sourdine pour la durée choisie.</DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4">
                                 {[1, 3, 8, 24, 'eternal'].map((duration) => (
