@@ -1,6 +1,6 @@
 'use client';
 
-import {ChatConversation, ChatParticipant, LastMessage} from "@/models/ChatConversation";
+import {ChatConversation, LastMessage} from "@/models/ChatConversation";
 import React, {useCallback, useEffect, useMemo, useState} from "react";
 import ItemList from "@/app/(main)/(chat)/components/item/ItemList";
 import {Loader2} from "lucide-react";
