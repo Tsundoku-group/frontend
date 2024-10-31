@@ -52,7 +52,7 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
     const otherParticipantName = otherParticipant?.userName || "";
 
     const fetchData = useCallback(async () => {
-        setState(prev => ({ ...prev, loading: true }));
+        setState(prev => ({...prev, loading: true}));
 
         try {
             const [messagesData, participantsData] = await Promise.all([
@@ -65,7 +65,7 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
                 loading: false,
             });
         } catch (error) {
-            setState(prev => ({ ...prev, loading: false }));
+            setState(prev => ({...prev, loading: false}));
         }
     }, [conversationId]);
 
@@ -110,9 +110,8 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
             }
         };
 
-        if (socket && user?.userId) {
-            markUnreadMessagesAsRead();
-        }
+        markUnreadMessagesAsRead();
+
     }, [socket, messages, conversationId, otherParticipant, user?.userId]);
 
     return (
@@ -132,7 +131,7 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
                                 conversationId={conversationId}
                             />
                         </div>
-                        <ChatInput conversationId={conversationId}/>
+                        <ChatInput conversationId={conversationId} otherParticipant={otherParticipant}/>
                     </>
                 )}
             </ConversationContainer>

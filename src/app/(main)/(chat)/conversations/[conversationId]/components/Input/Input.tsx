@@ -14,6 +14,7 @@ import {Smile} from "lucide-react";
 import {useSocket} from "@/context/socketContext";
 import {v4 as uuidv4} from 'uuid';
 import {ShowToast} from "@/components/ShowToast";
+import {ChatParticipant} from "@/models/ChatConversation";
 
 const chatMessageSchema = z.object({
     content: z.string().optional(),
@@ -21,9 +22,10 @@ const chatMessageSchema = z.object({
 
 type Props = {
     conversationId: string;
+    otherParticipant?: ChatParticipant;
 };
 
-const ChatInput = ({conversationId}: Props) => {
+const ChatInput = ({conversationId, otherParticipant}: Props) => {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -39,21 +41,30 @@ const ChatInput = ({conversationId}: Props) => {
             if (socket) {
                 const isCurrentUser = payload.userEmail === userEmail;
 
+
                 socket.emit('send_msg', JSON.stringify({
                     roomId: conversationId,
                     id: uuid,
-                    isRead: true,
                     userId: userId,
                     content: payload.message,
+                    receiverData: otherParticipant,
                     sender_email: userEmail,
                     sent_by: payload.userEmail,
                     sent_at: new Date().toISOString(),
                     isCurrentUser: isCurrentUser,
                 }));
 
-                socket.on('typing', (userId));
-
-                socket.on('stopTyping', (userId));
+                socket?.emit('lastMessageSend', {
+                    lastMessage: {
+                        roomId: conversationId,
+                        sender_email: userEmail,
+                        content: payload.message,
+                        sent_by: userEmail,
+                        sent_at: new Date().toISOString(),
+                        isRead: false,
+                        isCurrentUser: isCurrentUser,
+                    },
+                });
             }
           return await sendMessage({...payload, id: uuid}, conversationId);
         } catch (error) {
@@ -82,7 +93,7 @@ const ChatInput = ({conversationId}: Props) => {
             form.setValue("content", value);
         }
 
-        if (socket && value.trim() !== "") {
+        if (socket && conversationId && value.trim() !== "") {
 
             if (!isTyping) {
                 socket.emit("typing", {roomId: conversationId, userId});
