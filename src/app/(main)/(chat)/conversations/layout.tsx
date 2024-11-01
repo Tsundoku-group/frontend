@@ -135,9 +135,13 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
         setConversations(allConversations);
     }, [allConversations]);
 
-    const addNewConversation = (newConversation: ChatConversation) => {
+    const addNewConversation = useCallback((newConversation: ChatConversation) => {
         setConversations((prevConversations) => [newConversation, ...prevConversations]);
-    };
+    }, [setConversations]);
+
+    const updateConversations = useCallback((updateFn: React.SetStateAction<ChatConversation[]>) => {
+        setConversations(updateFn);
+    }, [setConversations]);
 
     return (
         <div className="mt-16">
@@ -175,7 +179,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                                 sentAt={sentAt}
                                 isRead={isRead}
                                 isMutedUntil={isMutedUntil}
-                                setConversations={setConversations}
+                                setConversations={updateConversations}
                             />
                         ))
                     )}

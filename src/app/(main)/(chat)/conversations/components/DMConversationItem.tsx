@@ -122,7 +122,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
         } catch {
             ShowToast("destructive", "Erreur", "Une conversation n'a pas pu être archivée.");
         }
-    }, [id]);
+    }, [id, setConversations]);
 
     return (
         <div className="w-full">

@@ -1,15 +1,10 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import { Home, User, BookOpen, Trophy, MessageCircle, Users, PenTool } from 'lucide-react';
 import { useAuthContext } from "@/context/authContext";
-import {useSocket} from "@/context/socketContext";
+import { useSocket } from "@/context/socketContext";
 
 export default function Sidebar() {
-    const [unreadMessages, setUnreadMessages] = useState<number>(() => {
-        const savedCount = localStorage.getItem('unreadMessages');
-        return savedCount ? parseInt(savedCount, 10) : 0;
-    });
+    const [unreadMessages, setUnreadMessages] = useState(0);
     const [isClient, setIsClient] = useState(false);
     const socket = useSocket();
     const { user } = useAuthContext();
@@ -17,7 +12,9 @@ export default function Sidebar() {
 
     useEffect(() => {
         setIsClient(true);
+    }, []);
 
+    useEffect(() => {
         if (isClient) {
             const savedCount = localStorage.getItem('unreadMessages');
             setUnreadMessages(savedCount ? parseInt(savedCount, 10) : 0);
@@ -25,7 +22,7 @@ export default function Sidebar() {
     }, [isClient]);
 
     useEffect(() => {
-        if (socket) {
+        if (socket && isClient) {
             socket.on('messageAlert', () => {
                 setUnreadMessages((prevCount) => {
                     const newCount = prevCount + 1;
@@ -33,6 +30,7 @@ export default function Sidebar() {
                     return newCount;
                 });
             });
+
             socket.on('conversationRead', () => {
                 setUnreadMessages(0);
                 localStorage.setItem('unreadMessages', '0');
@@ -43,7 +41,7 @@ export default function Sidebar() {
                 socket.off('conversationRead');
             };
         }
-    }, [userId, socket]);
+    }, [userId, socket, isClient]);
 
     return (
         <div className="fixed min-h-screen bg-secondary-black text-text-white flex flex-col">
