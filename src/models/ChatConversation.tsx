@@ -1,6 +1,5 @@
 export type ChatConversation = {
     id: string;
-    isGroup: boolean;
     lastMessage?: LastMessage;
     participants: ChatParticipant[];
     isArchived: boolean;

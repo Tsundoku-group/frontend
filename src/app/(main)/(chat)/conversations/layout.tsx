@@ -135,9 +135,13 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
         setConversations(allConversations);
     }, [allConversations]);
 
+    const addNewConversation = (newConversation: ChatConversation) => {
+        setConversations((prevConversations) => [newConversation, ...prevConversations]);
+    };
+
     return (
         <div className="mt-16">
-            <ItemList title="Conversations" action={<StartNewConversation/>}>
+            <ItemList title="Conversations" action={<StartNewConversation onNewConversation={addNewConversation} />}>
                 <div className="fixed w-[calc(48svh)] z-50">
                     <SearchBar
                         placeholder="Rechercher une conversation..."
