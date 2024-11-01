@@ -21,6 +21,7 @@ export const fetchLatestReleases = async (limit: number = 40) => {
             console.error('HTTP error', response.status);
             throw new Error('Échec lors de la récupération des informations des dernières sorties.');
         }
+        console.log(data);
         return data;
     } catch (error: any) {
         return [];

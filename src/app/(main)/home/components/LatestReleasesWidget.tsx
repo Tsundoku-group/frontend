@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { fetchLatestReleases } from '../actions';
 import { Loader2, Sparkles, ArrowRight } from 'lucide-react';
 import { truncateString } from '@/utils/string-utils';
+import '../styles/styles.css';
 
 interface Book {
     title: string;
