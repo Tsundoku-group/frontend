@@ -72,7 +72,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
             setConversations(prevConversations =>
                 prevConversations.map(conv =>
                     conv.id === id
-                        ? { ...conv, isMutedUntil: { date: muteUntilDate, timezone: "UTC", timezone_type: 3 } } // Adaptation de la structure
+                        ? {...conv, isMutedUntil: {date: muteUntilDate, timezone: "UTC", timezone_type: 3}} // Adaptation de la structure
                         : conv
                 )
             );
@@ -90,7 +90,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
             setConversations(prevConversations =>
                 prevConversations.map(conv =>
                     conv.id === id
-                        ? { ...conv, isMutedUntil: null }
+                        ? {...conv, isMutedUntil: null}
                         : conv
                 )
             );
@@ -113,19 +113,21 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
     const handleArchiveClick = useCallback(async () => {
         try {
             await handleArchiveConversation(id);
+
+            setConversations(prevConversations =>
+                prevConversations.filter(conv => conv.id !== id)
+            );
+
             ShowToast("default", "Conversation archivée !");
         } catch {
             ShowToast("destructive", "Erreur", "Une conversation n'a pas pu être archivée.");
         }
     }, [id]);
 
-    const handleNavigate = () => {
-        router.push(`/conversations/${id}`);
-    };
-
     return (
-        <div className="w-full" onClick={handleNavigate}>
-            <Card className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition mb-2">
+        <div className="w-full">
+            <Card onClick={() => router.push(`/conversations/${id}`)}
+                  className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition mb-2">
                 <Avatar className="w-12 h-12">
                     <AvatarImage src={imageUrl}/>
                     <AvatarFallback>
@@ -176,23 +178,35 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <span className="text-xs cursor-pointer"
-                                      onPointerDown={(event) => event.stopPropagation()}>
+                                      onClick={(event) => event.stopPropagation()}>
                                     <EllipsisVertical className="h-4 w-4"/>
                                 </span>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={handleMutedClick}>
+                                <DropdownMenuItem onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    handleMutedClick();
+                                }}>
                                     Sourdine<BellOff className="h-4 w-4 ml-7"/>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleArchiveClick}>
+                                <DropdownMenuItem onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleArchiveClick();
+                                }}>
                                     Archives<ArchiveRestore className="h-4 w-4 ml-8"/>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleDeleteClick}>
+                                <DropdownMenuItem
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        handleDeleteClick();
+                                    }}>
                                     Supprimer<Trash2 className="h-4 w-4 ml-5"/>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
+
                     <Dialog open={openMuteDialog} onOpenChange={setOpenMuteDialog}>
                         <DialogContent>
                             <DialogHeader>

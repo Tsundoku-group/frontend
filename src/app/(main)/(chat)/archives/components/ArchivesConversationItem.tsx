@@ -1,14 +1,15 @@
-import React from "react";
-import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArchiveRestore, EllipsisVertical, Trash2, User } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { handleDeleteConversation } from "@/app/(main)/(chat)/conversations/actions";
-import { handleUnarchiveConversation } from "@/app/(main)/(chat)/archives/actions";
-import { Checkbox } from "@/components/ui/checkbox";
-import Link from "next/link";
+import React, {useState} from "react";
+import {Card} from "@/components/ui/card";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {ArchiveRestore, EllipsisVertical, Trash2, User} from "lucide-react";
+import {Badge} from "@/components/ui/badge";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {handleDeleteConversation} from "@/app/(main)/(chat)/conversations/actions";
+import {handleUnarchiveConversation} from "@/app/(main)/(chat)/archives/actions";
+import {Checkbox} from "@/components/ui/checkbox";
 import {ShowToast} from "@/components/ShowToast";
+import {ChatConversation} from "@/models/ChatConversation";
+import {useRouter} from "next/navigation";
 
 type Props = {
     id: string;
@@ -19,14 +20,16 @@ type Props = {
     archivedAt: string;
     isChecked: boolean;
     onChange: () => void;
+    setArchivesConversation: React.Dispatch<React.SetStateAction<ChatConversation[]>>;
 };
 
-const ArchivesConversationItem = React.memo(({ id, imageUrl, username, lastMessageContent, lastMessageSender, archivedAt, isChecked, onChange }: Props) => {
+const ArchivesConversationItem = React.memo(({id, imageUrl, username, lastMessageContent, lastMessageSender, archivedAt, isChecked, onChange, setArchivesConversation}: Props) => {
     const formattedArchivedAt = new Date(archivedAt).toLocaleDateString("fr-FR", {
         year: "numeric",
         month: "long",
         day: "numeric",
     });
+    const router = useRouter();
 
     const handleDeleteClick = async () => {
         try {
@@ -40,6 +43,11 @@ const ArchivesConversationItem = React.memo(({ id, imageUrl, username, lastMessa
     const handleRestoreClick = async () => {
         try {
             await handleUnarchiveConversation(id);
+
+            setArchivesConversation(prevConversations =>
+                prevConversations.filter(conv => conv.id !== id)
+            );
+
             ShowToast("default", "Conversation restaurée !");
         } catch (error) {
             ShowToast("destructive", "Une conversation n'a pas pu être restaurée.", "Erreur");
@@ -47,13 +55,13 @@ const ArchivesConversationItem = React.memo(({ id, imageUrl, username, lastMessa
     };
 
     return (
-        <Link href={`/archives/${id}`} className="w-full">
-            <Card className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition">
-                <Checkbox id={id} checked={isChecked} onChange={onChange} />
+        <div className="w-full">
+            <Card onClick={() => router.push(`/archives/${id}`)} className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition">
+                <Checkbox id={id} checked={isChecked} onChange={onChange}/>
                 <Avatar className="w-12 h-12">
-                    <AvatarImage src={imageUrl} />
+                    <AvatarImage src={imageUrl}/>
                     <AvatarFallback>
-                        <User />
+                        <User/>
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col flex-grow overflow-hidden">
@@ -74,23 +82,32 @@ const ArchivesConversationItem = React.memo(({ id, imageUrl, username, lastMessa
                         )}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <span className="text-xs cursor-pointer" onClick={(event) => event.stopPropagation()}>
-                                    <EllipsisVertical className="h-4 w-4" />
+                                <span className="text-xs cursor-pointer"
+                                      onClick={(event) => event.stopPropagation()} >
+                                    <EllipsisVertical className="h-4 w-4"/>
                                 </span>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={handleRestoreClick}>
-                                    Restaurer<ArchiveRestore className="h-4 w-4 ml-8" />
+                                <DropdownMenuItem
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        handleRestoreClick();
+                                    }}>
+                                    Restaurer<ArchiveRestore className="h-4 w-4 ml-8"/>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleDeleteClick}>
-                                    Supprimer<Trash2 className="h-4 w-4 ml-7" />
+                                <DropdownMenuItem
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        handleDeleteClick();
+                                    }}>
+                                    Supprimer<Trash2 className="h-4 w-4 ml-7"/>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
                 </div>
             </Card>
-        </Link>
+        </div>
     );
 });
 

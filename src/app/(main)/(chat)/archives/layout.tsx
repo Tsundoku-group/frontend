@@ -151,6 +151,7 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
                                 archivedAt={archivedAt || "Date inconnue"}
                                 isChecked={selectedConversations.has(id)}
                                 onChange={() => toggleSelectConversation(id)}
+                                setArchivesConversation={setArchivesConversation}
                             />
                         );
                     })
