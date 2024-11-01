@@ -78,7 +78,7 @@ const Body = ({messages, conversationId, userEmail}: Props) => {
                 socket.off('stopTyping');
             };
         }
-    }, [socket, conversationId, userId]);
+    }, [socket, conversationId, userId, userEmail]);
 
     const loadMoreMessages = useCallback(async () => {
         if (loading) return;
