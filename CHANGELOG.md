@@ -27,3 +27,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-20] Chat: optimisation socket des messages reçus dans DMConversationItem.tsx [#20](https://trello.com/c/o2USVIwG/20-t-20-chat-optimisation-socket-des-messages-re%C3%A7us-dans-dmconversationitemtsx)
 - [t-21] Compteur message dans sidebar [#21](https://trello.com/c/AzRqsk0D/21-t-21-compteur-message-dans-sidebar)
 - [t-22] sécuriser l'app à l'aide du middleware pour chat app[#22](https://trello.com/b/C70Zvnc3/tsundoku-frontend)
+- [t-23] Chat: correction archive conversation [#23](https://trello.com/c/FfgmSUDZ/23-t-23-chat-correction-archive-conversation)
