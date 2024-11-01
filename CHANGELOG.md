@@ -28,3 +28,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-21] Compteur message dans sidebar [#21](https://trello.com/c/AzRqsk0D/21-t-21-compteur-message-dans-sidebar)
 - [t-22] sécuriser l'app à l'aide du middleware pour chat app[#22](https://trello.com/b/C70Zvnc3/tsundoku-frontend)
 - [t-23] Chat: correction archive conversation [#23](https://trello.com/c/FfgmSUDZ/23-t-23-chat-correction-archive-conversation)
+- [t-24] Chat: correction startNewConversation [#24](https://trello.com/c/EiNvVOu3/24-t-24-chat-correction-startnewconversation)

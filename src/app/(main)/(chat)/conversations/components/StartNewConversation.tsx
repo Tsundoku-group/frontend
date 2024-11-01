@@ -21,6 +21,7 @@ import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
 import {Input} from "@/components/ui/input";
 import {useRouter} from "next/navigation";
 import {ShowToast} from "@/components/ShowToast";
+import {ChatConversation} from "@/models/ChatConversation";
 
 type Friend = {
     id: string;
@@ -29,12 +30,17 @@ type Friend = {
     email: string;
 };
 
-const StartNewConversation = () => {
+type StartNewConversationProps = {
+    onNewConversation: (newConversation: ChatConversation) => void;
+};
+
+const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConversation }) => {
     const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
     const {user} = useAuthContext();
     const userId = user?.userId;
     const router = useRouter();
@@ -65,9 +71,19 @@ const StartNewConversation = () => {
         try {
             const response = await startNewConversation(userEmail, friendId);
 
+            const newConversation: ChatConversation = {
+                id: response.conversationId,
+                participants: [{ id: friendId, userName: selectedFriend.userName, email: selectedFriend.email }],
+                isArchived: false,
+                isMutedUntil: null,
+            };
+
             if (response.success) {
+                onNewConversation(newConversation);
+
                 ShowToast("default", "Nouvelle conversation démarrée !", "");
                 setIsDialogOpen(false);
+
                 router.push(`/conversations/${response.conversationId}`);
             } else {
                 ShowToast("destructive", "Erreur", response.error || "Erreur lors de la création de la conversation.");
