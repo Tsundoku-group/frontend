@@ -30,3 +30,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-23] Chat: correction archive conversation [#23](https://trello.com/c/FfgmSUDZ/23-t-23-chat-correction-archive-conversation)
 - [t-24] Chat: correction startNewConversation [#24](https://trello.com/c/EiNvVOu3/24-t-24-chat-correction-startnewconversation)
 - [t-25] Correction: npm run build [#25](https://trello.com/c/1CHHTMYw/25-t-25-correction-npm-run-build)
+- [t-26] Chat: corrections paramètres conversations [#26](https://trello.com/c/7gmx8Emx/26-t-26-chat-corrections-param%C3%A8tres-conversations)

@@ -106,7 +106,6 @@ export const fetchMarkMessagesAsRead = async (conversationId: string, userEmail:
 
 export const startNewConversation = async (userEmail: string, friendId: string) => {
     const body = {
-        title: "Nouvelle conversation",
         participants: [friendId],
         email: userEmail
     };
