@@ -5,10 +5,9 @@ import {fetchWithAuth} from "@/services/fetchWithAuth";
 const symfonyUrl = process.env.SYMFONY_URL;
 
 export async function createFriendRequest(requesterEmail: string, receiverEmail: string) {
-    const symfonyUrl = process.env.SYMFONY_URL;
 
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/chat-friendship/request`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/friendship/request`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
