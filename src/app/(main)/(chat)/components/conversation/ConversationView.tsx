@@ -50,7 +50,6 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
     }, [participants, userEmail]);
 
     const otherParticipantName = otherParticipant?.userName || "";
-
     const fetchData = useCallback(async () => {
         setState(prev => ({...prev, loading: true}));
 
@@ -117,7 +116,7 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
     return (
         <div className="ml-80">
             <ConversationContainer>
-                <Header name={otherParticipantName} imageUrl={otherParticipant?.imageUrl}/>
+                <Header name={otherParticipantName} imageUrl={otherParticipant?.imageUrl} otherParticipantId={otherParticipant?.id as string}/>
                 {loading ? (
                     <div className="flex justify-center py-4">
                         <Loader2 className="h-5 w-5 animate-spin"/>

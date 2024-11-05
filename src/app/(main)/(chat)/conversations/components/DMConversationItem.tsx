@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState, useCallback, useMemo} from "react";
+import React, {useState, useCallback, useMemo, useEffect} from "react";
 import {Card} from "@/components/ui/card";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {ArchiveRestore, BellOff, EllipsisVertical, Trash2, User} from "lucide-react";
@@ -27,6 +27,7 @@ import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hov
 import {ShowToast} from "@/components/ShowToast";
 import {useRouter} from "next/navigation";
 import {ChatConversation} from "@/models/ChatConversation";
+import {useSocket} from "@/context/socketContext";
 
 type Props = {
     id: string;
@@ -42,11 +43,14 @@ type Props = {
         timezone_type: number;
     } | null;
     setConversations: React.Dispatch<React.SetStateAction<ChatConversation[]>>;
+    otherParticipantId?: string;
 };
 
-const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageContent, lastMessageSender, sentAt, isRead, isMutedUntil, setConversations,}: Props) => {
+const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageContent, lastMessageSender, sentAt, isRead, isMutedUntil, setConversations, otherParticipantId}: Props) => {
     const [openMuteDialog, setOpenMuteDialog] = useState(false);
+    const [isOnline, setIsOnline] = useState(false);
     const router = useRouter();
+    const socket = useSocket();
 
     const parsedDate = useMemo(() => sentAt ? parseISO(sentAt) : null, [sentAt]);
     const timeAgo = useMemo(() => parsedDate ? formatDistanceToNow(parsedDate, {
@@ -72,7 +76,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
             setConversations(prevConversations =>
                 prevConversations.map(conv =>
                     conv.id === id
-                        ? {...conv, isMutedUntil: {date: muteUntilDate, timezone: "UTC", timezone_type: 3}} // Adaptation de la structure
+                        ? {...conv, isMutedUntil: {date: muteUntilDate, timezone: "UTC", timezone_type: 3}}
                         : conv
                 )
             );
@@ -124,16 +128,36 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
         }
     }, [id, setConversations]);
 
+    useEffect(() => {
+        if (socket) {
+            socket.on("user_status_update", ({ userId, status }) => {
+                if (otherParticipantId === userId) {
+                    setIsOnline(status === "online");
+                }
+            });
+
+            return () => {
+                socket.off("user_status_update");
+            };
+        }
+    }, [socket, otherParticipantId]);
+
     return (
         <div className="w-full">
             <Card onClick={() => router.push(`/conversations/${id}`)}
                   className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition mb-2">
-                <Avatar className="w-12 h-12">
-                    <AvatarImage src={imageUrl}/>
-                    <AvatarFallback>
-                        <User/>
-                    </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                    <Avatar className="w-12 h-12">
+                        <AvatarImage src={imageUrl} />
+                        <AvatarFallback>
+                            <User/>
+                        </AvatarFallback>
+                    </Avatar>
+                    {isOnline && (
+                        <span
+                            className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                    )}
+                </div>
                 <div className="flex flex-col flex-grow overflow-hidden">
                     <h4 className={`truncate font-semibold text-sm ${isMuted ? 'text-black' : displayReadStatus ? 'text-black' : 'text-red-500'}`}>
                         {username}
@@ -211,7 +235,8 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>Choisir la durée de la sourdine</DialogTitle>
-                                <DialogDescription>Cette action mettra la conversation en sourdine pour la durée choisie.</DialogDescription>
+                                <DialogDescription>Cette action mettra la conversation en sourdine pour la durée
+                                    choisie.</DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4">
                                 {[1, 3, 8, 24, 'eternal'].map((duration) => (

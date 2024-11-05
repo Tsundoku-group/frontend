@@ -127,6 +127,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 sentAt: lastMessage.sent_at,
                 isRead: isReadForCurrentUser,
                 isMutedUntil: conversation.isMutedUntil,
+                otherParticipantId: otherMember?.id
             };
         });
     }, [conversations, getOtherMember, user?.email]);
@@ -168,7 +169,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                             Pas de conversation trouvée
                         </p>
                     ) : (
-                        lastMessageDetails.map(({id, username, imageUrl, lastMessageSender, lastMessageContent, sentAt, isRead, isMutedUntil}) => (
+                        lastMessageDetails.map(({id, username, imageUrl, lastMessageSender, lastMessageContent, sentAt, isRead, isMutedUntil, otherParticipantId}) => (
                             <DMConversationItem
                                 key={id}
                                 id={id}
@@ -179,6 +180,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                                 sentAt={sentAt}
                                 isRead={isRead}
                                 isMutedUntil={isMutedUntil}
+                                otherParticipantId={otherParticipantId}
                                 setConversations={updateConversations}
                             />
                         ))
