@@ -1,8 +1,13 @@
 import { Bell, ChevronDown } from "lucide-react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import LogoutButton from "@/components/logoutButton";
+import ProfileButton from "@/components/ProfileButton";
+import {useAuthContext} from "@/context/authContext";
 
 export default function Navbar() {
+    const {user} = useAuthContext();
+    const userId = user?.userId as number;
+
     return (
         <div className="h-16 flex justify-between items-center">
             <div className="text-text-white text-lg">
@@ -21,6 +26,7 @@ export default function Navbar() {
                 </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
+                        <ProfileButton userId={userId}/>
                         <LogoutButton/>
                     </DropdownMenuContent>
                 </DropdownMenu>
