@@ -1,12 +1,12 @@
-import { createServer } from "node:http";
+import {createServer} from "node:http";
 import next from "next";
-import { Server } from "socket.io";
+import {Server} from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 3000;
 
-const app = next({ dev, hostname, port });
+const app = next({dev, hostname, port});
 const handler = app.getRequestHandler();
 
 app.prepare().then(() => {
@@ -23,17 +23,26 @@ app.prepare().then(() => {
 
     let roomUsers = {};
     let userSockets = {};
+    let socketToUser = {};
 
     io.on("connection", (socket) => {
         console.log(`Un utilisateur est connecté : ${socket.id}`);
 
         socket.on("registerUser", (userId) => {
             socket.userId = userId;
-            userSockets[userId] = socket.id;
+
+            socketToUser[socket.id] = userId;
+
+            if (!Array.isArray(userSockets[userId])) {
+                userSockets[userId] = [];
+            }
+
+            userSockets[userId].push(socket.id);
+            io.emit("user_status_update", {userId, status: "online"});
         });
 
         socket.on('lastMessageSend', (data) => {
-            const { lastMessage } = data;
+            const {lastMessage} = data;
             const roomId = lastMessage.roomId;
 
             if (roomUsers[roomId] && roomUsers[roomId].size === 2) {
@@ -44,7 +53,7 @@ app.prepare().then(() => {
             }
         });
 
-        socket.on("joinRoom", ({ roomId, userId }) => {
+        socket.on("joinRoom", ({roomId, userId}) => {
 
             socket.userId = userId;
             userSockets[userId] = socket.id;
@@ -65,12 +74,8 @@ app.prepare().then(() => {
             socket.join(roomId);
 
             if (roomUsers[roomId].size === 2) {
-                io.to(roomId).emit("bothInConversation", { roomId });
+                io.to(roomId).emit("bothInConversation", {roomId});
             }
-        });
-
-        socket.on("disconnect", () => {
-            console.log(`Utilisateur ${socket.userId} avec socket ID ${socket.id} est maintenant déconnecté`);
         });
 
         socket.on("send_msg", (data) => {
@@ -94,16 +99,34 @@ app.prepare().then(() => {
             io.to(roomId).emit("receive_msg", parsedData);
         });
 
-        socket.on("markAsRead", ({ conversationId, userId }) => {
-            io.to(conversationId).emit("conversationRead", { conversationId, userId });
+        socket.on("markAsRead", ({conversationId, userId}) => {
+            io.to(conversationId).emit("conversationRead", {conversationId, userId});
         });
 
-        socket.on("typing", ({ roomId, userId }) => {
-            socket.to(roomId).emit("typing", { userId });
+        socket.on("typing", ({roomId, userId}) => {
+            socket.to(roomId).emit("typing", {userId});
         });
 
-        socket.on("stopTyping", ({ roomId, userId }) => {
-            socket.to(roomId).emit("stopTyping", { userId });
+        socket.on("stopTyping", ({roomId, userId}) => {
+            socket.to(roomId).emit("stopTyping", {userId});
+        });
+
+        socket.on("disconnect", () => {
+            const userId = socketToUser[socket.id];
+            if (userId) {
+                if (Array.isArray(userSockets[userId])) {
+                    userSockets[userId] = userSockets[userId].filter((id) => id !== socket.id);
+                } else {
+                    userSockets[userId] = [];
+                }
+
+                delete socketToUser[socket.id];
+
+                if (userSockets[userId].length === 0) {
+                    delete userSockets[userId];
+                    io.emit("user_status_update", { userId, status: "offline" });
+                }
+            }
         });
     });
 
