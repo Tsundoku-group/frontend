@@ -17,13 +17,13 @@ export default function Navbar() {
                 <Bell className="text-text-white mr-4" />
                 <DropdownMenu>
                     <DropdownMenuTrigger>
-                <div className="flex items-center bg-tertiary-black p-2 rounded-lg cursor-pointer">
-                    <div
-                        className="w-8 h-8 rounded-full mr-2"
-                    />
-                    <span className="text-text-white">Anne Honyme</span>
-                    <ChevronDown className="text-text-white ml-2" />
-                </div>
+                        <div className="flex items-center bg-tertiary-black p-2 rounded-lg cursor-pointer">
+                            <div
+                                className="w-8 h-8 rounded-full mr-2"
+                            />
+                            <span className="text-text-white">Anne Honyme</span>
+                            <ChevronDown className="text-text-white ml-2" />
+                        </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <ProfileButton userId={userId}/>
