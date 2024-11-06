@@ -32,3 +32,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-25] Correction: npm run build [#25](https://trello.com/c/1CHHTMYw/25-t-25-correction-npm-run-build)
 - [t-26] Chat: corrections paramètres conversations [#26](https://trello.com/c/7gmx8Emx/26-t-26-chat-corrections-param%C3%A8tres-conversations)
 - [t-27] Gestion de mode online [#27](https://trello.com/c/e2dj6kQG/27-t-27-gestion-de-mode-online)
+- [t-28] Page profil utilisateur [#28](https://trello.com/c/JiNow5W7/28-t-28-page-profil-utilisateur)

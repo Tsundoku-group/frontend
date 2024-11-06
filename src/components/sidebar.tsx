@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Home, User, BookOpen, Trophy, MessageCircle, Users, PenTool } from 'lucide-react';
-import { useAuthContext } from "@/context/authContext";
-import { useSocket } from "@/context/socketContext";
+import React, {useEffect, useState} from 'react';
+import {Home, User, BookOpen, Trophy, MessageCircle, Users, PenTool} from 'lucide-react';
+import {useAuthContext} from "@/context/authContext";
+import {useSocket} from "@/context/socketContext";
 
 export default function Sidebar() {
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [isClient, setIsClient] = useState(false);
     const socket = useSocket();
-    const { user } = useAuthContext();
+    const {user} = useAuthContext();
     const userId = user?.userId;
 
     useEffect(() => {
@@ -62,7 +62,9 @@ export default function Sidebar() {
                         <Home className="text-text-white"/>
                     </div>
                     <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -ml-5">
-                        <User className="text-text-white"/>
+                        <a href={`/profile/${user?.userId}`}>
+                            <User className="text-text-white"/>
+                        </a>
                     </div>
                 </div>
             </div>
