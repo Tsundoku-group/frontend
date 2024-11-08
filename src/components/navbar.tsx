@@ -1,8 +1,9 @@
 import { Bell, ChevronDown } from "lucide-react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import LogoutButton from "@/components/logoutButton";
-import ProfileButton from "@/components/ProfileButton";
+import LogoutButton from "@/components/navigateButton/logoutButton";
+import ProfileButton from "@/components/navigateButton/ProfileButton";
 import {useAuthContext} from "@/context/authContext";
+import SettingsButton from "@/components/navigateButton/SettingsButton";
 
 export default function Navbar() {
     const {user} = useAuthContext();
@@ -27,6 +28,7 @@ export default function Navbar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <ProfileButton userId={userId}/>
+                        <SettingsButton userId={userId} />
                         <LogoutButton/>
                     </DropdownMenuContent>
                 </DropdownMenu>
