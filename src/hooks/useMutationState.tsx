@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useState} from "react";
 
 export const useMutationState = (mutationToRun: any) => {
     const [pending, setPending] = useState(false);
@@ -7,8 +7,7 @@ export const useMutationState = (mutationToRun: any) => {
         setPending(true);
 
         try {
-            const res = await mutationToRun(payload);
-            return res;
+            return await mutationToRun(payload);
         } catch (error) {
             throw error;
         } finally {

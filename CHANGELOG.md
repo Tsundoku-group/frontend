@@ -34,3 +34,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-27] Gestion de mode online [#27](https://trello.com/c/e2dj6kQG/27-t-27-gestion-de-mode-online)
 - [t-28] Page profil utilisateur [#28](https://trello.com/c/JiNow5W7/28-t-28-page-profil-utilisateur)
 - [t-29] Page settings [#29](https://trello.com/c/qL72ZE9P/29-t-29-page-settings)
+- [t-30] profile settings : intégration des actions [#30](https://trello.com/c/efWXDAvv/30-t-30-profile-settings-int%C3%A9gration-des-actions)
