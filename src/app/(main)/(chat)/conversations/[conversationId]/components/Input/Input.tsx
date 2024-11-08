@@ -41,7 +41,6 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
             if (socket) {
                 const isCurrentUser = payload.userEmail === userEmail;
 
-
                 socket.emit('send_msg', JSON.stringify({
                     roomId: conversationId,
                     id: uuid,
