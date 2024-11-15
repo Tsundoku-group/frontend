@@ -2,12 +2,10 @@
 
 import React, {useState} from "react";
 import {Card, CardContent} from "@/components/ui/card";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 
 export default function AppearanceSettingsPage() {
     const [selectedTheme, setSelectedTheme] = useState("light");
-    const [selectedFont, setSelectedFont] = useState("Inter");
 
     return (
         <div className="flex items-start p-4">
