@@ -23,27 +23,6 @@ export default function AppearanceSettingsPage() {
 
                     <div className="space-y-4">
                         <div>
-                            <h2 className="text-lg font-medium text-text-white">Police</h2>
-                            <p className="text-sm text-gray-400">Définissez la police que vous souhaitez utiliser dans
-                                le tableau de bord.</p>
-                        </div>
-                        <Select
-                            value={selectedFont}
-                            onValueChange={(value) => setSelectedFont(value)}
-                        >
-                            <SelectTrigger className="w-60 text-gray-500 bg-gray-900 rounded-lg border border-gray-700">
-                                <SelectValue placeholder="Select a font"/>
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Inter">Inter</SelectItem>
-                                <SelectItem value="Roboto">Roboto</SelectItem>
-                                <SelectItem value="Poppins">Poppins</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div>
                             <h2 className="text-lg font-medium text-text-white">Thème</h2>
                             <p className="text-sm text-gray-400">Sélectionnez le thème du tableau de bord.</p>
                         </div>
