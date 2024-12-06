@@ -1,7 +1,6 @@
 import React from "react";
-import {Card, CardHeader, CardContent, CardFooter} from "@/components/ui/card";
+import {Card, CardHeader, CardContent} from "@/components/ui/card";
 import {Switch} from "@/components/ui/switch";
-import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from "@/components/ui/select";
 import {Slider} from "@/components/ui/slider";
 import {Button} from "@/components/ui/button";
 
@@ -12,8 +11,8 @@ export default function AccessibilitySettingsPage() {
                 <div className="flex-1 space-y-4">
                     <h1 className="text-3xl font-bold text-white">Accessibilités</h1>
                     <p className="text-sm text-gray-400">
-                        Personnalisez les paramètres pour améliorer l'accessibilité et l'expérience utilisateur dans
-                        l'application.
+                        Personnalisez les paramètres pour améliorer l&apos;accessibilité et l&apos;expérience utilisateur dans
+                        l&apos;application.
                     </p>
 
                     <Card className="bg-secondary-black rounded-lg border border-gray-700">
@@ -34,7 +33,7 @@ export default function AccessibilitySettingsPage() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-gray-400 mb-4">
-                                Ajustez la taille du texte dans l'application.
+                                Ajustez la taille du texte dans l&apos;application.
                             </p>
                             <Slider defaultValue={[16]} max={32} min={12} step={1}/>
                         </CardContent>
