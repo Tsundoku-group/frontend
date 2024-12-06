@@ -24,14 +24,17 @@ export async function fetchVerifyPwd(currentPassword: string) {
     }
 }
 
-export async function fetchUpdatePwd(newPassword: string) {
+export async function fetchUpdatePwd({ newPassword, captchaToken }: { newPassword: string; captchaToken: string }) {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/users/update-password`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({newPassword})
+            body: JSON.stringify({
+                newPassword: newPassword,
+                captchaToken: captchaToken,
+            })
         });
 
         if (!response.response) {
@@ -46,7 +49,7 @@ export async function fetchUpdatePwd(newPassword: string) {
 
 export async function fetchDeletePwd(userId: string) {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/users/delete-account`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/users/delete-account-request/${userId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -54,7 +57,7 @@ export async function fetchDeletePwd(userId: string) {
         });
 
         if (!response.response) {
-            throw new Error("Erreur lros de la suppression du compte.")
+            throw new Error("Erreur lors de la suppression du compte.")
         }
 
         return response;
