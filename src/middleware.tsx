@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { decrypt } from '@/app/_lib/session';
 
 export default async function middleware(req: NextRequest) {
-    const protectedRoutes = ['/', '/home', '/friends', '/conversations', '/archives'];
+    const protectedRoutes = ['/', '/home', '/friends', '/conversations', '/archives', '/accountSettings', '/profileSettings', '/accessibilitySettings', '/appearanceSettings', '/notificationSettings'];
     const conversationPattern = /^\/conversations(\/.*)?$/;
     const currentPath = req.nextUrl.pathname;
     const isProtectedRoute = protectedRoutes.includes(currentPath) || conversationPattern.test(currentPath);
