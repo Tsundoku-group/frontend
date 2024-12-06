@@ -1,13 +1,47 @@
 "use client";
 
-import React, {useState} from "react";
-import {Card, CardContent} from "@/components/ui/card";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {Button} from "@/components/ui/button";
+import React, {useEffect, useState} from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { useMutationState } from "@/hooks/useMutationState";
+
+const saveFontPreference = async (font: string): Promise<string> => {
+    localStorage.setItem("selectedFont", font);
+    return font;
+};
 
 export default function AppearanceSettingsPage() {
     const [selectedTheme, setSelectedTheme] = useState("light");
-    const [selectedFont, setSelectedFont] = useState("Inter");
+    const savedFont = localStorage.getItem("selectedFont") || "font-roboto";
+    const [selectedFont, setSelectedFont] = useState(savedFont);
+
+    const queryClient = useQueryClient();
+
+
+    useEffect(() => {
+        const savedFont = localStorage.getItem("selectedFont");
+        if (savedFont) {
+            setSelectedFont(savedFont);
+        }
+    }, []);
+
+    const { mutate, pending } = useMutationState(async (font: string) => {
+        const newFont = await saveFontPreference(font);
+        queryClient.setQueryData(["fontPreference"], newFont);
+        return newFont;
+    });
+
+    const handleUpdateAppearance = async () => {
+        try {
+            const newFont = await mutate(selectedFont);
+            document.body.classList.remove("font-inter", "font-roboto", "font-poppins");
+            document.body.classList.add(newFont);
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour de la police :", error);
+        }
+    };
 
     return (
         <div className="flex items-start p-4">
@@ -16,36 +50,39 @@ export default function AppearanceSettingsPage() {
                     <div>
                         <h1 className="text-3xl font-semibold mb-8 text-white">Apparence</h1>
                         <p className="text-sm text-gray-400">
-                            Personnaliser l&apos;apparence de l&apos;application. Basculer automatiquement entre les thèmes du
-                            jour et de la nuit.
+                            Personnaliser l&apos;apparence de l&apos;application. Basculer automatiquement entre les
+                            thèmes du jour et de la nuit et sélectionnez la police de votre choix.
                         </p>
                     </div>
 
                     <div className="space-y-4">
                         <div>
-                            <h2 className="text-lg font-medium text-text-white">Police</h2>
-                            <p className="text-sm text-gray-400">Définissez la police que vous souhaitez utiliser dans
-                                le tableau de bord.</p>
+                            <h2 className="text-lg font-medium text-white">Police</h2>
+                            <p className="text-sm text-gray-400">
+                                Définissez la police que vous souhaitez utiliser dans le tableau de bord.
+                            </p>
                         </div>
                         <Select
                             value={selectedFont}
                             onValueChange={(value) => setSelectedFont(value)}
                         >
                             <SelectTrigger className="w-60 text-gray-500 bg-gray-900 rounded-lg border border-gray-700">
-                                <SelectValue placeholder="Select a font"/>
+                                <SelectValue placeholder="Sélectionnez une police" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Inter">Inter</SelectItem>
-                                <SelectItem value="Roboto">Roboto</SelectItem>
-                                <SelectItem value="Poppins">Poppins</SelectItem>
+                                <SelectItem value="font-inter">Inter</SelectItem>
+                                <SelectItem value="font-roboto">Roboto</SelectItem>
+                                <SelectItem value="font-poppins">Poppins</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
                     <div className="space-y-4">
                         <div>
-                            <h2 className="text-lg font-medium text-text-white">Thème</h2>
-                            <p className="text-sm text-gray-400">Sélectionnez le thème du tableau de bord.</p>
+                            <h2 className="text-lg font-medium text-white">Thème</h2>
+                            <p className="text-sm text-gray-400">
+                                Sélectionnez le thème du tableau de bord.
+                            </p>
                         </div>
                         <div className="flex space-x-4">
                             <Card
@@ -70,12 +107,16 @@ export default function AppearanceSettingsPage() {
                     </div>
 
                     <div className="mt-6">
-                        <Button className="bg-purple-600 hover:bg-purple-700 text-white">
-                            Mise à jour des préférences
+                        <Button
+                            onClick={handleUpdateAppearance}
+                            disabled={pending}
+                            className={`bg-purple-600 hover:bg-purple-700 text-white ${pending ? "opacity-50" : ""}`}
+                        >
+                            {pending ? "Mise à jour..." : "Mise à jour des préférences"}
                         </Button>
                     </div>
                 </div>
             </div>
         </div>
     );
-};
+}

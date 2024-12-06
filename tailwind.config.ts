@@ -42,6 +42,11 @@ const config = {
           foreground: '#d2d5e9',
         },
       },
+      fontFamily: {
+        roboto: ['Roboto', 'sans-serif'],
+        'open-sans': ['Open Sans', 'sans-serif'],
+        poppins: ['Poppins', 'sans-serif'],
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

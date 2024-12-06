@@ -3,15 +3,22 @@
 import Navbar from "@/components/navbar";
 import Sidebar from "@/components/sidebar"
 import {SocketProvider} from "@/context/socketContext";
-import React from "react";
+import React, {useEffect} from "react";
 import {Toaster} from "@/components/ui/toaster";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 export default function MainLayout({children}: { children: React.ReactNode }) {
     const queryClient = new QueryClient();
 
+    useEffect(() => {
+        const savedFont = localStorage.getItem("selectedFont");
+        if (savedFont) {
+            document.body.classList.add(savedFont);
+        }
+    }, []);
+
     return (
-        <html lang="en">
+        <html lang="fr">
         <body>
         <QueryClientProvider client={queryClient}>
             <SocketProvider>
