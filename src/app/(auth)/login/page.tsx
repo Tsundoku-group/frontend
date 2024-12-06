@@ -1,19 +1,19 @@
 'use client';
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, User, Lock, OctagonAlert, ArrowRight } from "lucide-react";
-import { HandleLogin } from "@/app/(auth)/login/actions";
-import { useAuthContext } from "@/context/authContext";
+import React, {useState} from "react";
+import {useRouter} from "next/navigation";
+import {Eye, EyeOff, User, Lock, OctagonAlert, ArrowRight} from "lucide-react";
+import {HandleLogin} from "@/app/(auth)/login/actions";
+import {useAuthContext} from "@/context/authContext";
 
 export default function LoginPage() {
     const [email, setEmail] = useState<string>('admin@admin.com');
-    const [pwd, setPwd] = useState<string>('testtest');
+    const [pwd, setPwd] = useState<string>('Testtest1!');
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [errMsg, setErrMsg] = useState<string | null>(null);
 
-    const { setUser, setIsAuthenticated } = useAuthContext();
+    const {setUser, setIsAuthenticated} = useAuthContext();
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,8 +22,8 @@ export default function LoginPage() {
         const response = await HandleLogin(email, pwd);
         if (response.success) {
             setIsAuthenticated(true);
-            const { userId, email: userEmail, isVerified } = response;
-            setUser({ userId, email: userEmail, isVerified });
+            const {userId, email: userEmail, isVerified} = response;
+            setUser({userId, email: userEmail, isVerified});
 
             setEmail('');
             setPwd('');

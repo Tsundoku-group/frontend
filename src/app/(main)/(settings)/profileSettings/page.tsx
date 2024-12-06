@@ -23,6 +23,7 @@ import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useMutationState} from "@/hooks/useMutationState";
+import Image from "next/image";
 
 const ProfileSchema = z.object({
     firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
@@ -50,6 +51,12 @@ export default function ProfileSettingsPage() {
     const fetchUserProfile = useCallback(async () => {
         if (!userId) return;
 
+        const genderMap: Record<string, string> = {
+            male: "Masculin",
+            female: "Féminin",
+            other: "Autre",
+        };
+
         try {
             const data: Profile = await fetchUserProfileData(userId);
 
@@ -63,6 +70,12 @@ export default function ProfileSettingsPage() {
             console.error("Error fetching user profile:", error);
         }
     }, [userId]);
+
+    const reverseGenderMap: Record<string, string> = {
+        Masculin: "male",
+        Féminin: "female",
+        Autre: "other",
+    };
 
     useEffect(() => {
         fetchUserProfile();
@@ -96,18 +109,6 @@ export default function ProfileSettingsPage() {
         } catch (err) {
             console.error("Error updating profile:", err);
         }
-    };
-
-    const genderMap: Record<string, string> = {
-        male: "Masculin",
-        female: "Féminin",
-        other: "Autre",
-    };
-
-    const reverseGenderMap: Record<string, string> = {
-        Masculin: "male",
-        Féminin: "female",
-        Autre: "other",
     };
 
     function sanitizeProfile(profile: Profile | null): z.infer<typeof ProfileSchema> | {} {
@@ -284,10 +285,12 @@ export default function ProfileSettingsPage() {
                 <div className="w-1/4 flex flex-col items-center space-y-3">
                     <h3 className="text-base font-semibold mb-2">Photo de profil</h3>
                     <div className="w-40 h-auto rounded-full overflow-hidden mb-2">
-                        <img
+                        <Image
                             src="https://ui-avatars.com/api/?name=Louis+Dupont&background=4F46E5&color=fff"
                             alt="Profile"
                             className="w-full h-full object-cover"
+                            width={160}
+                            height={160}
                         />
                     </div>
                     <Button className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md flex items-center">

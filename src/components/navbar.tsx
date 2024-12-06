@@ -28,7 +28,7 @@ export default function Navbar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <ProfileButton userId={userId}/>
-                        <SettingsButton userId={userId} />
+                        <SettingsButton />
                         <LogoutButton/>
                     </DropdownMenuContent>
                 </DropdownMenu>

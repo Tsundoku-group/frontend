@@ -16,7 +16,7 @@ export default function AppearanceSettingsPage() {
                     <div>
                         <h1 className="text-3xl font-semibold mb-8 text-white">Apparence</h1>
                         <p className="text-sm text-gray-400">
-                            Personnaliser l'apparence de l'application. Basculer automatiquement entre les thèmes du
+                            Personnaliser l&apos;apparence de l&apos;application. Basculer automatiquement entre les thèmes du
                             jour et de la nuit.
                         </p>
                     </div>
