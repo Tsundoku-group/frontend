@@ -12,8 +12,21 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
 
     useEffect(() => {
         const savedFont = localStorage.getItem("selectedFont");
+        const savedHighContrast = localStorage.getItem("selectedHighContrast");
+        const savedTextSize = localStorage.getItem("selectedTextSize");
+
         if (savedFont) {
             document.body.classList.add(savedFont);
+        }
+
+        if ("true" === savedHighContrast ) {
+            document.body.classList.add("high-contrast");
+        } else {
+            document.body.classList.remove("high-contrast");
+        }
+        console.log(savedTextSize)
+        if (savedTextSize) {
+            document.documentElement.style.setProperty("--text-size", `${savedTextSize}px`);
         }
     }, []);
 
@@ -28,7 +41,7 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
                     </div>
                     <div className="col-span-10 mr-[4em]">
                         <Navbar/>
-                        <main>
+                        <main style={{ fontSize: 'var(--text-size)' }}>
                             {children}
                         </main>
                     </div>
