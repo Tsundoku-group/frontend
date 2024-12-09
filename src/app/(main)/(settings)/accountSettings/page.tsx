@@ -88,7 +88,7 @@ export default function AccountSettingsPage() {
                     return;
                 }
 
-                const updatePassword = await fetchUpdatePwd({ newPassword: pwd, captchaToken });
+                const updatePassword = await fetchUpdatePwd({newPassword: pwd, captchaToken});
 
                 if (200 === updatePassword.status) {
                     ShowToast("default", "Mot de passe changé avec succès !", "");
@@ -129,10 +129,10 @@ export default function AccountSettingsPage() {
         <div className="flex items-start p-4">
             <div className="max-w-2xl w-full p-1 flex space-x-6">
                 <div className="flex-1 space-y-4">
-                    <h1 className="text-3xl font-semibold mb-8 text-white">Comptes</h1>
+                    <h3 className="text-3xl font-semibold mb-8 text-white">Comptes</h3>
 
                     <Card className="p-6 bg-secondary-black rounded-lg border border-gray-700">
-                        <h2 className="text-lg font-semibold mb-4 text-white">Information du compte</h2>
+                        <h4 className="text-lg font-semibold mb-4 text-white">Information du compte</h4>
                         <div
                             className={`border border-dashed ${user?.isVerified ? 'border-green-600' : 'border-purple-600'} p-4 rounded-lg mb-4`}>
                             <p className={`text-sm ${user?.isVerified ? 'text-gray-400' : 'text-gray-400'}`}>
@@ -157,7 +157,7 @@ export default function AccountSettingsPage() {
 
                     <Card className="p-6 mb-6 bg-secondary-black rounded-lg border border-gray-700">
                         <div className="relative">
-                            <h2 className="text-lg font-semibold mb-4 text-white">Modifier le mot de passe</h2>
+                            <h4 className="text-lg font-semibold mb-4 text-white">Modifier le mot de passe</h4>
                             <div
                                 className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-text-white"
                                 onClick={() => setShowPassword(!showPassword)}
@@ -281,7 +281,7 @@ export default function AccountSettingsPage() {
                     </Card>
 
                     <Card className="p-6 rounded-lg bg-secondary-black border border-gray-700">
-                        <h2 className="text-lg font-semibold mb-4 text-white">Suppression du compte</h2>
+                        <h4 className="text-lg font-semibold mb-4 text-white">Suppression du compte</h4>
                         <div className="border border-dashed border-red-500 p-4 rounded-lg mb-4">
                             <p className="text-sm text-gray-400">
                                 Attention : Cette action est irréversible. La suppression de votre compte entraînera

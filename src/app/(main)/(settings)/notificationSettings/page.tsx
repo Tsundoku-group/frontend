@@ -7,10 +7,10 @@ export default function NotificationSettingsPage() {
         <div className="flex items-start p-4">
             <div className="max-w-2xl w-full p-1 flex space-x-6">
                 <div className="flex-1 space-y-4">
-                    <h1 className="text-2xl font-bold text-white">Paramètres des notifications</h1>
+                    <h3 className="text-2xl font-bold text-white">Paramètres des notifications</h3>
 
                     <Card className="p-6 bg-secondary-black rounded-lg border border-gray-700">
-                        <h2 className="text-lg font-semibold mb-4 text-white">Notifications générales</h2>
+                        <h4 className="text-lg font-semibold mb-4 text-white">Notifications générales</h4>
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Activer toutes les notifications</span>
@@ -20,7 +20,7 @@ export default function NotificationSettingsPage() {
                     </Card>
 
                     <Card className="p-6 bg-secondary-black rounded-lg border border-gray-700">
-                        <h2 className="text-lg font-semibold mb-4 text-text-white">Notifications sociales</h2>
+                        <h4 className="text-lg font-semibold mb-4 text-text-white">Notifications sociales</h4>
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Likes sur mes posts</span>
@@ -38,7 +38,7 @@ export default function NotificationSettingsPage() {
                     </Card>
 
                     <Card className="p-6 bg-secondary-black rounded-lg border border-gray-700">
-                        <h2 className="text-lg font-semibold mb-4 text-text-white">Fréquence des notifications</h2>
+                        <h4 className="text-lg font-semibold mb-4 text-text-white">Fréquence des notifications</h4>
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Notifications instantanées</span>

@@ -123,7 +123,7 @@ export default function ProfileSettingsPage() {
         <div className="flex items-start p-4 text-white">
             <div className="max-w-3xl w-full p-1 flex space-x-6">
                 <div className="flex-1 space-y-4">
-                    <h1 className="text-3xl font-semibold mb-8">Profil</h1>
+                    <h3 className="text-3xl font-semibold mb-8">Profil</h3>
 
                     <form onSubmit={handleSubmit(() => handleDialogOpen())}>
                         <div className="space-y-1">
@@ -283,7 +283,7 @@ export default function ProfileSettingsPage() {
                     </form>
                 </div>
                 <div className="w-1/4 flex flex-col items-center space-y-3">
-                    <h3 className="text-base font-semibold mb-2">Photo de profil</h3>
+                    <h4 className="text-base font-semibold mb-2">Photo de profil</h4>
                     <div className="w-40 h-auto rounded-full overflow-hidden mb-2">
                         <Image
                             src="https://ui-avatars.com/api/?name=Louis+Dupont&background=4F46E5&color=fff"
