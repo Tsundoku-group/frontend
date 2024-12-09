@@ -47,6 +47,9 @@ const config = {
         'open-sans': ['Open Sans', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
       },
+      fontSize : {
+        base: "var(--text-size)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

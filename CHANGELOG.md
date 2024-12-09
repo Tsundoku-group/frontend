@@ -37,3 +37,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-30] profile settings : intégration des actions [#30](https://trello.com/c/efWXDAvv/30-t-30-profile-settings-int%C3%A9gration-des-actions)
 - [t-31] account settings : intégration des actions [#31](https://trello.com/c/XQ1DVZNn/31-t-31-account-settings-int%C3%A9gration-des-actions)
 - [t-32] apparence settings : intégrations des actions [#32](https://trello.com/c/CBUl6w5O/32-t-32-apparence-settings-int%C3%A9grations-des-actions)
+- [t-33] accessibility settings: intégrations des actions [#33](https://trello.com/c/y17cpiyS/33-t-33-accessibility-settings-int%C3%A9grations-des-actions)
