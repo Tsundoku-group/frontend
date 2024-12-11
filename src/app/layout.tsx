@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import "./globals.css";
 import {AuthProvider} from "@/context/authContext";
 import {TooltipProvider} from "@/components/ui/tooltip";
+import "../global.css";
 
 export const metadata: Metadata = {
     title: "Tsundoku",
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 export default function RootLayout({children}: Readonly<{ children: React.ReactNode; }>) {
     return (
         <html lang="en">
-        <body className="bg-primary-black">
+        <body>
         <AuthProvider>
                 <TooltipProvider>
                     {children}

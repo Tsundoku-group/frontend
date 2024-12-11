@@ -1,0 +1,29 @@
+/* --element-order-(theme) */
+:root {
+    --bg-primary-dark: #13181F;
+    --bg-secondary-dark: #171C26;
+    --bg-tertiary-dark: #1D2330;
+
+    --text-primary-light: #D2D5E9;
+
+    --highlight-green: #20D998;
+    --hover-highlight-green: #1bbe85;
+    --highlight-red: #FF5C64;
+    --hover-highlight-red: #e04f56;
+    --highlight-yellow: #FFBC33;
+    --hover-highlight-yellow: #e9ab2f;
+    --highlight-purple: #8146FF;
+    --hover-highlight-purple: #6d3adb;
+}
+
+html {
+    font-size: 16px;
+    font-family: 'Roboto', arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-primary-dark);
+    color: var(--text-primary-light);
+    margin: 0;
+    padding: 0;
+}
