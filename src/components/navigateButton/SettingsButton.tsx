@@ -13,7 +13,7 @@ const SettingsButton = () => {
     }
 
     return (
-        <Button onClick={handleNavigateProfilePage} className="flex items-center text-black bg-transparent outline-none focus:outline-none hover:bg-hover-bg-color">
+        <Button onClick={handleNavigateProfilePage} className="flex text-white bg-transparent outline-none focus:outline-none hover:bg-gray-700 hover:text-gray-200 transition-colors duration-200 rounded-lg">
             <Settings className="mr-2 w-4" />
             Paramètres
         </Button>

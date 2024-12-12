@@ -58,7 +58,7 @@ const ProfileHeader: React.FC<Profile> = React.memo(({firstName, lastName, usern
                 </div>
 
                 <div className="flex flex-col items-center text-center mt-4">
-                    <h1 className="text-2xl font-semibold">{firstName} {lastName}</h1>
+                    <h5 className="text-2xl font-semibold">{firstName} {lastName}</h5>
                     <p className="text-sm text-gray-500">@{username}</p>
                     <p className="mt-2 text-sm text-gray-200">{bio}</p>
                 </div>

@@ -20,31 +20,31 @@
 }
 
 body, p {
-    font-size: var(--text-size) !important;;
+    font-size: var(--text-size) !important;
 }
 
 h1 {
-    font-size: calc(var(--text-size) * 2) !important;;
+    font-size: calc(var(--text-size) * 2) !important;
 }
 
 h2 {
-    font-size: calc(var(--text-size) * 1.75) !important;;
+    font-size: calc(var(--text-size) * 1.75) !important;
 }
 
 h3 {
-    font-size: calc(var(--text-size) * 1.5) !important;;
+    font-size: calc(var(--text-size) * 1.5) !important;
 }
 
 h4 {
-    font-size: calc(var(--text-size) * 1.25) !important;;
+    font-size: calc(var(--text-size) * 1.25) !important;
 }
 
 h5 {
-    font-size: calc(var(--text-size) * 1.125) !important;;
+    font-size: calc(var(--text-size) * 1.125) !important;
 }
 
 h6 {
-    font-size: calc(var(--text-size) * 1.1) !important;;
+    font-size: calc(var(--text-size) * 1.1) !important;
 }
 
 .high-contrast {

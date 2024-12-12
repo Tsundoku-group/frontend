@@ -19,7 +19,7 @@ const LogoutButton = () => {
     };
 
     return (
-        <Button onClick={handleLogout} className="flex items-center text-black bg-transparent outline-none focus:outline-none hover:bg-hover-bg-color">
+        <Button onClick={handleLogout} className="flex items-center text-white bg-transparent outline-none focus:outline-none hover:bg-hover-bg-color hover:bg-gray-700 hover:text-gray-200 transition-colors duration-200 rounded-lg">
             <Plug className="mr-2 w-4"/>
             Se déconnecter
         </Button>
