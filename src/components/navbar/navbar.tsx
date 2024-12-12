@@ -142,7 +142,7 @@ export default function Navbar() {
                                 >
                                     {profileItems}
                                 </RadioGroup>
-                               <AddProfileButton />
+                                {userProfiles.length < 5 && <AddProfileButton />}
                             </>
                         )}
                         <Button
