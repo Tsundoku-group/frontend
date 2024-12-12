@@ -1,6 +1,6 @@
 'use client'
 
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/navbar/navbar";
 import Sidebar from "@/components/sidebar"
 import {SocketProvider} from "@/context/socketContext";
 import React, {useEffect} from "react";
