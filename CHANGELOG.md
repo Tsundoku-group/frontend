@@ -39,3 +39,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-32] apparence settings : intégrations des actions [#32](https://trello.com/c/CBUl6w5O/32-t-32-apparence-settings-int%C3%A9grations-des-actions)
 - [t-33] accessibility settings: intégrations des actions [#33](https://trello.com/c/y17cpiyS/33-t-33-accessibility-settings-int%C3%A9grations-des-actions)
 - [t-34] Ajout des profils dans navbar [#34](https://trello.com/c/AfQ6cqD5/34-t-34-ajout-dun-nouveau-profil-%C3%A0-son-compte)
+- [t-35] Ajout logique pour ajouter un profil utilisateur [#35](https://trello.com/c/NrN0yl2c/35-t-35-ajout-logique-pour-ajouter-un-profil-utilisateur)
