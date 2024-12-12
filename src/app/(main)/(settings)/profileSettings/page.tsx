@@ -26,9 +26,9 @@ import {useMutationState} from "@/hooks/useMutationState";
 import Image from "next/image";
 
 const ProfileSchema = z.object({
-    firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
-    lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-    username: z.string().min(3, "Le pseudo doit contenir au moins 3 caractères"),
+    lastName: z.string().min(5, "Le nom de famille doit contenir au moins 5 caractères").max(25, "Le nom de famille ne peut pas dépasser 25 caractères"),
+    firstName: z.string().min(5, "Le prénom doit contenir au moins 5 caractères").max(25, "Le prénom ne peut pas dépasser 25 caractères"),
+    username: z.string().min(5, "Le nom d'utilisateur doit contenir au moins 5 caractères").max(25, "Le nom d'utilisateur ne peut pas dépasser 25 caractères"),
     birthday: z.string().optional(),
     gender: z.enum(["Masculin", "Féminin", "Autre"]).optional(),
     phoneNumber: z.string().regex(/^\d{10}$/, "Le numéro de téléphone doit contenir 10 chiffres"),
