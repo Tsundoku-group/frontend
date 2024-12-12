@@ -22,7 +22,6 @@ export const fetchUserProfiles = async (userId: number) => {
             return [];
         }
     } catch (error) {
-
         throw error;
     }
 };
@@ -43,7 +42,30 @@ export const setActiveUserProfile = async (id: number, profileId: string) => {
 
         return response.data;
     } catch (error) {
-        console.error('Error setting active user profiles:', error);
+        throw error;
+    }
+};
+
+export const addNewUserProfile = async (payload: any) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/profile/new`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+        console.log(response)
+        if (!response.response || 201 !== response.status) {
+            if (400 === response.status) {
+                throw new Error (response?.message || 'Vous ne pouvez pas avoir plus de 5 profils');
+            }
+            throw new Error(response?.message || "Une erreur est survenue lors de la création du profil.");
+        }
+
+        return response;
+    } catch (error) {
+        console.error('Error adding new user profile:', error);
         throw error;
     }
 };
