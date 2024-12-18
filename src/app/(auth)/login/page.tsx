@@ -5,6 +5,7 @@ import {useRouter} from "next/navigation";
 import {Eye, EyeOff, User, Lock, OctagonAlert, ArrowRight} from "lucide-react";
 import {HandleLogin} from "@/app/(auth)/login/actions";
 import {useAuthContext} from "@/context/authContext";
+import {useProfile} from "@/context/profileContext";
 
 export default function LoginPage() {
     const [email, setEmail] = useState<string>('admin@admin.com');
@@ -14,6 +15,8 @@ export default function LoginPage() {
     const [errMsg, setErrMsg] = useState<string | null>(null);
 
     const {setUser, setIsAuthenticated} = useAuthContext();
+    const {setActiveProfileInStorage} = useProfile();
+
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,8 +25,14 @@ export default function LoginPage() {
         const response = await HandleLogin(email, pwd);
         if (response.success) {
             setIsAuthenticated(true);
-            const {userId, email: userEmail, isVerified} = response;
+            const {userId, email: userEmail, isVerified, profileData} = response;
             setUser({userId, email: userEmail, isVerified});
+            setActiveProfileInStorage({
+                id: profileData?.id,
+                firstName: profileData?.firstName,
+                lastName: profileData?.lastName,
+                username: profileData?.username,
+            });
 
             setEmail('');
             setPwd('');
