@@ -41,3 +41,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-34] Ajout des profils dans navbar [#34](https://trello.com/c/AfQ6cqD5/34-t-34-ajout-dun-nouveau-profil-%C3%A0-son-compte)
 - [t-35] Ajout logique pour ajouter un profil utilisateur [#35](https://trello.com/c/NrN0yl2c/35-t-35-ajout-logique-pour-ajouter-un-profil-utilisateur)
 - [t-36] logic pour changer de page profil [#36](https://trello.com/c/TQb1kf5l/36-t-36-logic-pour-changer-de-page-profil)
+- [t-37] Css: Page login + Register [#37](https://trello.com/c/RUHtFMNU/37-t-37-css-page-login-register)

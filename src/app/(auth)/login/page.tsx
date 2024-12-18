@@ -2,7 +2,7 @@
 
 import React, {useState} from "react";
 import {useRouter} from "next/navigation";
-import {Eye, EyeOff, User, Lock, OctagonAlert, ArrowRight} from "lucide-react";
+import {Eye, EyeOff, User, Lock, OctagonAlert, Command} from "lucide-react";
 import {HandleLogin} from "@/app/(auth)/login/actions";
 import {useAuthContext} from "@/context/authContext";
 import {useProfile} from "@/context/profileContext";
@@ -61,89 +61,114 @@ export default function LoginPage() {
     };
 
     return (
-        <section className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-            <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-                <h1 className="text-2xl font-bold mb-6 text-center">Bienvenue</h1>
-                {errMsg && (
-                    <div className="flex items-center bg-red-100 text-red-700 p-4 mb-4 rounded-md">
-                        <OctagonAlert className="mr-2"/>
-                        <span>{errMsg}</span>
-                    </div>
-                )}
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700">
-                            <User className="inline-block mr-2"/>
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-gray-700">
-                            <Lock className="inline-block mr-2"/>
-                            Mot de passe
-                        </label>
-                        <div className="relative">
+        <section className="grid grid-cols-1 lg:grid-cols-2 min-h-screen bg-tertiary-black text-text-white">
+            <div className="hidden lg:flex items-end justify-start bg-secondary-black relative p-12">
+                <div className="absolute top-16 left-8 flex items-center space-x-2 z-20">
+                    <Command className="w-6 h-6 text-pink-100"/>
+                    <h4 className="text-lg font-bold text-pink-100">Tsundoku</h4>
+                </div>
+                <div className="absolute inset-0 opacity-30">
+                    <img
+                        src=""
+                        alt=""
+                        className="object-cover w-full h-full"
+                    />
+                </div>
+
+                <div className="relative z-10 text-left max-w-sm">
+                    <h1 className="text-xl font-semibold text-white mb-2">
+                        Le réseau social pour lecteurs
+                    </h1>
+                    <p className="text-sm text-gray-400 leading-relaxed">
+                        Où ta pile à lire va enfin pouvoir se rétrécir !
+                    </p>
+                    <span className="block mt-4 text-xs text-gray-500 italic">
+                        - Sofia Davis
+                    </span>
+                </div>
+            </div>
+
+            <div className="relative flex items-center justify-center">
+                <div className="absolute inset-0  backdrop-blur-lg rounded-lg"/>
+                <div className="absolute inset-0 bg-gradient-to-bl from-pink-500 to-tertiary-black opacity-10"/>
+
+                <div className="relative w-full max-w-md  p-8 z-10">
+                    <h1 className="text-2xl font-bold mb-6 text-center">Bienvenue</h1>
+                    {errMsg && (
+                        <div className="flex items-center bg-red-500 text-white p-3 mb-4 rounded-md">
+                            <OctagonAlert className="mr-2"/>
+                            <span>{errMsg}</span>
+                        </div>
+                    )}
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-4">
+                            <label className="block text-gray-300 mb-2">
+                                <User className="inline-block mr-2 mb-1"/>
+                                Email
+                            </label>
                             <input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Mot de passe"
-                                value={pwd}
-                                onChange={(e) => setPwd(e.target.value)}
+                                type="email"
+                                placeholder="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+                                className="w-full px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
                             />
-                            <div
-                                className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
-                                onClick={() => setShowPassword(!showPassword)}
-                            >
-                                {showPassword ? <EyeOff/> : <Eye/>}
+                        </div>
+                        <div className="mb-6">
+                            <label className="block text-gray-300 mb-2">
+                                <Lock className="inline-block mr-2 mb-1"/>
+                                Mot de passe
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Mot de passe"
+                                    value={pwd}
+                                    onChange={(e) => setPwd(e.target.value)}
+                                    required
+                                    className="w-full px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
+                                />
+                                <div
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? <EyeOff/> : <Eye/>}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <button
+                            type="submit"
+                            className="w-full bg-pink-100 text-primary-black font-bold py-2 rounded-md hover:bg-opacity-90 transition-colors"
+                        >
+                            Se connecter
+                        </button>
+                    </form>
+
                     <button
-                        type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
+                        onClick={handleRegisterRedirect}
+                        className="w-full mt-4 bg-gray-700 text-white py-2 rounded-md hover:bg-gray-600 transition-colors"
                     >
-                        Se connecter
-                        <ArrowRight className="inline-block ml-2"/>
+                        S&apos;inscrire
                     </button>
-                </form>
-                <button
-                    onClick={handleRegisterRedirect}
-                    className="w-full mt-4 bg-gray-500 text-white py-2 rounded-md hover:bg-gray-600 transition-colors"
-                >
-                    S&apos;inscrire
-                </button>
-                <button
-                    onClick={handleForgotPasswordRedirect}
-                    className="w-full mt-2 text-blue-500 hover:underline"
-                >
-                    Mot de passe oublié ?
-                </button>
-            </div>
-            <div className="text-center mt-6">
-                <a
-                    href="#"
-                    onClick={handlePrivacyPolicyRedirect}
-                    className="text-blue-500 hover:underline"
-                >
-                    Politique de confidentialité
-                </a>
-                &nbsp;|&nbsp;
-                <a
-                    href="#"
-                    onClick={handleTermsRedirect}
-                    className="text-blue-500 hover:underline"
-                >
-                    Conditions générales
-                </a>
+
+                    <button
+                        onClick={handleForgotPasswordRedirect}
+                        className="w-full mt-2 text-pink-100 hover:underline"
+                    >
+                        Mot de passe oublié ?
+                    </button>
+
+                    <div className="mt-4 text-sm text-center text-gray-500">
+                        En t&apos;inscrivant, tu acceptes nos&nbsp;
+                        <a href="#" onClick={handlePrivacyPolicyRedirect} className="text-pink-100 underline">
+                            Conditions de service
+                        </a> et notre&nbsp;
+                        <a href="#" onClick={handleTermsRedirect} className="text-pink-100 underline">
+                            Politique de Confidentialité
+                        </a>.
+                    </div>
+                </div>
             </div>
         </section>
     );

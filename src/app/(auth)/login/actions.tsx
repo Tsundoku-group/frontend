@@ -11,7 +11,7 @@ interface LoginResponse {
     email: string;
     isVerified: boolean;
     token?: string;
-    profileData?: Profile;
+    profileData: Profile | null;
     error?: string;
 }
 
@@ -39,6 +39,7 @@ export async function HandleLogin(email: string, password: string): Promise<Logi
                 userId: 0,
                 email: "",
                 isVerified: false,
+                profileData: null,
                 error: errorMessage
             };
         }
@@ -69,6 +70,7 @@ export async function HandleLogin(email: string, password: string): Promise<Logi
             userId: 0,
             email: "",
             isVerified: false,
+            profileData: null,
             error: 'An unexpected error occurred',
         };
     }
