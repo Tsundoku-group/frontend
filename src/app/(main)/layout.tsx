@@ -32,11 +32,10 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
     }, []);
 
     return (
-        <html lang="fr">
-        <body>
-        <QueryClientProvider client={queryClient}>
-            <SocketProvider>
-                    <GlobalLoader />
+        <>
+            <QueryClientProvider client={queryClient}>
+                <SocketProvider>
+                    <GlobalLoader/>
                     <div className="grid grid-cols-12">
                         <div className="col-span-2">
                             <Sidebar/>
@@ -48,10 +47,9 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
                             </main>
                         </div>
                     </div>
-            </SocketProvider>
-        </QueryClientProvider>
-        <Toaster/>
-        </body>
-        </html>
+                </SocketProvider>
+            </QueryClientProvider>
+            <Toaster/>
+        </>
     );
 }
