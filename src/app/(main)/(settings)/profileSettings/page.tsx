@@ -5,7 +5,6 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Facebook, Instagram, Twitter} from "lucide-react";
 import {Profile} from "@/models/Profile";
-import {useAuthContext} from "@/context/authContext";
 import {
     fetchUserProfileData,
     updateUserProfileData,
@@ -24,6 +23,7 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useMutationState} from "@/hooks/useMutationState";
 import Image from "next/image";
+import {useProfile} from "@/context/profileContext";
 
 const ProfileSchema = z.object({
     lastName: z.string().min(5, "Le nom de famille doit contenir au moins 5 caractères").max(25, "Le nom de famille ne peut pas dépasser 25 caractères"),
@@ -41,15 +41,15 @@ const ProfileSchema = z.object({
 export default function ProfileSettingsPage() {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const {user} = useAuthContext();
-    const userId = user?.userId as string;
+    const {activeProfileInStorage} = useProfile();
+    const profileId = activeProfileInStorage?.id as string;
 
     const {mutate, pending} = useMutationState(async (updatedProfile: Profile) => {
-        return await updateUserProfileData(userId, updatedProfile);
+        return await updateUserProfileData(profileId, updatedProfile);
     });
 
     const fetchUserProfile = useCallback(async () => {
-        if (!userId) return;
+        if (!profileId) return;
 
         const genderMap: Record<string, string> = {
             male: "Masculin",
@@ -58,7 +58,7 @@ export default function ProfileSettingsPage() {
         };
 
         try {
-            const data: Profile = await fetchUserProfileData(userId);
+            const data: Profile = await fetchUserProfileData(profileId);
 
             const transformedProfile = {
                 ...data,
@@ -69,7 +69,7 @@ export default function ProfileSettingsPage() {
         } catch (error) {
             console.error("Error fetching user profile:", error);
         }
-    }, [userId]);
+    }, [profileId]);
 
     const reverseGenderMap: Record<string, string> = {
         Masculin: "male",
