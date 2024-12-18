@@ -1,6 +1,7 @@
 'use server';
 
 import { createSession } from '@/app/_lib/session';
+import {Profile} from "@/models/Profile";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
@@ -10,6 +11,7 @@ interface LoginResponse {
     email: string;
     isVerified: boolean;
     token?: string;
+    profileData?: Profile;
     error?: string;
 }
 
@@ -48,6 +50,7 @@ export async function HandleLogin(email: string, password: string): Promise<Logi
         const isVerified = data.isVerified;
         const token = data.token;
         const refreshToken = data.refresh_token;
+        const activeProfileData = data.activeProfile;
 
         await createSession(userId, userEmail, isVerified, token, refreshToken);
 
@@ -57,6 +60,7 @@ export async function HandleLogin(email: string, password: string): Promise<Logi
             email: userEmail,
             isVerified: isVerified,
             token: token,
+            profileData: activeProfileData,
         };
 
     } catch (error) {

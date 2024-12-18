@@ -7,22 +7,25 @@ import RightbarWrapper from "@/app/(main)/profile/[profileId]/components/rightba
 import { Profile } from "@/models/Profile";
 import { fetchUserProfile } from "@/app/(main)/profile/[profileId]/actions";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {useRouter} from "next/navigation";
+import {useProfile} from "@/context/profileContext";
 
 type Props = {
     params: {
-        profileId: number;
+        profileId: string;
     };
 };
 
 const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
     const queryClient = useQueryClient();
+    const router = useRouter();
+    const {activeProfileInStorage} = useProfile();
 
     useEffect(() => {
-        queryClient.prefetchQuery({
-            queryKey: ['userProfile', profileId],
-            queryFn: () => fetchUserProfile(profileId),
-        });
-    }, [profileId, queryClient]);
+        if (activeProfileInStorage?.id && activeProfileInStorage.id.toString() !== profileId) {
+            router.replace(`/profile/${activeProfileInStorage.id}`);
+        }
+    }, [profileId, activeProfileInStorage, router]);
 
     const { data: profile, isLoading, isError } = useQuery<Profile>({
         queryKey: ['userProfile', profileId],

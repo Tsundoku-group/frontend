@@ -12,7 +12,7 @@ type ProfileButtonProps = {
     name?: string;
 };
 
-const ProfileButton = ({userId, email, imageUrl, name}: ProfileButtonProps) => {
+const ProfileButton = ({userId, email, name}: ProfileButtonProps) => {
     const router = useRouter();
 
     const handleNavigateProfilePage = () => {
@@ -28,7 +28,7 @@ const ProfileButton = ({userId, email, imageUrl, name}: ProfileButtonProps) => {
                 </AvatarFallback>
             </Avatar>
             <Edit2
-                className="absolute top-10 right-1 w-6 h-6 bg-white rounded-full p-1 text-gray-500 cursor-pointer z-10"
+                className="absolute top-10 ml-10 w-6 h-6 bg-white rounded-full p-1 text-gray-500 cursor-pointer z-10"
             />
 
             <div className="text-xs text-gray-500">{email}</div>

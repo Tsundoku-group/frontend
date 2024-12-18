@@ -3,6 +3,7 @@ import "./globals.css";
 import {AuthProvider} from "@/context/authContext";
 import {TooltipProvider} from "@/components/ui/tooltip";
 import "../global.css";
+import {ProfileProvider} from "@/context/profileContext";
 
 export const metadata: Metadata = {
     title: "Tsundoku",
@@ -17,9 +18,11 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
         <html lang="en">
         <body>
         <AuthProvider>
+            <ProfileProvider>
                 <TooltipProvider>
                     {children}
                 </TooltipProvider>
+            </ProfileProvider>
         </AuthProvider>
         </body>
         </html>

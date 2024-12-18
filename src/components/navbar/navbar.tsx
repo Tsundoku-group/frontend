@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import React, {useMemo, useState} from "react";
 import {Bell, ChevronDown, ChevronLeft, ChevronRight, User, UserPen} from "lucide-react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import LogoutButton from "@/components/navigateButton/logoutButton";
@@ -14,6 +14,7 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {truncateString} from "@/utils/string-utils";
 import {ShowToast} from "@/components/ShowToast";
 import AddProfileButton from "@/components/AddProfileButton";
+import {useProfile} from "@/context/profileContext";
 
 type UserProfile = {
     id: number;
@@ -21,7 +22,38 @@ type UserProfile = {
     activeProfile: boolean;
 };
 
+function CustomDropDown(props: {
+    dropdownContent: React.JSX.Element;
+    firstName: string;
+    lastName: string;
+    isDropdownOpen: boolean;
+    setIsDropdownOpen: (isOpen: boolean) => void;
+}) {
+    const { dropdownContent, firstName, lastName, isDropdownOpen, setIsDropdownOpen } = props;
+
+    const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger onClick={toggleDropdown}>
+                <div className="flex items-center bg-tertiary-black p-2 rounded-lg cursor-pointer">
+                    <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" alt="" />
+                        <AvatarFallback>
+                            <User className="w-6 h-6 text-gray-500" />
+                        </AvatarFallback>
+                    </Avatar>
+                    <span className="ml-2 text-text-white">{truncateString(`${firstName} ${lastName}`, 15)}</span>
+                    <ChevronDown className="text-text-white ml-2" />
+                </div>
+            </DropdownMenuTrigger>
+            {isDropdownOpen && dropdownContent}
+        </DropdownMenu>
+    );
+}
+
 export default function Navbar() {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isSwitchingProfiles, setIsSwitchingProfiles] = useState(false);
     const [userProfiles, setUserProfiles] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -31,9 +63,10 @@ export default function Navbar() {
 
     const {user} = useAuthContext();
     const userId = user?.userId as number;
+    const {activeProfileInStorage, setActiveProfileInStorage} = useProfile()
 
-    const fetchProfiles = useCallback(async () => {
-        if (!userId) return;
+    const fetchProfiles = async () => {
+        if (userProfiles.length > 0) return;
 
         setLoading(true);
         try {
@@ -44,30 +77,34 @@ export default function Navbar() {
         } finally {
             setLoading(false);
         }
-    }, [userId]);
-
-    useEffect(() => {
-        if (isSwitchingProfiles) {
-            fetchProfiles();
-        }
-    }, [isSwitchingProfiles, fetchProfiles]);
+    };
 
     const handleProfileChange = async (profileId: string) => {
         try {
             if (!userId || !profileId) return;
 
-            await setActiveUserProfile(userId, profileId);
+            const profileData = await setActiveUserProfile(userId, profileId);
+            setActiveProfileInStorage(profileData);
 
-            setActiveProfile(profileId);
+            setActiveProfile(profileData);
             setUserProfiles((prevProfiles) =>
                 prevProfiles.map((profile) => ({
                     ...profile,
                     activeProfile: profile.id.toString() === profileId,
                 }))
             );
+
+            setIsDropdownOpen(false);
             ShowToast('default', 'Vous allez être redirigé vers votre autre profil');
         } catch (error) {
             ShowToast('destructive', 'Erreur lors du changement de profil', 'Erreur');
+        }
+    };
+
+    const handleSwitchProfiles = async () => {
+        if (!isSwitchingProfiles) {
+            setIsSwitchingProfiles(true);
+            await fetchProfiles();
         }
     };
 
@@ -82,13 +119,14 @@ export default function Navbar() {
                 <label htmlFor={`profile-${profile.id}`} className="flex items-center w-full cursor-pointer relative">
                     <div className="relative">
                         <Avatar className="w-12 h-12">
-                            <AvatarImage src="https://github.com/shadcn.png" alt={profile.username} />
+                            <AvatarImage src="https://github.com/shadcn.png" alt={profile.username}/>
                             <AvatarFallback>
-                                <User className="w-6 h-6 text-gray-500" />
+                                <User className="w-6 h-6 text-gray-500"/>
                             </AvatarFallback>
                         </Avatar>
                         {profile.activeProfile && (
-                            <div className="absolute top-9 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-gray-800"></div>
+                            <div
+                                className="absolute top-9 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-gray-800"></div>
                         )}
                     </div>
                     <span className="text-sm ml-4">{truncateString(profile.username, 10)}</span>
@@ -116,7 +154,7 @@ export default function Navbar() {
                         <ProfileButton userId={userId} email={user?.email}/>
                         <Button
                             className="flex justify-between w-full text-white bg-transparent outline-none focus:outline-none hover:bg-hover-bg-color hover:bg-gray-700 hover:text-gray-200 transition-colors duration-200 rounded-lg"
-                            onClick={() => setIsSwitchingProfiles(true)}
+                            onClick={handleSwitchProfiles}
                         >
                             <div className="flex items-center">
                                 <UserPen className="mr-2 w-4"/>
@@ -142,7 +180,7 @@ export default function Navbar() {
                                 >
                                     {profileItems}
                                 </RadioGroup>
-                                {userProfiles.length < 5 && <AddProfileButton />}
+                                {userProfiles.length < 5 && <AddProfileButton/>}
                             </>
                         )}
                         <Button
@@ -161,25 +199,18 @@ export default function Navbar() {
     return (
         <div className="h-16 flex justify-between items-center">
             <div className="text-text-white text-lg">
-                Bienvenue, <span className="text-green-highlight">Anne Honyme</span> !
+                Bienvenue, <span
+                className="text-green-highlight">{activeProfileInStorage?.firstName}{activeProfileInStorage?.lastName}</span> !
             </div>
             <div className="flex items-center">
                 <Bell className="text-text-white mr-4"/>
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <div className="flex items-center bg-tertiary-black p-2 rounded-lg cursor-pointer">
-                            <Avatar>
-                                <AvatarImage src="https://github.com/shadcn.png" alt=""/>
-                                <AvatarFallback>
-                                    <User className="w-6 h-6 text-gray-500"/>
-                                </AvatarFallback>
-                            </Avatar>
-                            <span className="ml-2 text-text-white">Anne Honyme</span>
-                            <ChevronDown className="text-text-white ml-2"/>
-                        </div>
-                    </DropdownMenuTrigger>
-                    {dropdownContent}
-                </DropdownMenu>
+                <CustomDropDown
+                    dropdownContent={dropdownContent}
+                    firstName={activeProfileInStorage?.firstName || "Utilisateur"}
+                    lastName={activeProfileInStorage?.lastName || ""}
+                    isDropdownOpen={isDropdownOpen}
+                    setIsDropdownOpen={setIsDropdownOpen}
+                />
             </div>
         </div>
     );

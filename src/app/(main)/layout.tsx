@@ -6,6 +6,7 @@ import {SocketProvider} from "@/context/socketContext";
 import React, {useEffect} from "react";
 import {Toaster} from "@/components/ui/toaster";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import GlobalLoader from "@/components/loader/GlobalLoader";
 
 export default function MainLayout({children}: { children: React.ReactNode }) {
     const queryClient = new QueryClient();
@@ -19,37 +20,36 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
             document.body.classList.add(savedFont);
         }
 
-        if ("true" === savedHighContrast ) {
+        if ("true" === savedHighContrast) {
             document.body.classList.add("high-contrast");
         } else {
             document.body.classList.remove("high-contrast");
         }
-        console.log(savedTextSize)
+
         if (savedTextSize) {
             document.documentElement.style.setProperty("--text-size", `${savedTextSize}px`);
         }
     }, []);
 
     return (
-        <html lang="fr">
-        <body>
-        <QueryClientProvider client={queryClient}>
-            <SocketProvider>
-                <div className="grid grid-cols-12">
-                    <div className="col-span-2">
-                        <Sidebar/>
+        <>
+            <QueryClientProvider client={queryClient}>
+                <SocketProvider>
+                    <GlobalLoader/>
+                    <div className="grid grid-cols-12">
+                        <div className="col-span-2">
+                            <Sidebar/>
+                        </div>
+                        <div className="col-span-10 mr-[4em]">
+                            <Navbar/>
+                            <main style={{fontSize: 'var(--text-size)'}}>
+                                {children}
+                            </main>
+                        </div>
                     </div>
-                    <div className="col-span-10 mr-[4em]">
-                        <Navbar/>
-                        <main style={{ fontSize: 'var(--text-size)' }}>
-                            {children}
-                        </main>
-                    </div>
-                </div>
-            </SocketProvider>
-        </QueryClientProvider>
-        <Toaster/>
-        </body>
-        </html>
+                </SocketProvider>
+            </QueryClientProvider>
+            <Toaster/>
+        </>
     );
 }

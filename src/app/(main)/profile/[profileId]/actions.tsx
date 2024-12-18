@@ -5,7 +5,7 @@ import {Profile} from "@/models/Profile";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
-export const fetchUserProfile = async (profileId: number): Promise<Profile> => {
+export const fetchUserProfile = async (profileId: string): Promise<Profile> => {
     const response = await fetchWithAuth(`${symfonyUrl}/api/profile/${profileId}`, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'},
