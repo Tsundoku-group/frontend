@@ -7,13 +7,13 @@ import {Profile} from "@/models/Profile";
 
 type ProfileContextType = {
     activeProfileInStorage: Profile | null;
-    setActiveProfileInStorage: (profileData: Partial<Profile>, triggerLoading?: boolean ) => void;
+    setActiveProfileInStorage: (profileData: Partial<Profile>, triggerLoading?: boolean) => void;
     isLoading: boolean;
 };
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
-export const ProfileProvider = ({ children }: { children: React.ReactNode }) => {
+export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
     const [activeProfileInStorage, setActiveProfileInStorageState] = useState<Profile | null>(() => {
         if (typeof window !== "undefined") {
             const storedProfile = localStorage.getItem("activeProfile");
@@ -57,11 +57,11 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     };
 
     if (initialLoading) {
-        return <LoadingSkeleton />;
+        return <LoadingSkeleton/>;
     }
 
     return (
-        <ProfileContext.Provider value={{ activeProfileInStorage, setActiveProfileInStorage, isLoading }}>
+        <ProfileContext.Provider value={{activeProfileInStorage, setActiveProfileInStorage, isLoading}}>
             {children}
         </ProfileContext.Provider>
     );

@@ -14,7 +14,7 @@ export const fetchUserProfiles = async (userId: number) => {
             throw new Error('Failed to fetch profiles');
         }
 
-        const { profiles } = response.data;
+        const {profiles} = response.data;
 
         if (Array.isArray(profiles)) {
             return profiles;
@@ -77,7 +77,7 @@ export const addNewUserProfile = async (payload: any) => {
         console.log(response)
         if (!response.response || 201 !== response.status) {
             if (400 === response.status) {
-                throw new Error (response?.message || 'Vous ne pouvez pas avoir plus de 5 profils');
+                throw new Error(response?.message || 'Vous ne pouvez pas avoir plus de 5 profils');
             }
             throw new Error(response?.message || "Une erreur est survenue lors de la création du profil.");
         }
