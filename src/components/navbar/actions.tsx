@@ -10,7 +10,7 @@ export const fetchUserProfiles = async (userId: number) => {
             method: 'GET',
         });
 
-        if (!response.response || response.status !== 200) {
+        if (!response.response || 200 !== response.status) {
             throw new Error('Failed to fetch profiles');
         }
 
@@ -25,6 +25,25 @@ export const fetchUserProfiles = async (userId: number) => {
         throw error;
     }
 };
+
+export const setUserProfileStatus = async (profileId: string, status: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/profile/update-status/${profileId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                status: status,
+            })
+        });
+
+        if (!response.response || 200 !== response.status) {
+            throw new Error(response.message);
+        }
+
+        return {success: true};
+    } catch (error) {
+        throw error;
+    }
+}
 
 export const setActiveUserProfile = async (id: number, profileId: string) => {
     try {
