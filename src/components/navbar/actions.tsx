@@ -74,7 +74,7 @@ export const addNewUserProfile = async (payload: any) => {
             },
             body: JSON.stringify(payload),
         });
-        console.log(response)
+
         if (!response.response || 201 !== response.status) {
             if (400 === response.status) {
                 throw new Error(response?.message || 'Vous ne pouvez pas avoir plus de 5 profils');
@@ -84,7 +84,6 @@ export const addNewUserProfile = async (payload: any) => {
 
         return response;
     } catch (error) {
-        console.error('Error adding new user profile:', error);
         throw error;
     }
 };

@@ -327,8 +327,6 @@ export default function Navbar() {
                                         } else if (visibleItems === "status") {
                                             if (activeProfile) {
                                                 handleStatusProfileChange(activeProfile, value);
-                                            } else {
-                                                console.error("activeProfile is null or undefined");
                                             }
                                         }
                                     }}
