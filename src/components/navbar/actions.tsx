@@ -10,11 +10,11 @@ export const fetchUserProfiles = async (userId: number) => {
             method: 'GET',
         });
 
-        if (!response.response || response.status !== 200) {
+        if (!response.response || 200 !== response.status) {
             throw new Error('Failed to fetch profiles');
         }
 
-        const { profiles } = response.data;
+        const {profiles} = response.data;
 
         if (Array.isArray(profiles)) {
             return profiles;
@@ -25,6 +25,25 @@ export const fetchUserProfiles = async (userId: number) => {
         throw error;
     }
 };
+
+export const setUserProfileStatus = async (profileId: string, status: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/profile/update-status/${profileId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                status: status,
+            })
+        });
+
+        if (!response.response || 200 !== response.status) {
+            throw new Error(response.message);
+        }
+
+        return {success: true};
+    } catch (error) {
+        throw error;
+    }
+}
 
 export const setActiveUserProfile = async (id: number, profileId: string) => {
     try {
@@ -55,17 +74,16 @@ export const addNewUserProfile = async (payload: any) => {
             },
             body: JSON.stringify(payload),
         });
-        console.log(response)
+
         if (!response.response || 201 !== response.status) {
             if (400 === response.status) {
-                throw new Error (response?.message || 'Vous ne pouvez pas avoir plus de 5 profils');
+                throw new Error(response?.message || 'Vous ne pouvez pas avoir plus de 5 profils');
             }
             throw new Error(response?.message || "Une erreur est survenue lors de la création du profil.");
         }
 
         return response;
     } catch (error) {
-        console.error('Error adding new user profile:', error);
         throw error;
     }
 };

@@ -42,3 +42,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-35] Ajout logique pour ajouter un profil utilisateur [#35](https://trello.com/c/NrN0yl2c/35-t-35-ajout-logique-pour-ajouter-un-profil-utilisateur)
 - [t-36] logic pour changer de page profil [#36](https://trello.com/c/TQb1kf5l/36-t-36-logic-pour-changer-de-page-profil)
 - [t-37] Css: Page login + Register [#37](https://trello.com/c/RUHtFMNU/37-t-37-css-page-login-register)
+- [t-38] Ajout des status profils utilisateur [#38](https://trello.com/c/yZP5chM1/38-t-38-ajout-de-plusieurs-compte-pour-un-utilisateur)

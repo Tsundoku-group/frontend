@@ -16,4 +16,5 @@ export interface Profile {
     instagram?: string;
     facebook?: string;
     createdAt?: string | null;
+    status: string | 'offline';
 }
