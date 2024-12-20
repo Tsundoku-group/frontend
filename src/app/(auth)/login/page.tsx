@@ -5,17 +5,17 @@ import {useRouter} from "next/navigation";
 import {Eye, EyeOff, User, Lock, OctagonAlert, Command} from "lucide-react";
 import {HandleLogin} from "@/app/(auth)/login/actions";
 import {useAuthContext} from "@/context/authContext";
-import {useProfile} from "@/context/profileContext";
+import {useProfileContext} from "@/context/profileContext";
 
 export default function LoginPage() {
     const [email, setEmail] = useState<string>('admin@admin.com');
-    const [pwd, setPwd] = useState<string>('Testtest1!');
+    const [pwd, setPwd] = useState<string>('testtest');
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [errMsg, setErrMsg] = useState<string | null>(null);
 
     const {setUser, setIsAuthenticated} = useAuthContext();
-    const {setActiveProfileInStorage} = useProfile();
+    const {setActiveProfileInStorage} = useProfileContext();
 
     const router = useRouter();
 
@@ -32,6 +32,7 @@ export default function LoginPage() {
                 firstName: profileData?.firstName,
                 lastName: profileData?.lastName,
                 username: profileData?.username,
+                status: profileData?.status,
             });
 
             setEmail('');
