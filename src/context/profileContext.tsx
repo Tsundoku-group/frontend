@@ -7,7 +7,7 @@ import {Profile} from "@/models/Profile";
 
 type ProfileContextType = {
     activeProfileInStorage: Profile | null;
-    setActiveProfileInStorage: (profileData: Partial<Profile>) => void;
+    setActiveProfileInStorage: (profileData: Partial<Profile>, triggerLoading?: boolean ) => void;
     isLoading: boolean;
 };
 
@@ -34,21 +34,26 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
         setInitialLoading(false);
     }, []);
 
-    const setActiveProfileInStorage = (profileData: Partial<Profile>) => {
-        setIsLoading(true);
+    const setActiveProfileInStorage = (profileData: Partial<Profile>, triggerLoading: boolean = true) => {
+        if (triggerLoading) {
+            setIsLoading(true);
+        }
 
         const completeProfile: Profile = {
             id: profileData.id as string,
             firstName: profileData.firstName || "",
             lastName: profileData.lastName || "",
             username: profileData.username || "",
+            status: profileData.status || 'offline',
         };
 
         localStorage.setItem("activeProfile", JSON.stringify(profileData));
         setActiveProfileInStorageState(completeProfile);
-        router.refresh();
 
-        setTimeout(() => setIsLoading(false), 3000);
+        if (triggerLoading) {
+            router.refresh();
+            setTimeout(() => setIsLoading(false), 3000);
+        }
     };
 
     if (initialLoading) {
@@ -62,7 +67,7 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     );
 };
 
-export const useProfile = () => {
+export const useProfileContext = () => {
     const context = React.useContext(ProfileContext);
     if (context === undefined) {
         throw new Error("useProfile must be used within a ProfileProvider");
