@@ -308,7 +308,7 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
                                 >
                                     <CloudUpload className="text-white cursor-pointer"/>
                                     <span className="text-gray-400 text-sm cursor-pointer">
-                                        Glisse et dépose l'image ici
+                                        Glisse et dépose l&apos;image ici
                                     </span>
                                 </label>
                             </div>
