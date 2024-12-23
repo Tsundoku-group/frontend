@@ -4,7 +4,7 @@ export interface Profile {
     firstName?: string;
     lastName?: string;
     username?: string;
-    avatarUrl?: string;
+    avatarUrl?: ProfilePicture;
     coverUrl?: string;
     friendsCount?: number;
     followersCount?: number;
@@ -16,5 +16,12 @@ export interface Profile {
     instagram?: string;
     facebook?: string;
     createdAt?: string | null;
-    status: string | 'offline';
-}
+    status?: string | 'offline';
+};
+
+export interface ProfilePicture {
+    id: string;
+    profileId: string;
+    url: string;
+    type: string;
+};
