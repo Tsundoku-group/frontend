@@ -22,7 +22,7 @@ export async function fetchUserProfileData(profileId: string): Promise<Profile> 
     } catch (error) {
         throw new Error('Failed to fetch user profile data');
     }
-};
+}
 
 export async function updateUserProfileData(profileId: string, profileData: Partial<Profile>): Promise<Profile> {
     try {
@@ -42,7 +42,7 @@ export async function updateUserProfileData(profileId: string, profileData: Part
     } catch (error) {
         throw new Error('Failed to update user profile data');
     }
-};
+}
 
 export async function fetchUploadImageProfile(userId: string, profileId: string, imageUrl: string, type: string): Promise<ProfilePicture> {
     try {
@@ -62,4 +62,4 @@ export async function fetchUploadImageProfile(userId: string, profileId: string,
     } catch (error) {
         throw new Error( 'Failed to fetch upload image');
     }
-};
+}

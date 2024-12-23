@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -158,7 +158,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name, onPreviewComplete}: P
         setErrorMessage(null);
         setPreview(imageUrl);
         setIsDialogOpen(false);
-    };
+    }
 
     const UploadedImagesList = ({profileId}: { profileId: string }) => {
         const [images, setImages] = useState<string[]>([]);
@@ -179,8 +179,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name, onPreviewComplete}: P
 
                     const urls = await Promise.all(
                         result.items.map(async (item) => {
-                            const url = await getDownloadURL(item);
-                            return url;
+                            return await getDownloadURL(item);
                         })
                     );
 

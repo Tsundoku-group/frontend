@@ -216,7 +216,7 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
                         </div>
                         <div className="flex flex-col">
                             <label htmlFor="username" className="text-sm font-medium text-gray-400">
-                                Nom d'utilisateur <span className="text-red-500">*</span>
+                                Nom d&apos;utilisateur <span className="text-red-500">*</span>
                             </label>
                             <Input
                                 {...register('username')}
@@ -245,7 +245,7 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
                                     ⚠️ Auteur (prochainement)
                                 </option>
                                 <option value="maison d'édition" disabled>
-                                    ⚠️ Maison d'édition (prochainement)
+                                    ⚠️ Maison d&apos;édition (prochainement)
                                 </option>
                             </select>
                         </div>
@@ -409,7 +409,7 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
                             </li>
                             <li>
                                 <span
-                                    className="font-bold">Nom d'utilisateur :</span> {watch("username") || "Non renseigné"}
+                                    className="font-bold">Nom d&apos;utilisateur :</span> {watch("username") || "Non renseigné"}
                             </li>
                             <li>
                                 <span

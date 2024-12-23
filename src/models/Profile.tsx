@@ -17,11 +17,11 @@ export interface Profile {
     facebook?: string;
     createdAt?: string | null;
     status?: string | 'offline';
-};
+}
 
 export interface ProfilePicture {
     id: string;
     profileId: string;
     url: string;
     type: string;
-};
+}
