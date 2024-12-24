@@ -22,39 +22,42 @@ import { useMutationState } from "@/hooks/useMutationState";
 import { createFriendRequest } from "./actions";
 import { useAuthContext } from "@/context/authContext";
 import {ShowToast} from "@/components/ShowToast";
+import {useProfileContext} from "@/context/profileContext";
 
 const addFriendFormSchema = z.object({
-    receiverEmail: z.string()
+    receiverUsername: z.string()
         .min(1, { message: "Ce champ ne peut être vide" })
-        .email("Veuillez saisir un e-mail valide")
 });
 
 const AddFriends = () => {
     const { user } = useAuthContext();
+    const {activeProfileInStorage} = useProfileContext();
 
     const form = useForm<z.infer<typeof addFriendFormSchema>>({
         resolver: zodResolver(addFriendFormSchema),
         defaultValues: {
-            receiverEmail: ""
+            receiverUsername: ""
         },
     });
 
-    const { mutate: createRequest, pending } = useMutationState(async ({ receiverEmail }: { receiverEmail: string }) => {
-        if (!user || !user.email) {
+    const { mutate: createRequest, pending } = useMutationState(async ({ receiverUsername }: { receiverUsername: string }) => {
+        if (!user || !activeProfileInStorage?.username) {
             ShowToast("destructive", "Erreur", "Impossible de récupérer l'email de l'utilisateur.");
             return;
         }
 
         try {
-            await createFriendRequest(user.email, receiverEmail);
+            const response = await createFriendRequest(activeProfileInStorage?.username, receiverUsername);
 
-            ShowToast("default", "Demande d'ajout envoyée !");
+            if (!response.success) {
+                ShowToast("destructive", "Erreur", response.errorMessage || "Une erreur est survenue.");
+                return;
+            }
 
+            ShowToast("default", "Succès", "Demande d'ajout envoyée !");
             form.reset();
         } catch (error) {
-            const errorMessage = (error as Error).message || "Il y a eu un problème avec votre demande.";
-
-            ShowToast("destructive", "Erreur", errorMessage);
+            ShowToast("destructive", "Erreur", "Une erreur inattendue est survenue.");
         }
     });
 
@@ -90,12 +93,12 @@ const AddFriends = () => {
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <FormField
                             control={form.control}
-                            name="receiverEmail"
+                            name="receiverUsername"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email de ton ami(e)</FormLabel>
+                                    <FormLabel>Username de ton ami(e)</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Email de l'ami(e)..." {...field} />
+                                        <Input placeholder="Username de l'ami(e)..." {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

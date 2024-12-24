@@ -4,27 +4,33 @@ import {fetchWithAuth} from "@/services/fetchWithAuth";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
-export async function createFriendRequest(requesterEmail: string, receiverEmail: string) {
 
+export async function createFriendRequest(requesterUsername: string, receiverUsername: string) {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/friendship/request`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'requester-email': requesterEmail,
-                'receiver-email': receiverEmail,
+                'requester-username': requesterUsername,
+                'receiver-username': receiverUsername,
             }
         });
 
-        if (201 === response.status) {
+        if (response.status === 201) {
             return { success: true };
-        } else if (409 === response.status) {
-            return { success: false, error: "ChatFriendship already exists or request already sent." };
-        } else {
-            return { success: false, error: "Erreur lors de la création de la demande d'ami" };
         }
 
+        if (response.status === 409) {
+            return { success: false, errorMessage: "Une demande d'ami existe déjà ou a déjà été envoyée." };
+        }
+
+        if (response.status === 404) {
+            return { success: false, errorMessage: "Nous n'avons pas trouvé la personne que vous recherchez." };
+        }
+
+        return { success: false, errorMessage: "Erreur lors de la création de la demande d'ami." };
+
     } catch (error) {
-        return { success: false, error: "Erreur lors de la création de la demande d'ami" };
+        return { success: false, errorMessage: "Erreur lors de la création de la demande d'ami." };
     }
 }
