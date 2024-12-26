@@ -13,7 +13,7 @@ export type ChatConversation = {
 
 export type ChatParticipant = {
     id: string;
-    userName: string;
+    username: string;
     imageUrl?: string;
     email: string;
 };
