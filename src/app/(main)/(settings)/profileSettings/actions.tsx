@@ -44,6 +44,25 @@ export async function updateUserProfileData(profileId: string, profileData: Part
     }
 }
 
+export async function fetchActiveProfilePictureUrl(userId: string, profileId: string, type: string): Promise<ProfilePicture> {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/get-active-photo`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        console.log(response)
+        if (!response.response || 200 !== response.status) {
+            throw new Error('Invalid response from the server');
+        }
+
+        return response.data as ProfilePicture;
+    } catch (error) {
+        throw new Error('Failed to fetch active profile picture');
+    }
+}
+
 export async function fetchUploadImageProfile(userId: string, profileId: string, imageUrl: string, type: string): Promise<ProfilePicture> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/add-photo`, {

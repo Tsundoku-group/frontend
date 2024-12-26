@@ -55,7 +55,7 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
             const otherMember = getOtherMember(conversation);
             return {
                 id: conversation.id,
-                username: otherMember?.userName || "Utilisateur inconnu",
+                username: otherMember?.username || "Utilisateur inconnu",
                 imageUrl: otherMember?.imageUrl || "",
                 lastMessageSender: lastMessage.sent_by || "Inconnu",
                 lastMessageContent: lastMessage.content || "",
@@ -107,7 +107,7 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
                     setFilteredItems={setFilteredConversations}
                     getLabel={(conversation) => {
                         const otherMember = getOtherMember(conversation);
-                        return otherMember?.userName || '';
+                        return otherMember?.username || '';
                     }}
                     resetItems={resetSearchBarConversations}
                 />

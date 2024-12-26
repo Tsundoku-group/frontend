@@ -15,7 +15,7 @@ import {ShowToast} from "@/components/ShowToast";
 
 type Friend = {
     id: string;
-    userName: string;
+    username: string;
     email: string;
     imageUrl?: string;
 };
@@ -82,7 +82,7 @@ const FriendsPage = React.memo(() => {
                         placeholder="Rechercher un(e) ami(e)..."
                         items={friendList}
                         setFilteredItems={setFilteredFriends}
-                        getLabel={(friend) => friend.userName || friend.email}
+                        getLabel={(friend) => friend.username || friend.email}
                         resetItems={resetSearchBarFriends}
                     />
                     {loading ? (

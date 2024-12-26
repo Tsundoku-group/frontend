@@ -20,6 +20,7 @@ import {useMutationState} from "@/hooks/useMutationState";
 import {useProfileContext} from "@/context/profileContext";
 import {Profile} from "@/models/Profile";
 import {
+    fetchActiveProfilePicture, fetchActiveProfilePictureUrl,
     fetchUploadImageProfile,
     fetchUserProfileData,
     updateUserProfileData,
@@ -66,6 +67,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name, onPreviewComplete}: P
     const [preview, setPreview] = useState<string>(imageUrl);
     const [tempPreview, setTempPreview] = useState<string | null>(imageUrl);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [currentAvatar, setCurrentAvatar] = useState<string>(imageUrl || '');
     const [type] = useState<string>("profile");
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id as string;
@@ -75,6 +77,33 @@ const ProfilePictureSection = React.memo(({imageUrl, name, onPreviewComplete}: P
 
     const {user} = useAuthContext();
     const userId = user?.userId as string;
+
+    useEffect(() => {
+        const handleActiveProfilePicture = async () => {
+            try {
+                if (imageUrl) {
+
+                    const response = await fetchActiveProfilePictureUrl(userId, profileId, type);
+
+                    console.log(response);
+                    const folderRef = ref(storage, `profilePictures/${profileId}`);
+                    const result = await listAll(folderRef);
+
+                    if (result.items.length > 0) {
+                        const url = await getDownloadURL(result.items[0]);
+
+                        setCurrentAvatar(url);
+                    } else {
+                        setCurrentAvatar(imageUrl);
+                    }
+                }
+            } catch (error) {
+                setCurrentAvatar(imageUrl);
+            }
+        };
+
+        handleActiveProfilePicture();
+    }, [imageUrl, profileId]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -142,6 +171,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name, onPreviewComplete}: P
 
             ShowToast('default', 'Ta photo de profil a bien été téléchargée !');
             setPreview(data.url);
+            setCurrentAvatar(data.url);
             onPreviewComplete(data.url);
             setIsDialogOpen(false);
         } catch (error) {
@@ -264,9 +294,6 @@ const ProfilePictureSection = React.memo(({imageUrl, name, onPreviewComplete}: P
                         <AlertDialogContent className="max-w-4xl w-full bg-tertiary-black border-none max-h-[80vh] overflow-y-auto">
                             <AlertDialogHeader>
                                 <AlertDialogTitle>Toutes les images</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Cliquez sur ✕ pour supprimer une image.
-                                </AlertDialogDescription>
                             </AlertDialogHeader>
                             <div className="grid grid-cols-4 gap-2 mt-4">
                                 {images.map((url, index) => (
@@ -306,7 +333,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name, onPreviewComplete}: P
             <div className="w-1/4 flex flex-col items-center space-y-3">
                 <h4 className="text-base font-semibold mb-2">Photo de profil</h4>
                 <Avatar className="w-40 h-40">
-                    <AvatarImage src={preview} alt={`Avatar de ${name}`}/>
+                    <AvatarImage src={currentAvatar || preview} alt={`Avatar de ${name}`} />
                     <AvatarFallback>
                         150 x150
                     </AvatarFallback>
@@ -352,7 +379,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name, onPreviewComplete}: P
                                 />
                             ) : (
                                 <Avatar className="w-40 h-40">
-                                    <AvatarImage src={preview} alt={`Avatar de ${name}`}/>
+                                    <AvatarImage src={currentAvatar || preview} alt={`Avatar de ${name}`}/>
                                     <AvatarFallback>
                                         150 x150
                                     </AvatarFallback>

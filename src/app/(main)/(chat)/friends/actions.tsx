@@ -6,7 +6,7 @@ const symfonyUrl = process.env.SYMFONY_URL;
 
 interface Friend {
     id: string;
-    userName: string;
+    username: string;
     email: string;
     imageUrl?: string;
 }

@@ -49,7 +49,7 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
         return participants.find(participant => participant.email !== userEmail);
     }, [participants, userEmail]);
 
-    const otherParticipantName = otherParticipant?.userName || "";
+    const otherParticipantName = otherParticipant?.username || "";
     const fetchData = useCallback(async () => {
         setState(prev => ({...prev, loading: true}));
 
@@ -112,7 +112,7 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
         markUnreadMessagesAsRead();
 
     }, [socket, messages, conversationId, otherParticipant, user?.userId]);
-
+    
     return (
         <div className="ml-80">
             <ConversationContainer>

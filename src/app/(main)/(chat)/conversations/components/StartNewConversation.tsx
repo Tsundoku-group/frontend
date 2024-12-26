@@ -25,7 +25,7 @@ import {ChatConversation} from "@/models/ChatConversation";
 
 type Friend = {
     id: string;
-    userName: string;
+    username: string;
     imageUrl?: string;
     email: string;
 };
@@ -73,7 +73,7 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
 
             const newConversation: ChatConversation = {
                 id: response.conversationId,
-                participants: [{ id: friendId, userName: selectedFriend.userName, email: selectedFriend.email }],
+                participants: [{ id: friendId, username: selectedFriend.username, email: selectedFriend.email }],
                 isArchived: false,
                 isMutedUntil: null,
             };
@@ -155,12 +155,12 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
                                 >
                                     <Avatar className="w-8 h-8 mr-4">
                                         <AvatarImage src={friend.imageUrl || "/default-avatar.png"}
-                                                     alt={friend.userName}/>
-                                        <AvatarFallback>{friend.userName.charAt(0)}</AvatarFallback>
+                                                     alt={friend.username}/>
+                                        <AvatarFallback>{friend.username.charAt(0)}</AvatarFallback>
                                     </Avatar>
 
                                     <div className="flex flex-col">
-                                        <span className="text-sm font-medium">{friend.userName}</span>
+                                        <span className="text-sm font-medium">{friend.username}</span>
                                         <span className="text-xs text-gray-500">{friend.email}</span>
                                     </div>
 

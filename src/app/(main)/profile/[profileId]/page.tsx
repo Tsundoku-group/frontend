@@ -8,7 +8,7 @@ import { Profile } from "@/models/Profile";
 import { fetchUserProfile } from "@/app/(main)/profile/[profileId]/actions";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
-import {useProfile} from "@/context/profileContext";
+import {useProfileContext} from "@/context/profileContext";
 
 type Props = {
     params: {
@@ -19,7 +19,7 @@ type Props = {
 const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
     const queryClient = useQueryClient();
     const router = useRouter();
-    const {activeProfileInStorage} = useProfile();
+    const {activeProfileInStorage} = useProfileContext();
 
     useEffect(() => {
         if (activeProfileInStorage?.id && activeProfileInStorage.id.toString() !== profileId) {

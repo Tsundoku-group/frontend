@@ -27,6 +27,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
 
         try {
             const data: ChatConversation[] = await fetchUserConversations(userId);
+
             setConversations(data);
             setAllConversations(data);
 
@@ -120,7 +121,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
 
             return {
                 id: conversation.id,
-                username: otherMember?.userName || "Utilisateur inconnu",
+                username: otherMember?.username || "Utilisateur inconnu",
                 imageUrl: otherMember?.imageUrl || "",
                 lastMessageSender: lastMessage.sent_by,
                 lastMessageContent: lastMessage.content || "",
@@ -154,7 +155,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                         setFilteredItems={setConversations}
                         getLabel={(conversation) => {
                             const otherMember = getOtherMember(conversation);
-                            return otherMember?.userName || '';
+                            return otherMember?.username || '';
                         }}
                         resetItems={resetSearchBarConversations}
                     />

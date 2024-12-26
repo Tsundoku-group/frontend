@@ -41,12 +41,12 @@ export const fetchOneConversationById = async (conversationId: string): Promise<
         if (data && data.participants && Array.isArray(data.participants)) {
             return data.participants.map((participant: {
                 id: any;
-                userName: any;
+                username: any;
                 email: any;
                 imageUrl: any;
             }) => ({
                 id: participant.id,
-                userName: participant.userName,
+                username: participant.username,
                 email: participant.email,
                 imageUrl: participant.imageUrl,
             }));

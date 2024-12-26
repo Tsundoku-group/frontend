@@ -34,8 +34,7 @@ const FriendsList = ({ friends, loading, onStartConversation }: Props) => {
                             </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col truncate">
-                            <h4 className="truncate">{friend.username}</h4>
-                            <p className="text-xs text-muted-foreground truncate">{friend.email}</p>
+                            <p className="truncate">{friend.username}</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
