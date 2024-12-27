@@ -1,11 +1,22 @@
+"use client";
+
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Facebook, Instagram, Twitter, User } from "lucide-react";
-import {Profile} from "@/models/Profile";
-import {useProfileContext} from "@/context/profileContext";
+import {Facebook, Instagram, Twitter, User, ZoomIn} from "lucide-react";
+import { Profile } from "@/models/Profile";
+import { useProfileContext } from "@/context/profileContext";
+import {
+    Dialog,
+    DialogContent,
+    DialogTrigger,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 const ProfileHeader: React.FC<Profile> = React.memo(({firstName, lastName, username, coverUrl, friendsCount, followersCount, bio, x, instagram, facebook}) => {
     const { activeProfileInStorage, profileImageUrls } = useProfileContext();
+
+    const profileImageUrl = profileImageUrls[activeProfileInStorage?.id || ''] || '';
 
     return (
         <div className="max-w-6xl mx-auto relative">
@@ -34,16 +45,38 @@ const ProfileHeader: React.FC<Profile> = React.memo(({firstName, lastName, usern
 
                     <div className="flex items-center justify-center relative z-10">
                         <div className="w-32 h-32 bg-gray-900 rounded-full flex items-center justify-center">
-                            <Avatar className="w-28 h-28 border-white rounded-full">
-                                <AvatarImage
-                                    src={profileImageUrls[activeProfileInStorage?.id || ''] || ''}
-                                    alt={activeProfileInStorage?.username || "Profile Image"}
-                                    className="object-cover object-center"
-                                />
-                                <AvatarFallback>
-                                    <User className="w-6 h-6 text-gray-500" />
-                                </AvatarFallback>
-                            </Avatar>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <div className="relative group cursor-pointer">
+                                        <Avatar className="w-28 h-28 border-white rounded-full">
+                                            <AvatarImage
+                                                src={profileImageUrl}
+                                                alt={activeProfileInStorage?.username || "Profile Image"}
+                                                className="object-cover object-center"
+                                            />
+                                            <AvatarFallback>
+                                                <User className="w-6 h-6 text-gray-500" />
+                                            </AvatarFallback>
+                                        </Avatar>
+
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+                                            <span className="text-white text-lg font-semibold"><ZoomIn /></span>
+                                        </div>
+                                    </div>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Photo de profil</DialogTitle>
+                                    </DialogHeader>
+                                    <div className="flex justify-center">
+                                        <img
+                                            src={profileImageUrl}
+                                            alt="Profile Image"
+                                            className="w-auto max-w-full max-h-[80vh] object-contain rounded-lg shadow-lg"
+                                        />
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </div>
 
