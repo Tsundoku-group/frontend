@@ -46,3 +46,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-39] Ajout des photos profil [#39](https://trello.com/c/dPKFZHk8/39-t-39-ajout-des-photos-profil-et-couverture)
 - [t-41] Adaptation car changement dans symfony [#41](https://trello.com/c/2iZSWvfO/41-t-41-adaptation-car-changement-dans-symfony)
 - [t-40] Afficher la photo de profil [#40](https://trello.com/c/abjrqxE3/40-t-40-afficher-la-photo-de-profil)
+- [t-42] Ajout de fonctionnalités sur l'image profile [#42](https://trello.com/c/erO3vm8Z/42-t-42-ajout-de-fonctionnalit%C3%A9s-sur-limage)
