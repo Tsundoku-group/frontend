@@ -20,7 +20,6 @@ import {useMutationState} from "@/hooks/useMutationState";
 import {useProfileContext} from "@/context/profileContext";
 import {Profile} from "@/models/Profile";
 import {
-    fetchActiveProfilePicture, fetchActiveProfilePictureUrl,
     fetchUploadImageProfile,
     fetchUserProfileData,
     updateUserProfileData,
@@ -31,6 +30,12 @@ import {useAuthContext} from "@/context/authContext";
 import {ShowToast} from "@/components/ShowToast";
 import {storage} from "../../../../../firebaseConfig";
 import {deleteObject, getDownloadURL, listAll, ref} from "@firebase/storage";
+
+interface ImageProps {
+    currentAvatar: string | null;
+    preview: string | null;
+    name: string;
+}
 
 type ProfilePictureSectionProps = {
     imageUrl: string;
@@ -61,361 +66,359 @@ function FormField({label, children, error}: { label: string; children: React.Re
     );
 }
 
-const ProfilePictureSection = React.memo(({imageUrl, name, onPreviewComplete}: ProfilePictureSectionProps) => {
-    const [uploading, setUploading] = useState<boolean>(false);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [preview, setPreview] = useState<string>(imageUrl);
-    const [tempPreview, setTempPreview] = useState<string | null>(imageUrl);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [currentAvatar, setCurrentAvatar] = useState<string>(imageUrl || '');
-    const [type] = useState<string>("profile");
-    const {activeProfileInStorage} = useProfileContext();
-    const profileId = activeProfileInStorage?.id as string;
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isDeleting, setIsDeleting] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    const {user} = useAuthContext();
-    const userId = user?.userId as string;
+const ImageFromLocalStorage: React.FC<ImageProps> = ({currentAvatar, preview, name}) => {
+    const {activeProfileInStorage, profileImageUrls} = useProfileContext();
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        const handleActiveProfilePicture = async () => {
-            try {
-                if (imageUrl) {
+        setIsLoading(false);
+    }, [profileImageUrls]);
 
-                    const response = await fetchActiveProfilePictureUrl(userId, profileId, type);
+    return (
+        <div className="flex flex-col items-center space-y-3">
+            <h4 className="text-base font-semibold mb-2">Photo de profil</h4>
+            <Avatar className="w-40 h-40">
+                {isLoading ? (
+                    <AvatarFallback><Loader2 className="h-5 w-5 animate-spin"/></AvatarFallback>
+                ) : (
+                    <>
+                        <AvatarImage
+                            src={profileImageUrls[activeProfileInStorage?.id || ''] || preview || currentAvatar || ''}
+                            alt={activeProfileInStorage?.username || "Profile Image"}
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = '';
+                            }}
+                            className="object-cover object-center"
+                        />
+                        <AvatarFallback>150 x150</AvatarFallback>
+                    </>
+                )}
+            </Avatar>
+        </div>
+    );
+};
 
-                    console.log(response);
-                    const folderRef = ref(storage, `profilePictures/${profileId}`);
-                    const result = await listAll(folderRef);
+const ProfilePictureSection = React.memo(({imageUrl, name, onPreviewComplete}: ProfilePictureSectionProps) => {
+        const [uploading, setUploading] = useState<boolean>(false);
+        const [isDialogOpen, setIsDialogOpen] = useState(false);
+        const [preview, setPreview] = useState<string>(imageUrl);
+        const [tempPreview, setTempPreview] = useState<string | null>(imageUrl);
+        const [selectedFile, setSelectedFile] = useState<File | null>(null);
+        const [currentAvatar, setCurrentAvatar] = useState<string>(imageUrl || '');
+        const [type] = useState<string>("profile");
+        const [isLoading, setIsLoading] = useState<boolean>(false);
+        const [isDeleting, setIsDeleting] = useState<boolean>(false);
+        const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-                    if (result.items.length > 0) {
-                        const url = await getDownloadURL(result.items[0]);
+        const {user} = useAuthContext();
+        const userId = user?.userId as number;
+        const {activeProfileInStorage, refreshProfileImage} = useProfileContext();
+        const profileId = activeProfileInStorage?.id as string;
 
-                        setCurrentAvatar(url);
-                    } else {
-                        setCurrentAvatar(imageUrl);
-                    }
-                }
-            } catch (error) {
-                setCurrentAvatar(imageUrl);
-            }
-        };
+        const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
 
-        handleActiveProfilePicture();
-    }, [imageUrl, profileId]);
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const allowedTypes = ["image/jpeg", "image/png"];
-        if (!allowedTypes.includes(file.type)) {
-            setErrorMessage("Seuls les fichiers JPEG et PNG sont acceptés.");
-            return;
-        }
-
-        const maxSize = 2 * 1024 * 1024; // 2 Mo
-        if (file.size > maxSize) {
-            setErrorMessage("Le fichier est trop volumineux. Taille maximale : 2 Mo.");
-            return;
-        }
-
-        const tempUrl = URL.createObjectURL(file);
-        setTempPreview(tempUrl);
-        setSelectedFile(file);
-        setErrorMessage(null);
-    };
-
-    const handleUpload = async () => {
-        if (!selectedFile) {
-            ShowToast("destructive", "Veuillez sélectionner une photo avant de confirmer.", "Erreur");
-            return;
-        }
-
-        setIsLoading(true);
-        setErrorMessage(null);
-
-        try {
-            setUploading(true);
-
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            formData.append('filename', selectedFile.name);
-            formData.append('profileId', profileId);
-            formData.append('type', type);
-
-            const apiResponse = await fetch('/api/uploadImage', {
-                method: 'POST',
-                body: formData,
-            });
-            if (409 === apiResponse.status) {
-                const errorData = await apiResponse.json();
-                setErrorMessage(errorData.error || 'L\'image existe déjà.');
-                setUploading(false);
+            const allowedTypes = ["image/jpeg", "image/png"];
+            if (!allowedTypes.includes(file.type)) {
+                setErrorMessage("Seuls les fichiers JPEG et PNG sont acceptés.");
                 return;
             }
 
-            if (!apiResponse.ok) {
-                throw new Error('Erreur lors du téléversement vers Firebase.');
+            const maxSize = 2 * 1024 * 1024; // 2 Mo
+            if (file.size > maxSize) {
+                setErrorMessage("Le fichier est trop volumineux. Taille maximale : 2 Mo.");
+                return;
             }
 
-            const data = await apiResponse.json();
+            const tempUrl = URL.createObjectURL(file);
+            setTempPreview(tempUrl);
+            setSelectedFile(file);
+            setErrorMessage(null);
+        };
 
-            const url = data.url;
-            const symfonyResponse = await fetchUploadImageProfile(userId, profileId, url, type);
-
-            if (!symfonyResponse) {
-                throw new Error('Erreur lors de la sauvegarde dans la BDD Symfony.');
+        const handleUpload = async () => {
+            if (!selectedFile) {
+                ShowToast("destructive", "Veuillez sélectionner une photo avant de confirmer.", "Erreur");
+                return;
             }
 
-            ShowToast('default', 'Ta photo de profil a bien été téléchargée !');
-            setPreview(data.url);
-            setCurrentAvatar(data.url);
-            onPreviewComplete(data.url);
-            setIsDialogOpen(false);
-        } catch (error) {
-            setErrorMessage('Une erreur est survenue lors du téléversement.');
-        } finally {
-            setUploading(false);
-            setIsLoading(false);
-        }
-    };
+            setIsLoading(true);
+            setErrorMessage(null);
 
-    function handleCancelUpdatePicture() {
-        setTempPreview(null);
-        setSelectedFile(null);
-        setErrorMessage(null);
-        setPreview(imageUrl);
-        setIsDialogOpen(false);
-    }
-
-    const UploadedImagesList = ({profileId}: { profileId: string }) => {
-        const [images, setImages] = useState<string[]>([]);
-        const [isLoading, setIsLoading] = useState<boolean>(false);
-        const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-        const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-        useEffect(() => {
-            const fetchImages = async () => {
-                if (!profileId) return;
-
-                try {
-                    setIsLoading(true);
-                    setErrorMessage(null);
-
-                    const folderRef = ref(storage, `profilePictures/${profileId}`);
-                    const result = await listAll(folderRef);
-
-                    const urls = await Promise.all(
-                        result.items.map(async (item) => {
-                            return await getDownloadURL(item);
-                        })
-                    );
-
-                    setImages(urls);
-                } catch (error) {
-                    ShowToast("destructive", "Impossible de charger les photo de profils", "Erreur");
-                } finally {
-                    setIsLoading(false);
-                }
-            }
-
-            fetchImages();
-        }, [profileId]);
-
-        const handleDeleteImage = async (url: string) => {
             try {
-                setIsDeleting(true);
+                setUploading(true);
 
-                const path = decodeURIComponent(new URL(url).pathname.split("/o/")[1].split("?")[0]);
-                const imageRef = ref(storage, path);
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('filename', selectedFile.name);
+                formData.append('profileId', profileId);
+                formData.append('type', type);
 
-                await deleteObject(imageRef);
+                const apiResponse = await fetch('/api/uploadImage', {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (409 === apiResponse.status) {
+                    const errorData = await apiResponse.json();
+                    setErrorMessage(errorData.error || 'L\'image existe déjà.');
+                    setUploading(false);
+                    return;
+                }
 
-                setImages((prevImages) => prevImages.filter((img) => img !== url));
-                ShowToast("default", "Image supprimée");
+                if (!apiResponse.ok) {
+                    throw new Error('Erreur lors du téléversement vers Firebase.');
+                }
+
+                const data = await apiResponse.json();
+
+                const url = data.url;
+                const symfonyResponse = await fetchUploadImageProfile(userId, profileId, url, type);
+
+                if (!symfonyResponse) {
+                    throw new Error('Erreur lors de la sauvegarde dans la BDD Symfony.');
+                }
+
+                localStorage.removeItem(`profile-image-${profileId}`);
+
+                ShowToast('default', 'Ta photo de profil a bien été téléchargée !');
+                setPreview(data.url);
+                setCurrentAvatar(data.url);
+                onPreviewComplete(data.url);
+                refreshProfileImage(profileId)
+                setIsDialogOpen(false);
             } catch (error) {
-                ShowToast("destructive", "Impossible de supprimer l'image.", "Erreur");
+                setErrorMessage('Une erreur est survenue lors du téléversement.');
             } finally {
-                setIsDeleting(false);
+                setUploading(false);
+                setIsLoading(false);
             }
         };
-        const displayedImages = images.slice(0, 4);
+
+        function handleCancelUpdatePicture() {
+            setTempPreview(null);
+            setSelectedFile(null);
+            setErrorMessage(null);
+            setPreview(imageUrl);
+            setIsDialogOpen(false);
+        }
+
+        const UploadedImagesList = ({profileId}: { profileId: string }) => {
+            const [images, setImages] = useState<string[]>([]);
+            const [isLoading, setIsLoading] = useState<boolean>(false);
+            const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+            const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+            useEffect(() => {
+                const fetchImages = async () => {
+                    if (!profileId) return;
+
+                    try {
+                        setIsLoading(true);
+                        setErrorMessage(null);
+
+                        const folderRef = ref(storage, `profilePictures/${profileId}`);
+                        const result = await listAll(folderRef);
+
+                        const urls = await Promise.all(
+                            result.items.map(async (item) => {
+                                return await getDownloadURL(item);
+                            })
+                        );
+
+                        setImages(urls);
+                    } catch (error) {
+                        ShowToast("destructive", "Impossible de charger les photo de profils", "Erreur");
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }
+
+                fetchImages();
+            }, [profileId]);
+
+            const handleDeleteImage = async (url: string) => {
+                try {
+                    setIsDeleting(true);
+
+                    const path = decodeURIComponent(new URL(url).pathname.split("/o/")[1].split("?")[0]);
+                    const imageRef = ref(storage, path);
+
+                    await deleteObject(imageRef);
+
+                    setImages((prevImages) => prevImages.filter((img) => img !== url));
+                    ShowToast("default", "Image supprimée");
+                } catch (error) {
+                    ShowToast("destructive", "Impossible de supprimer l'image.", "Erreur");
+                } finally {
+                    setIsDeleting(false);
+                }
+            };
+            const displayedImages = images.slice(0, 4);
+
+            return (
+                <div className="mt-4">
+                    <div className="text-lg font-semibold mb-3">Images téléchargées</div>
+
+                    {isLoading ? (
+                        <div className="flex justify-center py-4">
+                            <Loader2 className="h-5 w-5 animate-spin text-black"/>
+                        </div>
+                    ) : null}
+
+                    {errorMessage && (<p className="text-gray-500 text-sm">{errorMessage}</p>)}
+
+                    {!isLoading && images.length === 0 && <p>Aucune image trouvée.</p>}
+
+                    <div className="grid grid-cols-4 gap-2 mt-4">
+                        {displayedImages.map((url, index) => (
+                            <div key={index} className="relative flex items-center justify-center">
+                                <img
+                                    src={url}
+                                    alt={`Image ${index + 1}`}
+                                    className="w-24 h-24 rounded-md object-cover border border-gray-300"
+                                    onError={(e) => {
+                                        e.currentTarget.src =
+                                            "https://via.placeholder.com/150?text=Image+invalide";
+                                    }}
+                                />
+                                <button
+                                    onClick={() => handleDeleteImage(url)}
+                                    className="absolute top-1 right-5 bg-gray-500 text-white p-1 rounded-full text-xs hover:bg-red-highlight focus:outline-none"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
+
+                        {images.length > 4 && (
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="col-span-4 text-blue-500 hover:underline mt-2"
+                            >
+                                Voir plus
+                            </button>
+                        )}
+                    </div>
+
+                    {isModalOpen ? (
+                        <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                            <AlertDialogOverlay/>
+                            <AlertDialogContent
+                                className="max-w-4xl w-full bg-tertiary-black border-none max-h-[80vh] overflow-y-auto">
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Toutes les images</AlertDialogTitle>
+                                </AlertDialogHeader>
+                                <div className="grid grid-cols-4 gap-2 mt-4">
+                                    {images.map((url, index) => (
+                                        <div key={index} className="relative flex items-center justify-center">
+                                            <img
+                                                src={url}
+                                                alt={`Image ${index + 1}`}
+                                                className="w-24 h-24 rounded-md object-cover border border-gray-300"
+                                                onError={(e) => {
+                                                    e.currentTarget.src =
+                                                        "https://via.placeholder.com/150?text=Image+invalide";
+                                                }}
+                                            />
+                                            <button
+                                                onClick={() => handleDeleteImage(url)}
+                                                className="absolute top-1 right-12 bg-gray-500 text-white p-1 rounded-full text-xs hover:bg-red-highlight focus:outline-none"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <AlertDialogFooter>
+                                    <Button variant="outline" onClick={() => setIsModalOpen(false)}
+                                            className="bg-gray-500 border-none">
+                                        Fermer
+                                    </Button>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    ) : null}
+                </div>
+            );
+        };
 
         return (
-            <div className="mt-4">
-                <div className="text-lg font-semibold mb-3">Images téléchargées</div>
-
-                {isLoading ? (
-                    <div className="flex justify-center py-4">
-                        <Loader2 className="h-5 w-5 animate-spin text-black"/>
-                    </div>
-                ) : null}
-
-                {errorMessage && (<p className="text-gray-500 text-sm">{errorMessage}</p>)}
-
-                {!isLoading && images.length === 0 && <p>Aucune image trouvée.</p>}
-
-                <div className="grid grid-cols-4 gap-2 mt-4">
-                    {displayedImages.map((url, index) => (
-                        <div key={index} className="relative flex items-center justify-center">
-                            <img
-                                src={url}
-                                alt={`Image ${index + 1}`}
-                                className="w-24 h-24 rounded-md object-cover border border-gray-300"
-                                onError={(e) => {
-                                    e.currentTarget.src =
-                                        "https://via.placeholder.com/150?text=Image+invalide";
-                                }}
-                            />
-                            <button
-                                onClick={() => handleDeleteImage(url)}
-                                className="absolute top-1 right-5 bg-gray-500 text-white p-1 rounded-full text-xs hover:bg-red-highlight focus:outline-none"
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    ))}
-
-                    {images.length > 4 && (
-                        <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="col-span-4 text-blue-500 hover:underline mt-2"
-                        >
-                            Voir plus
-                        </button>
-                    )}
-                </div>
-
-                {isModalOpen ? (
-                    <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                        <AlertDialogOverlay />
-                        <AlertDialogContent className="max-w-4xl w-full bg-tertiary-black border-none max-h-[80vh] overflow-y-auto">
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Toutes les images</AlertDialogTitle>
-                            </AlertDialogHeader>
-                            <div className="grid grid-cols-4 gap-2 mt-4">
-                                {images.map((url, index) => (
-                                    <div key={index} className="relative flex items-center justify-center">
-                                        <img
-                                            src={url}
-                                            alt={`Image ${index + 1}`}
-                                            className="w-24 h-24 rounded-md object-cover border border-gray-300"
-                                            onError={(e) => {
-                                                e.currentTarget.src =
-                                                    "https://via.placeholder.com/150?text=Image+invalide";
-                                            }}
-                                        />
-                                        <button
-                                            onClick={() => handleDeleteImage(url)}
-                                            className="absolute top-1 right-12 bg-gray-500 text-white p-1 rounded-full text-xs hover:bg-red-highlight focus:outline-none"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                            <AlertDialogFooter>
-                                <Button variant="outline" onClick={() => setIsModalOpen(false)} className="bg-gray-500 border-none">
-                                    Fermer
-                                </Button>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                ) : null}
-            </div>
-        );
-    };
-
-    return (
-        <>
-            <div className="w-1/4 flex flex-col items-center space-y-3">
-                <h4 className="text-base font-semibold mb-2">Photo de profil</h4>
-                <Avatar className="w-40 h-40">
-                    <AvatarImage src={currentAvatar || preview} alt={`Avatar de ${name}`} />
-                    <AvatarFallback>
-                        150 x150
-                    </AvatarFallback>
-                </Avatar>
-
-                <label htmlFor="profile-upload" className="cursor-pointer">
+            <>
+                <div className="flex flex-col items-center">
+                    <ImageFromLocalStorage currentAvatar={currentAvatar} preview={preview} name={name}/>
                     <Button
-                        className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md"
+                        className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md mt-4"
                         onClick={() => setIsDialogOpen(true)}
                     >
                         Modifier
                     </Button>
-                </label>
-            </div>
+                </div>
 
-            <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <AlertDialogOverlay/>
-                <AlertDialogContent className="max-w-2xl w-full bg-tertiary-black border-none">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Changer la photo de Profil</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Voulez-vous vraiment changer votre photo de profil ?
-                        </AlertDialogDescription>
-                        {errorMessage && (
-                            <Alert variant="destructive" className="border-red-500 text-red-500 mt-4">
-                                <AlertCircle className="h-4 w-4 text-red-500"/>
-                                <AlertDescription>{errorMessage}</AlertDescription>
-                            </Alert>
-                        )}
-
-                        {isLoading ? (
-                            <div className="flex justify-center py-4">
-                                <Loader2 className="h-5 w-5 animate-spin text-black"/>
-                            </div>
-                        ) : null}
-
-                        <div className="flex flex-col items-center space-y-3 mb-4">
-                            {tempPreview ? (
-                                <img
-                                    src={tempPreview}
-                                    alt="Nouvelle prévisualisation"
-                                    className="w-32 h-32 rounded-full object-cover border border-gray-300"
-                                />
-                            ) : (
-                                <Avatar className="w-40 h-40">
-                                    <AvatarImage src={currentAvatar || preview} alt={`Avatar de ${name}`}/>
-                                    <AvatarFallback>
-                                        150 x150
-                                    </AvatarFallback>
-                                </Avatar>
+                <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <AlertDialogOverlay/>
+                    <AlertDialogContent className="max-w-2xl w-full bg-tertiary-black border-none">
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Changer la photo de Profil</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Voulez-vous vraiment changer votre photo de profil ?
+                            </AlertDialogDescription>
+                            {errorMessage && (
+                                <Alert variant="destructive" className="border-red-500 text-red-500 mt-4">
+                                    <AlertCircle className="h-4 w-4 text-red-500"/>
+                                    <AlertDescription>{errorMessage}</AlertDescription>
+                                </Alert>
                             )}
-                        </div>
 
-                        <UploadedImagesList profileId={profileId}/>
+                            {isLoading ? (
+                                <div className="flex justify-center py-4">
+                                    <Loader2 className="h-5 w-5 animate-spin text-black"/>
+                                </div>
+                            ) : null}
 
-                        <Input
-                            id="profile-upload"
-                            type="file"
-                            accept="image/jpeg, image/png, image/jpg"
-                            onChange={handleFileChange}
-                        />
-                        <div>Recommandé: La taille de l&apos;image doit faire <strong>150x150</strong></div>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <Button variant="outline" onClick={handleCancelUpdatePicture} className="mr-2 bg-gray-500 border-none">
-                            Annuler
-                        </Button>
-                        <label htmlFor="profile-upload" className="cursor-pointer">
-                            <Button
-                                className="bg-purple-highlight hover:bg-purple-700 text-white"
-                                disabled={uploading}
-                                onClick={handleUpload}
-                            >
-                                Confirmer
+                            <div className="flex flex-col items-center space-y-3 mb-4">
+                                {tempPreview ? (
+                                    <Avatar className="w-32 h-32">
+                                        <AvatarImage src={tempPreview} className="object-cover object-center"/>
+                                        <AvatarFallback />
+                                    </Avatar>
+                                ) : (
+                                    <ImageFromLocalStorage currentAvatar={currentAvatar} preview={preview} name={name}/>
+                                )}
+                            </div>
+
+                            <UploadedImagesList profileId={profileId}/>
+
+                            <Input
+                                id="profile-upload"
+                                type="file"
+                                accept="image/jpeg, image/png, image/jpg"
+                                onChange={handleFileChange}
+                            />
+                            <div>Recommandé: La taille de l&apos;image doit faire <strong>150x150</strong></div>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <Button variant="outline" onClick={handleCancelUpdatePicture}
+                                    className="mr-2 bg-gray-500 border-none">
+                                Annuler
                             </Button>
-                        </label>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </>
-    );
-});
+                            <label htmlFor="profile-upload" className="cursor-pointer">
+                                <Button
+                                    className="bg-purple-highlight hover:bg-purple-700 text-white"
+                                    disabled={uploading}
+                                    onClick={handleUpload}
+                                >
+                                    Confirmer
+                                </Button>
+                            </label>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </>
+        );
+    })
+;
 
 ProfilePictureSection.displayName = "ProfilePictureSection";
 

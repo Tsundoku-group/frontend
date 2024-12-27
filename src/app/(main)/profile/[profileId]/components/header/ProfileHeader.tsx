@@ -2,8 +2,11 @@ import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Facebook, Instagram, Twitter, User } from "lucide-react";
 import {Profile} from "@/models/Profile";
+import {useProfileContext} from "@/context/profileContext";
 
-const ProfileHeader: React.FC<Profile> = React.memo(({firstName, lastName, username, avatarUrl, coverUrl, friendsCount, followersCount, bio, x, instagram, facebook}) => {
+const ProfileHeader: React.FC<Profile> = React.memo(({firstName, lastName, username, coverUrl, friendsCount, followersCount, bio, x, instagram, facebook}) => {
+    const { activeProfileInStorage, profileImageUrls } = useProfileContext();
+
     return (
         <div className="max-w-6xl mx-auto relative">
             <div className="bg-gray-900 rounded-t-2xl text-white shadow-lg overflow-hidden">
@@ -32,9 +35,13 @@ const ProfileHeader: React.FC<Profile> = React.memo(({firstName, lastName, usern
                     <div className="flex items-center justify-center relative z-10">
                         <div className="w-32 h-32 bg-gray-900 rounded-full flex items-center justify-center">
                             <Avatar className="w-28 h-28 border-white rounded-full">
-                                <AvatarImage src={avatarUrl} alt={firstName}/>
+                                <AvatarImage
+                                    src={profileImageUrls[activeProfileInStorage?.id || ''] || ''}
+                                    alt={activeProfileInStorage?.username || "Profile Image"}
+                                    className="object-cover object-center"
+                                />
                                 <AvatarFallback>
-                                    <User/>
+                                    <User className="w-6 h-6 text-gray-500" />
                                 </AvatarFallback>
                             </Avatar>
                         </div>
