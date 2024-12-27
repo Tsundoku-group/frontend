@@ -1,6 +1,6 @@
 'use server';
 
-import { fetchWithAuth } from "@/services/fetchWithAuth";
+import {fetchWithAuth} from "@/services/fetchWithAuth";
 import {Profile, ProfilePicture} from "@/models/Profile";
 
 const symfonyUrl = process.env.SYMFONY_URL;
@@ -44,15 +44,15 @@ export async function updateUserProfileData(profileId: string, profileData: Part
     }
 }
 
-export async function fetchActiveProfilePictureUrl(userId: string, profileId: string, type: string): Promise<ProfilePicture> {
+export async function fetchActiveProfilePictureUrl(profileId: string): Promise<ProfilePicture> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/get-active-photo`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/get-active-photo/${profileId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             }
         });
-        console.log(response)
+        console.log('response :', response)
         if (!response.response || 200 !== response.status) {
             throw new Error('Invalid response from the server');
         }
@@ -63,7 +63,7 @@ export async function fetchActiveProfilePictureUrl(userId: string, profileId: st
     }
 }
 
-export async function fetchUploadImageProfile(userId: string, profileId: string, imageUrl: string, type: string): Promise<ProfilePicture> {
+export async function fetchUploadImageProfile(userId: number, profileId: string, imageUrl: string, type: string): Promise<ProfilePicture> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/add-photo`, {
             method: 'POST',
@@ -79,6 +79,6 @@ export async function fetchUploadImageProfile(userId: string, profileId: string,
 
         return response.data as ProfilePicture;
     } catch (error) {
-        throw new Error( 'Failed to fetch upload image');
+        throw new Error('Failed to fetch upload image');
     }
 }

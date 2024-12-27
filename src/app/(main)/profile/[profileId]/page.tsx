@@ -45,7 +45,6 @@ const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
                     firstName={profile.firstName}
                     lastName={profile.lastName}
                     username={profile.username}
-                    avatarUrl="https://github.com/shadcn.png"
                     friendsCount={142}
                     followersCount={503}
                     bio={profile.bio}

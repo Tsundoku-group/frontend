@@ -15,6 +15,7 @@ import {truncateString} from "@/utils/string-utils";
 import {ShowToast} from "@/components/ShowToast";
 import AddProfileButton from "@/components/AddProfileButton";
 import {useProfileContext} from "@/context/profileContext";
+import {getProfileImageUrl} from "@/utils/profileImageUtils";
 
 type UserProfile = {
     id: number;
@@ -31,8 +32,8 @@ function CustomDropDown(props: {
     setIsDropdownOpen: (isOpen: boolean) => void;
 }) {
     const {dropdownContent, firstName, lastName, status, isDropdownOpen, setIsDropdownOpen} = props;
-
     const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+    const {profileImageUrls, activeProfileInStorage} = useProfileContext();
 
     return (
         <DropdownMenu>
@@ -40,9 +41,13 @@ function CustomDropDown(props: {
                 <div className="flex items-center bg-tertiary-black p-2 rounded-lg cursor-pointer relative">
                     <div className="relative">
                         <Avatar>
-                            <AvatarImage src="https://github.com/shadcn.png" alt=""/>
+                            <AvatarImage
+                                src={profileImageUrls[activeProfileInStorage?.id || ''] || ''}
+                                alt={activeProfileInStorage?.username || "Profile Image"}
+                                className="object-cover object-center"
+                            />
                             <AvatarFallback>
-                                <User className="w-6 h-6 text-gray-500"/>
+                                <User className="w-6 h-6 text-gray-500" />
                             </AvatarFallback>
                         </Avatar>
                         <div
@@ -95,7 +100,7 @@ export default function Navbar() {
 
     const {user} = useAuthContext();
     const userId = user?.userId as number;
-    const {activeProfileInStorage, setActiveProfileInStorage} = useProfileContext()
+    const {activeProfileInStorage, setActiveProfileInStorage, profileImageUrls} = useProfileContext()
 
     const fetchProfiles = async () => {
         if (userProfiles.length > 0) return;
@@ -179,7 +184,11 @@ export default function Navbar() {
                 <label htmlFor={`profile-${profile.id}`} className="flex items-center w-full cursor-pointer relative">
                     <div className="relative">
                         <Avatar className="w-12 h-12">
-                            <AvatarImage src="https://github.com/shadcn.png" alt={profile.username}/>
+                            <AvatarImage
+                                src={profileImageUrls[profile.id] || ''}
+                                alt={activeProfileInStorage?.username || "Profile Image"}
+                                className="object-cover object-center"
+                            />
                             <AvatarFallback>
                                 <User className="w-6 h-6 text-gray-500"/>
                             </AvatarFallback>
@@ -268,7 +277,7 @@ export default function Navbar() {
                     style={{width: "100%"}}
                 >
                     <div className="w-full p-2 flex flex-col justify-center space-y-2 flex-shrink-0">
-                        <ProfileButton userId={userId} email={user?.email}/>
+                        <ProfileButton userId={userId} email={user?.email} profileImageUrl={profileImageUrls[activeProfileInStorage?.id as string]} />
                         <Button
                             className="flex justify-between w-full text-white bg-transparent outline-none focus:outline-none hover:bg-hover-bg-color hover:bg-gray-700 hover:text-gray-200 transition-colors duration-200 rounded-lg"
                             onClick={() => handleSwitch("", "profiles")}
