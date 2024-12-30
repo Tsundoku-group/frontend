@@ -20,6 +20,7 @@ import {useMutationState} from "@/hooks/useMutationState";
 import {useProfileContext} from "@/context/profileContext";
 import {Profile} from "@/models/Profile";
 import {
+    deleteUserProfilePictureUrl,
     fetchUploadImageProfile,
     fetchUserProfileData,
     updateUserProfileData,
@@ -109,7 +110,7 @@ const ImageFromLocalStorage: React.FC<ImageProps> = ({currentAvatar, preview}) =
                 setIsCropDialogOpen(false);
             }
         } catch (error) {
-            console.error("Erreur lors de l'upload :", error);
+            ShowToast("destructive", "Erreur lors de l'upload.", "Erreur");
         }
     };
 
@@ -157,14 +158,20 @@ const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, 
         const loadFirebaseImage = async () => {
             try {
                 const downloadUrl = await getDownloadURL(ref(storage, firebasePath));
-                setImageUrl(downloadUrl);
-            } catch (error) {
-                console.error("Erreur lors du chargement de l'image :", error);
+                if (downloadUrl) {
+                    setImageUrl(downloadUrl);
+                }
+            } catch (error: any) {
+                if ('storage/object-not-found' === error.code) {
+                    setImageUrl(null);
+                }
             }
         };
 
         if (firebasePath) {
             loadFirebaseImage();
+        } else {
+            setImageUrl(null);
         }
     }, [firebasePath]);
 
@@ -194,7 +201,7 @@ const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, 
                 setLoading,
             });
         } catch (error) {
-            console.error("Erreur lors du recadrage :", error);
+            ShowToast("destructive", "Erreur lors du recadrage.", "Erreur")
         } finally {
             setLoading(false);
         }
@@ -249,18 +256,10 @@ const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, 
     );
 };
 
-async function handleUploadNewImage({
-                                        file,
-                                        profileId,
-                                        userId,
-                                        type = "profile",
-                                        onUploadSuccess,
-                                        onError,
-                                        setLoading,
-                                    }: {
+async function handleUploadNewImage({file, profileId, userId, type = "profile", onUploadSuccess, onError, setLoading}: {
     file: File;
     profileId: string;
-    userId: number;
+    userId: string;
     type?: string;
     onUploadSuccess: (url: string) => void;
     onError: (message: string) => void;
@@ -290,7 +289,6 @@ async function handleUploadNewImage({
                 await apiResponse.json();
                 ShowToast("destructive", "Le fichier existe déjà.", "Erreur");
             }
-            console.log('salut')
             ShowToast("destructive", "Erreur lors de l'enregistrement en base de données.", "Erreur");
         }
 
@@ -304,7 +302,6 @@ async function handleUploadNewImage({
         onUploadSuccess(data.url);
         ShowToast("default", "Image téléchargée avec succès !");
     } catch (error: any) {
-        console.error(error);
         onError(error.message || "Erreur lors du téléchargement.");
     } finally {
         setLoading(false);
@@ -323,7 +320,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const {user} = useAuthContext();
-    const userId = user?.userId as number;
+    const userId = user?.userId as string;
     const {activeProfileInStorage, refreshProfileImage} = useProfileContext();
     const profileId = activeProfileInStorage?.id as string;
 
@@ -354,9 +351,8 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
         setIsDialogOpen(false);
     };
 
-
-    const UploadedImagesList = ({profileId}: { profileId: string }) => {
-        const [images, setImages] = useState<string[]>([]);
+    const UploadedImagesList = ({userId, profileId}: { userId: string, profileId: string }) => {
+        const [images, setImages] = useState<{ url: string; type: string }[]>([]);
         const [isLoading, setIsLoading] = useState<boolean>(false);
         const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
         const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -374,12 +370,16 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
 
                     const urls = await Promise.all(
                         result.items.map(async (item) => {
-                            return await getDownloadURL(item);
+                            const url = await getDownloadURL(item);
+                            const type = item.fullPath.startsWith(`profilePictures/`) ? "profile" : "cover";
+
+                            return {url, type};
                         })
                     );
 
                     setImages(urls);
                 } catch (error) {
+                    console.log(error);
                     ShowToast("destructive", "Impossible de charger les photo de profils", "Erreur");
                 } finally {
                     setIsLoading(false);
@@ -389,7 +389,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
             fetchImages();
         }, [profileId]);
 
-        const handleDeleteImage = async (url: string) => {
+        const handleDeleteImage = async (url: string, type: string) => {
             try {
                 setIsDeleting(true);
 
@@ -398,14 +398,35 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
 
                 await deleteObject(imageRef);
 
-                setImages((prevImages) => prevImages.filter((img) => img !== url));
+                const symfonyResponse = await deleteUserProfilePictureUrl(userId, profileId, url, type);
+
+                if (!symfonyResponse) {
+                    ShowToast("destructive", "Erreur lors de la suppression de l'image.", "Erreur");
+                }
+
                 ShowToast("default", "Image supprimée");
+
+                const folderRef = ref(storage, `profilePictures/${profileId}`);
+                const result = await listAll(folderRef);
+
+                if (0 === result.items.length) {
+                    setImages([]);
+                    return;
+                }
+
+                const updatedImages = result.items.map((item) => ({
+                    url: `https://firebasestorage.googleapis.com/v0/b/${item.bucket}/o/${encodeURIComponent(item.fullPath)}?alt=media`,
+                    type: item.fullPath.startsWith(`profilePictures/`) ? "profile" : "other",
+                }));
+
+                setImages(updatedImages);
             } catch (error) {
                 ShowToast("destructive", "Impossible de supprimer l'image.", "Erreur");
             } finally {
                 setIsDeleting(false);
             }
         };
+
         const displayedImages = images.slice(0, 4);
 
         return (
@@ -423,7 +444,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
                 {!isLoading && images.length === 0 && <p>Aucune image trouvée.</p>}
 
                 <div className="grid grid-cols-4 gap-2 mt-4">
-                    {displayedImages.map((url, index) => (
+                    {displayedImages.map(({url, type}, index) => (
                         <div key={index} className="relative flex items-center justify-center">
                             <img
                                 src={url}
@@ -435,7 +456,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
                                 }}
                             />
                             <button
-                                onClick={() => handleDeleteImage(url)}
+                                onClick={() => handleDeleteImage(url, type)}
                                 className="absolute top-1 right-5 bg-gray-500 text-white p-1 rounded-full text-xs hover:bg-red-highlight focus:outline-none"
                             >
                                 ✕
@@ -462,7 +483,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
                                 <AlertDialogTitle>Toutes les images</AlertDialogTitle>
                             </AlertDialogHeader>
                             <div className="grid grid-cols-4 gap-2 mt-4">
-                                {images.map((url, index) => (
+                                {images.map(({url, type}, index) => (
                                     <div key={index} className="relative flex items-center justify-center">
                                         <img
                                             src={url}
@@ -474,7 +495,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
                                             }}
                                         />
                                         <button
-                                            onClick={() => handleDeleteImage(url)}
+                                            onClick={() => handleDeleteImage(url, type)}
                                             className="absolute top-1 right-12 bg-gray-500 text-white p-1 rounded-full text-xs hover:bg-red-highlight focus:outline-none"
                                         >
                                             ✕
@@ -539,7 +560,7 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
                             )}
                         </div>
 
-                        <UploadedImagesList profileId={profileId}/>
+                        <UploadedImagesList userId={userId} profileId={profileId}/>
 
                         <Input
                             id="profile-upload"
