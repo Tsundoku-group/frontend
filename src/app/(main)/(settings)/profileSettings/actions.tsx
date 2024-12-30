@@ -52,7 +52,6 @@ export async function fetchActiveProfilePictureUrl(profileId: string): Promise<P
                 'Content-Type': 'application/json',
             }
         });
-        console.log('response :', response)
         if (!response.response || 200 !== response.status) {
             throw new Error('Invalid response from the server');
         }
@@ -63,7 +62,7 @@ export async function fetchActiveProfilePictureUrl(profileId: string): Promise<P
     }
 }
 
-export async function fetchUploadImageProfile(userId: number, profileId: string, imageUrl: string, type: string): Promise<ProfilePicture> {
+export async function fetchUploadImageProfile(userId: string, profileId: string, imageUrl: string, type: string): Promise<ProfilePicture> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/add-photo`, {
             method: 'POST',
@@ -80,5 +79,25 @@ export async function fetchUploadImageProfile(userId: number, profileId: string,
         return response.data as ProfilePicture;
     } catch (error) {
         throw new Error('Failed to fetch upload image');
+    }
+}
+
+export async function deleteUserProfilePictureUrl(id: string, profileId: string, url: string, type: string): Promise<{ response: boolean; status: number; data: any } | { response: boolean; status: number; message: string; error: any }> {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/remove-photo`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({id, profileId, url, type})
+        });
+        console.log(response);
+        if (!response.response || 200 !== response.status) {
+            throw new Error('Invalid response from the server');
+        }
+
+        return response;
+    } catch (error) {
+        throw new Error('Failed to delete profile picture');
     }
 }
