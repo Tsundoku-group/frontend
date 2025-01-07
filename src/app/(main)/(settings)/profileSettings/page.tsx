@@ -762,7 +762,6 @@ export default function ProfileSettingsPage() {
         }
     }, [profileId]);
 
-
     const reverseGenderMap: Record<string, string> = {
         male: "Masculin",
         female: "Féminin",

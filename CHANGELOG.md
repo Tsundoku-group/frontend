@@ -50,3 +50,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-43] recadrer/zoomer une photo [#43](https://trello.com/c/oT2BZPCF/43-t-43-recadrer-zoomer-une-photo)
 - [t-44] corrections mineures sur l'upload des images [#44](https://trello.com/c/eBkiDeWI/44-t-44-corrections-mineures-sur-lupload-des-images)
 - [t-45] Ajout de la photo de couverture [#45](https://trello.com/c/BLQnf5Rq/45-t-45-ajout-de-la-photo-de-couverture)
+- [t-46] Makefile [#46](https://trello.com/c/zNrZIUMV/46-t-46-makefile)

@@ -3,17 +3,17 @@ COMPOSE=docker compose                   # Commande pour exécuter Docker Compos
 NEXTJS_SERVICE=nextjs                    # Service Docker pour Next.js
 
 # Commandes Docker Compose
-build:                                   # Construire l'image Docker pour Next.js
-	$(COMPOSE) build $(NEXTJS_SERVICE)
+build:                                   # Construire les images Docker des services
+	$(COMPOSE) build
 
-start:                                   # Démarrer le conteneur Next.js
-	$(COMPOSE) start $(NEXTJS_SERVICE)
+start:                                   # Démarrer les conteneurs sans détachement
+	$(COMPOSE) start
 
-stop:                                    # Arrêter le conteneur Next.js
-	$(COMPOSE) stop $(NEXTJS_SERVICE)
+stop:                                    # Arrêter les conteneurs en cours d'exécution
+	$(COMPOSE) stop
 
-up:                                      # Démarrer le conteneur Next.js en arrière-plan
-	$(COMPOSE) up -d $(NEXTJS_SERVICE)
+up:                                      # Démarrer les conteneurs en arrière-plan (mode détaché)
+	$(COMPOSE) up -d
 
 down:                                    # Arrêter et supprimer le conteneur Next.js
 	$(COMPOSE) down
