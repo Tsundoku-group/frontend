@@ -75,14 +75,14 @@ export const addNewUserProfile = async (payload: any) => {
             body: JSON.stringify(payload),
         });
 
-        if (!response.response || 201 !== response.status) {
+        if (!response.response || 201 !== response.status || !response.data) {
             if (400 === response.status) {
                 throw new Error(response?.message || 'Vous ne pouvez pas avoir plus de 5 profils');
             }
             throw new Error(response?.message || "Une erreur est survenue lors de la création du profil.");
         }
 
-        return response;
+        return response.data;
     } catch (error) {
         throw error;
     }

@@ -51,3 +51,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-44] corrections mineures sur l'upload des images [#44](https://trello.com/c/eBkiDeWI/44-t-44-corrections-mineures-sur-lupload-des-images)
 - [t-45] Ajout de la photo de couverture [#45](https://trello.com/c/BLQnf5Rq/45-t-45-ajout-de-la-photo-de-couverture)
 - [t-46] Makefile [#46](https://trello.com/c/zNrZIUMV/46-t-46-makefile)
+- [t-47] nouveau profil: aller sur le nouveau profil [#47](https://trello.com/c/qrtZDlRq/47-t-47-nouveau-profil-aller-sur-le-nouveau-profil)

@@ -101,8 +101,8 @@ export default function Navbar() {
     const userId = user?.userId as number;
     const {activeProfileInStorage, setActiveProfileInStorage, profileImageUrls} = useProfileContext()
 
-    const fetchProfiles = async () => {
-        if (userProfiles.length > 0) return;
+    const fetchProfiles = async (forceRefresh = false) => {
+        if (!forceRefresh && userProfiles.length > 0) return;
 
         setLoading(true);
         try {
@@ -135,6 +135,10 @@ export default function Navbar() {
             ShowToast('destructive', 'Erreur lors du changement de profil', 'Erreur');
         }
     };
+
+    useEffect(() => {
+        fetchProfiles();
+    }, []);
 
     const handleStatusProfileChange = async (profileId: string, status: string) => {
         try {
@@ -343,7 +347,7 @@ export default function Navbar() {
                                 >
                                     {items}
                                 </RadioGroup>
-                                {visibleItems === "profiles" && userProfiles.length < 5 && <AddProfileButton/>}
+                                {visibleItems === "profiles" && userProfiles.length < 5 && <AddProfileButton onProfileAdded={() => fetchProfiles(true)}/>}
                             </>
                         )}
                         <Button
