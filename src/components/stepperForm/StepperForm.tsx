@@ -13,7 +13,7 @@ import {
     AlertDialogAction,
     AlertDialogCancel, AlertDialogTitle, AlertDialogDescription
 } from '@/components/ui/alert-dialog';
-import {addNewUserProfile} from "@/components/navbar/actions";
+import {addNewUserProfile, setActiveUserProfile} from "@/components/navbar/actions";
 import {ShowToast} from "@/components/ShowToast";
 import {z} from "zod";
 import {useForm} from "react-hook-form";
@@ -21,6 +21,8 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {useMutationState} from "@/hooks/useMutationState";
 import {Profile} from "@/models/Profile";
 import {CloudUpload} from "lucide-react";
+import {useProfileContext} from "@/context/profileContext";
+import {useAuthContext} from "@/context/authContext";
 
 const userProfileSchema = z.object({
     lastName: z
@@ -78,15 +80,12 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
     const [step, setStep] = useState(1);
     const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
     const totalSteps = 3;
+    const {user} = useAuthContext()
+    const userId = user?.userId;
 
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: {errors},
-        setValue,
-        watch
-    } = useForm<z.infer<typeof userProfileSchema>>({
+    const {setActiveProfileInStorage} = useProfileContext();
+
+    const {register, handleSubmit, reset, formState: {errors}, setValue, watch} = useForm<z.infer<typeof userProfileSchema>>({
         mode: 'onChange',
         resolver: zodResolver(userProfileSchema),
         defaultValues: {
@@ -103,7 +102,16 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
     });
 
     const {mutate, pending} = useMutationState(async (payload: Profile) => {
-        return await addNewUserProfile(payload);
+        const newProfileAdd = await addNewUserProfile(payload);
+
+        if (!newProfileAdd) {
+            ShowToast("destructive", "Une erreur est survenue. Veuillez réessayer plus tard", "Erreur");
+        }
+
+        if (newProfileAdd && newProfileAdd.id) {
+            await setActiveUserProfile(userId, newProfileAdd.id);
+            setActiveProfileInStorage(newProfileAdd, true);
+        }
     });
 
     const handleNext = () => setStep((prev) => Math.min(prev + 1, totalSteps));
