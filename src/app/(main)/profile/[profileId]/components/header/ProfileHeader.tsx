@@ -13,17 +13,18 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 
-const ProfileHeader: React.FC<Profile> = React.memo(({firstName, lastName, username, coverUrl, friendsCount, followersCount, bio, x, instagram, facebook}) => {
+const ProfileHeader: React.FC<Profile> = React.memo(({firstName, lastName, username, friendsCount, followersCount, bio, x, instagram, facebook}) => {
     const { activeProfileInStorage, profileImageUrls } = useProfileContext();
 
-    const profileImageUrl = profileImageUrls[activeProfileInStorage?.id || ''] || '';
+    const profileImageUrl = profileImageUrls[`${activeProfileInStorage?.id || ""}-profile`] || '' || '';
+    const coverImageUrl= profileImageUrls[`${activeProfileInStorage?.id || ""}-cover`] || '' || '';
 
     return (
         <div className="max-w-6xl mx-auto relative">
             <div className="bg-gray-900 rounded-t-2xl text-white shadow-lg overflow-hidden">
                 <div className="w-full h-24 bg-gray-700 rounded-t-2xl overflow-hidden">
-                    {coverUrl ? (
-                        <img src={coverUrl} alt="Cover" className="w-full h-full object-cover" />
+                    {coverImageUrl ? (
+                        <img src={coverImageUrl} alt="Cover" className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full bg-gradient-to-r from-indigo-600 to-purple-600"></div>
                     )}
