@@ -52,3 +52,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-45] Ajout de la photo de couverture [#45](https://trello.com/c/BLQnf5Rq/45-t-45-ajout-de-la-photo-de-couverture)
 - [t-46] Makefile [#46](https://trello.com/c/zNrZIUMV/46-t-46-makefile)
 - [t-47] nouveau profil: aller sur le nouveau profil [#47](https://trello.com/c/qrtZDlRq/47-t-47-nouveau-profil-aller-sur-le-nouveau-profil)
+- [t-48] correction: affiche image et données profil lorsqu'il n'y en a pas [#48](https://trello.com/c/GxhOcGQM/48-t-48-correction-affiche-image-et-donn%C3%A9es-profil-lorsquil-ny-en-a-pas)
