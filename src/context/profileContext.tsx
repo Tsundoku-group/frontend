@@ -82,8 +82,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
                     [`${profileId}-cover`]: defaultImages.cover
                 }));
             }
-        },
-        [profileImageUrls, defaultImages]
+        }, []
     );
 
     useEffect(() => {
