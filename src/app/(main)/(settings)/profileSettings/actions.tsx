@@ -44,21 +44,28 @@ export async function updateUserProfileData(profileId: string, profileData: Part
     }
 }
 
-export async function fetchActiveProfilePictureUrl(profileId: string): Promise<ProfilePicture> {
+export async function fetchActiveProfilePictures(profileId: string): Promise<Record<string, ProfilePicture>> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/get-active-photo/${profileId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
+        const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/get-active-photo/${profileId}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             }
-        });
-        if (!response.response || 200 !== response.status) {
+        );
+
+        if (404 === response.status) {
+            throw new Error('Not found profile picture');
+        }
+
+        if (!response.response || response.status !== 200) {
             throw new Error('Invalid response from the server');
         }
 
-        return response.data as ProfilePicture;
+        return response.data as Record<string, ProfilePicture>;
     } catch (error) {
-        throw new Error('Failed to fetch active profile picture');
+        throw new Error('Impossible de récupérer les photos actives.');
     }
 }
 
