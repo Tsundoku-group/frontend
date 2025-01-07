@@ -24,16 +24,15 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         }
         return null;
     });
+    const [profileImageUrls, setProfileImageUrls] = useState<Record<string, string>>({});
+    const [initialLoading, setInitialLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const router = useRouter();
 
     const defaultImages = {
         profile: "https://via.placeholder.com/150",
         cover: "https://via.placeholder.com/600x400"
     };
-
-    const [profileImageUrls, setProfileImageUrls] = useState<Record<string, string>>({});
-    const [initialLoading, setInitialLoading] = useState<boolean>(true);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const router = useRouter();
 
     const loadProfileImages = useCallback(
         async (profileId: string) => {
