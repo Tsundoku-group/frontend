@@ -11,7 +11,7 @@ type ProfileContextType = {
     setActiveProfileInStorage: (profileData: Partial<Profile>, triggerLoading?: boolean) => void;
     isLoading: boolean;
     profileImageUrls: Record<string, string>;
-    refreshProfileImage: (profileId: string) => void;
+    refreshProfileImage: (profileId: string, type: "profile" | "cover") => void
 };
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -25,29 +25,66 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         return null;
     });
 
+    const defaultImages = {
+        profile: "https://via.placeholder.com/150",
+        cover: "https://via.placeholder.com/600x400"
+    };
+
     const [profileImageUrls, setProfileImageUrls] = useState<Record<string, string>>({});
     const [initialLoading, setInitialLoading] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
 
-    const loadProfileImage = useCallback(async (profileId: string) => {
-        const cacheKey = `profile-image-${profileId}`;
-        const cachedImage = localStorage.getItem(cacheKey);
-
-        if (cachedImage) {
-            setProfileImageUrls(prev => ({...prev, [profileId]: cachedImage}));
-        } else {
-            try {
-                const url = await getProfileImageUrl(profileId, '');
-                const timestampedUrl = `${url}?t=${Date.now()}`;
-                setProfileImageUrls(prev => ({...prev, [profileId]: timestampedUrl}));
-
-                localStorage.setItem(cacheKey, timestampedUrl);
-            } catch (error) {
-                setProfileImageUrls(prev => ({...prev, [profileId]: ''}));
+    const loadProfileImages = useCallback(
+        async (profileId: string) => {
+            if (profileImageUrls[`${profileId}-profile`] && profileImageUrls[`${profileId}-cover`]) {
+                return;
             }
-        }
-    }, []);
+
+            const cacheKeys = {
+                profile: `profile-image-${profileId}-profile`,
+                cover: `profile-image-${profileId}-cover`,
+            };
+
+            const cachedImages = {
+                profile: localStorage.getItem(cacheKeys.profile),
+                cover: localStorage.getItem(cacheKeys.cover),
+            };
+
+            setProfileImageUrls(prev => ({
+                ...prev,
+                ...(cachedImages.profile ? { [`${profileId}-profile`]: cachedImages.profile } : {}),
+                ...(cachedImages.cover ? { [`${profileId}-cover`]: cachedImages.cover } : {})
+            }));
+
+            try {
+                const urls = await getProfileImageUrl(profileId);
+
+                for (const type of ["profile", "cover"] as const) {
+                    if (urls[type]) {
+                        const timestampedUrl = `${urls[type]}?t=${Date.now()}`;
+                        setProfileImageUrls(prev => ({
+                            ...prev,
+                            [`${profileId}-${type}`]: timestampedUrl
+                        }));
+                        localStorage.setItem(cacheKeys[type], timestampedUrl);
+                    } else {
+                        setProfileImageUrls(prev => ({
+                            ...prev,
+                            [`${profileId}-${type}`]: defaultImages[type]
+                        }));
+                    }
+                }
+            } catch (error: any) {
+                setProfileImageUrls(prev => ({
+                    ...prev,
+                    [`${profileId}-profile`]: defaultImages.profile,
+                    [`${profileId}-cover`]: defaultImages.cover
+                }));
+            }
+        },
+        [profileImageUrls, defaultImages]
+    );
 
     useEffect(() => {
         const storedProfile = localStorage.getItem("activeProfile");
@@ -55,10 +92,10 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
             const parsedProfile = JSON.parse(storedProfile) as Profile;
             setActiveProfileInStorageState(parsedProfile);
 
-            loadProfileImage(parsedProfile.id);
+            loadProfileImages(parsedProfile.id);
         }
         setInitialLoading(false);
-    }, [loadProfileImage]);
+    }, [loadProfileImages]);
 
     const setActiveProfileInStorage = (profileData: Partial<Profile>, triggerLoading: boolean = true) => {
         if (triggerLoading) {
@@ -77,7 +114,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         setActiveProfileInStorageState(completeProfile);
 
         if (profileData.id) {
-            loadProfileImage(profileData.id);
+            loadProfileImages(profileData.id);
         }
 
         if (triggerLoading) {
@@ -87,8 +124,15 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
     };
 
     const refreshProfileImage = (profileId: string) => {
-        localStorage.removeItem(`profile-image-${profileId}`);
-        loadProfileImage(profileId);
+        const cacheKeys = {
+            profile: `profile-image-${profileId}-profile`,
+            cover: `profile-image-${profileId}-cover`,
+        };
+
+        localStorage.removeItem(cacheKeys.profile);
+        localStorage.removeItem(cacheKeys.cover);
+
+        loadProfileImages(profileId);
     };
 
     if (initialLoading) {
