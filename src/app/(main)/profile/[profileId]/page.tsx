@@ -51,7 +51,6 @@ const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
                     x={profile.x}
                     instagram={profile.instagram}
                     facebook={profile.facebook}
-
                 />
             </div>
 

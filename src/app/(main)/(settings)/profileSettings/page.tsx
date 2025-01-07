@@ -25,8 +25,7 @@ import {
     fetchUserProfileData,
     updateUserProfileData,
 } from "@/app/(main)/(settings)/profileSettings/actions";
-import {AlertCircle, Facebook, Instagram, Loader2, Twitter} from "lucide-react";
-import {Alert, AlertDescription} from "@/components/ui/alert";
+import {Facebook, Instagram, Loader2, Twitter} from "lucide-react";
 import {useAuthContext} from "@/context/authContext";
 import {ShowToast} from "@/components/ShowToast";
 import {storage} from "../../../../../firebaseConfig";
@@ -34,29 +33,31 @@ import {deleteObject, getDownloadURL, listAll, ref} from "@firebase/storage";
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
+    DialogDescription,
     DialogFooter,
-    DialogDescription
+    DialogHeader,
+    DialogTitle
 } from "@/components/ui/dialog";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "@/utils/croppedImg";
 
 interface ImageProps {
-    currentAvatar: string | null;
-    preview: string | null;
-    name: string;
+    profileImage: string | null;
+    coverImage: string | null;
+    profilePreview: string | null;
+    coverPreview: string | null;
 }
 
 type ProfilePictureSectionProps = {
     imageUrl: string;
+    coverUrl: string;
     name: string;
-    onPreviewComplete: (url: string) => void;
 }
 
 interface ImageCropDialogProps {
     firebasePath: string;
     isOpen: boolean;
+    type: "profile" | "cover";
     onClose: () => void;
     onCropComplete: (croppedImage: Blob) => void;
 }
@@ -84,20 +85,27 @@ function FormField({label, children, error}: { label: string; children: React.Re
     );
 }
 
-const ImageFromLocalStorage: React.FC<ImageProps> = ({currentAvatar, preview}) => {
+const ProfileAndCoverImage: React.FC<ImageProps> = ({profileImage, coverImage, profilePreview, coverPreview}) => {
     const {activeProfileInStorage, profileImageUrls, refreshProfileImage} = useProfileContext();
-    const [isCropDialogOpen, setIsCropDialogOpen] = useState<boolean>(false);
-    const [imageUrl, setImageUrl] = useState<string>("");
+    const [isCropDialogOpen, setIsCropDialogOpen] = useState<{ type: "profile" | "cover" | null }>({type: null});
+    const [profileUrl, setProfileUrl] = useState<string>("");
+    const [coverUrl, setCoverUrl] = useState<string>("");
 
     useEffect(() => {
         const profileId = activeProfileInStorage?.id || "";
-        setImageUrl(profileImageUrls[profileId] || preview || currentAvatar || "");
-    }, [profileImageUrls, activeProfileInStorage, preview, currentAvatar]);
+        setProfileUrl(
+            profileImageUrls[`${profileId}-profile`] || profilePreview || profileImage || ""
+        );
+        setCoverUrl(
+            profileImageUrls[`${profileId}-cover`] || coverPreview || coverImage || ""
+        );
+    }, [profileImageUrls, activeProfileInStorage, profilePreview, profileImage, coverPreview, coverImage]);
 
-    const handleCropComplete = async (croppedImage: Blob) => {
+    const handleCropComplete = async (croppedImage: Blob, type: "profile" | "cover") => {
         const formData = new FormData();
         formData.append("file", croppedImage);
         formData.append("profileId", activeProfileInStorage?.id || "");
+        formData.append("type", type);
 
         try {
             const response = await fetch("/api/uploadImage", {
@@ -106,8 +114,10 @@ const ImageFromLocalStorage: React.FC<ImageProps> = ({currentAvatar, preview}) =
             });
 
             if (response.ok) {
-                refreshProfileImage(activeProfileInStorage?.id || "");
-                setIsCropDialogOpen(false);
+                refreshProfileImage(activeProfileInStorage?.id || "", type);
+                setIsCropDialogOpen({type: null});
+            } else {
+                ShowToast("destructive", "Erreur lors de l'upload.", "Erreur");
             }
         } catch (error) {
             ShowToast("destructive", "Erreur lors de l'upload.", "Erreur");
@@ -118,32 +128,54 @@ const ImageFromLocalStorage: React.FC<ImageProps> = ({currentAvatar, preview}) =
         <>
             <div className="flex flex-col items-center space-y-3">
                 <h4 className="text-base font-semibold mb-2">Photo de profil</h4>
-                <div onClick={() => setIsCropDialogOpen(true)} className="cursor-pointer">
+                <div
+                    onClick={() => setIsCropDialogOpen({type: "profile"})}
+                    className="cursor-pointer"
+                >
                     <Avatar className="w-40 h-40 border-2 border-gray-300 hover:border-blue-500 transition-all">
                         <AvatarImage
-                            src={imageUrl}
+                            src={profileUrl}
                             alt={activeProfileInStorage?.username || "Profile Image"}
-                            onError={(e) => {
-                                (e.target as HTMLImageElement).src = "/images/default-avatar.png";
-                            }}
                             className="object-cover object-center"
                         />
-                        <AvatarFallback>150 x150</AvatarFallback>
+                        <AvatarFallback className="bg-gray-400">150 x 150</AvatarFallback>
                     </Avatar>
                 </div>
             </div>
 
-            <ImageCropDialog
-                firebasePath={imageUrl}
-                isOpen={isCropDialogOpen}
-                onClose={() => setIsCropDialogOpen(false)}
-                onCropComplete={handleCropComplete}
-            />
+            <div className="flex flex-col items-center space-y-3 mt-6">
+                <h4 className="text-base font-semibold mb-2">Photo de couverture</h4>
+                <div
+                    onClick={() => setIsCropDialogOpen({type: "cover"})}
+                    className="cursor-pointer w-full max-w-3xl h-48 border-1 border-gray-300 hover:border-blue-500 transition-all"
+                >
+                   <Avatar className="w-full h-full rounded-lg border-1 border-gray-300 hover:border-blue-500 transition-all">
+                       <AvatarImage
+                           src={coverUrl}
+                           alt={activeProfileInStorage?.username || "Cover Image"}
+                           className="object-cover object-center"
+                           />
+                       <AvatarFallback className="bg-gray-400 rounded-none">600 x 400</AvatarFallback>
+                   </Avatar>
+                </div>
+            </div>
+
+            {isCropDialogOpen.type && (
+                <ImageCropDialog
+                    firebasePath={isCropDialogOpen.type === "profile" ? profileUrl : coverUrl}
+                    isOpen={!!isCropDialogOpen.type}
+                    type={isCropDialogOpen.type}
+                    onClose={() => setIsCropDialogOpen({type: null})}
+                    onCropComplete={(croppedImage) =>
+                        handleCropComplete(croppedImage, isCropDialogOpen.type!)
+                    }
+                />
+            )}
         </>
     );
 };
 
-const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, onClose, onCropComplete}) => {
+const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, type, onClose, onCropComplete}) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [crop, setCrop] = useState({x: 0, y: 0});
     const [zoom, setZoom] = useState(1);
@@ -153,6 +185,8 @@ const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, 
     const {user} = useAuthContext();
     const profileId = activeProfileInStorage?.id || "";
     const userId = user?.userId || 0;
+
+    const aspectRatio = type === 'profile' ? 1 : 16 / 9;
 
     useEffect(() => {
         const loadFirebaseImage = async () => {
@@ -185,15 +219,15 @@ const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, 
         setLoading(true);
         try {
             const croppedImageBlob = await getCroppedImg(imageUrl, croppedAreaPixels);
-            const croppedFile = new File([croppedImageBlob], "cropped-image.jpg", {type: "image/jpeg"});
+            const croppedFile = new File([croppedImageBlob], `${type}-cropped-image.jpg`, {type: "image/jpeg"});
 
             await handleUploadNewImage({
                 file: croppedFile,
                 profileId,
                 userId,
-                type: "profile",
+                type,
                 onUploadSuccess: () => {
-                    refreshProfileImage(profileId);
+                    refreshProfileImage(profileId, type);
                     onCropComplete(croppedImageBlob);
                     onClose();
                 },
@@ -223,7 +257,7 @@ const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, 
                             image={imageUrl}
                             crop={crop}
                             zoom={zoom}
-                            aspect={1}
+                            aspect={aspectRatio}
                             onCropChange={setCrop}
                             onZoomChange={setZoom}
                             onCropComplete={onCropCompleteHandler}
@@ -256,11 +290,11 @@ const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, 
     );
 };
 
-async function handleUploadNewImage({file, profileId, userId, type = "profile", onUploadSuccess, onError, setLoading}: {
+async function handleUploadNewImage({file, profileId, userId, type, onUploadSuccess, onError, setLoading}: {
     file: File;
     profileId: string;
     userId: string;
-    type?: string;
+    type: string;
     onUploadSuccess: (url: string) => void;
     onError: (message: string) => void;
     setLoading: (loading: boolean) => void;
@@ -308,15 +342,15 @@ async function handleUploadNewImage({file, profileId, userId, type = "profile", 
     }
 }
 
-const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectionProps) => {
-    const [uploading] = useState<boolean>(false);
+const ProfilePictureSection = React.memo(({imageUrl, coverUrl}: ProfilePictureSectionProps) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [preview, setPreview] = useState<string>(imageUrl);
-    const [tempPreview, setTempPreview] = useState<string | null>(imageUrl);
+    const [selectedType, setSelectedType] = useState<"profile" | "cover">("profile");
+    const [tempProfilePreview, setTempProfilePreview] = useState<string | null>(imageUrl);
+    const [tempCoverPreview, setTempCoverPreview] = useState<string | null>(coverUrl);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [currentAvatar, setCurrentAvatar] = useState<string>(imageUrl || '');
+    const [coverImage, setCoverImage] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const {user} = useAuthContext();
@@ -324,34 +358,83 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
     const {activeProfileInStorage, refreshProfileImage} = useProfileContext();
     const profileId = activeProfileInStorage?.id as string;
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    useEffect(() => {
+        const fetchImages = async () => {
+            if (!profileId) return;
+
+            try {
+                const fetchImagesByType = async (type: "profile" | "cover") => {
+                    const folderPath = type === "profile"
+                        ? `profilePictures/${profileId}`
+                        : `coverPictures/${profileId}`;
+
+                    const folderRef = ref(storage, folderPath);
+                    const result = await listAll(folderRef);
+
+                    return await Promise.all(
+                        result.items.map(async (item) => {
+                            const url = await getDownloadURL(item);
+                            return {url, type};
+                        })
+                    );
+                };
+
+                const [profileImages, coverImages] = await Promise.all([
+                    fetchImagesByType("profile"),
+                    fetchImagesByType("cover")
+                ]);
+
+                profileImages.forEach((img) => setCurrentAvatar(img.url));
+                coverImages.forEach((img) => setCoverImage(img.url));
+
+            } catch (error) {
+                ShowToast("destructive", "Erreur lors du chargement des images.", "Erreur");
+            }
+        };
+
+        fetchImages();
+    }, [profileId]);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         const allowedTypes = ["image/jpeg", "image/png"];
-        if (!allowedTypes.includes(file.type) || file.size > 2 * 1024 * 1024) {
+        const maxSize = 2 * 1024 * 1024; // 2 Mo
+
+        const dimensions = type === 'profile'
+            ? { minWidth: 150, minHeight: 150, maxWidth: 150, maxHeight: 150 }
+            : { minWidth: 600, minHeight: 400, maxWidth: 1200, maxHeight: 800 };
+
+        if (!allowedTypes.includes(file.type) || file.size > maxSize) {
             setErrorMessage(
                 !allowedTypes.includes(file.type)
                     ? "Seuls les fichiers JPEG et PNG sont acceptés."
                     : "Le fichier est trop volumineux. Taille maximale : 2 Mo."
-            );
+            )
             return;
         }
 
-        setTempPreview(URL.createObjectURL(file));
-        setSelectedFile(file);
-        setErrorMessage(null);
+        const image = new Image();
+        image.src = URL.createObjectURL(file);
+        image.onload = () => {
+            const isValidWidth = image.width >= dimensions.minWidth && image.width <= dimensions.maxWidth;
+            const isValidHeight = image.height >= dimensions.maxHeight && image.height <= dimensions.maxWidth;
+            if (!isValidWidth || !isValidHeight) {
+                setErrorMessage(`Dimensions requises pour ${type} : entre ${dimensions.minWidth}x${dimensions.minHeight}px et ${dimensions.maxWidth}x${dimensions.maxHeight}px.`,);
+            } else {
+                if (type === "profile") {
+                    setTempProfilePreview(URL.createObjectURL(file));
+                } else {
+                    setTempCoverPreview(URL.createObjectURL(file));
+                }
+                setSelectedFile(file);
+                setErrorMessage(null);
+            }
+        }
     };
 
-    const handleCancelUpdatePicture = () => {
-        setTempPreview(null);
-        setSelectedFile(null);
-        setErrorMessage(null);
-        setPreview(imageUrl);
-        setIsDialogOpen(false);
-    };
-
-    const UploadedImagesList = ({userId, profileId}: { userId: string, profileId: string }) => {
+    const UploadedImagesList = ({userId, profileId, type}: { userId: string, profileId: string, type: string }) => {
         const [images, setImages] = useState<{ url: string; type: string }[]>([]);
         const [isLoading, setIsLoading] = useState<boolean>(false);
         const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -359,27 +442,27 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
 
         useEffect(() => {
             const fetchImages = async () => {
-                if (!profileId) return;
+                if (!profileId || !type) return;
 
                 try {
                     setIsLoading(true);
                     setErrorMessage(null);
 
-                    const folderRef = ref(storage, `profilePictures/${profileId}`);
+                    const folderPath = type === "profile"
+                        ? `profilePictures/${profileId}`
+                        : `coverPictures/${profileId}`;
+                    const folderRef = ref(storage, folderPath);
                     const result = await listAll(folderRef);
 
                     const urls = await Promise.all(
                         result.items.map(async (item) => {
                             const url = await getDownloadURL(item);
-                            const type = item.fullPath.startsWith(`profilePictures/`) ? "profile" : "cover";
-
                             return {url, type};
                         })
                     );
 
                     setImages(urls);
                 } catch (error) {
-                    console.log(error);
                     ShowToast("destructive", "Impossible de charger les photo de profils", "Erreur");
                 } finally {
                     setIsLoading(false);
@@ -387,12 +470,10 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
             }
 
             fetchImages();
-        }, [profileId]);
+        }, [profileId, type]);
 
         const handleDeleteImage = async (url: string, type: string) => {
             try {
-                setIsDeleting(true);
-
                 const path = decodeURIComponent(new URL(url).pathname.split("/o/")[1].split("?")[0]);
                 const imageRef = ref(storage, path);
 
@@ -406,7 +487,10 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
 
                 ShowToast("default", "Image supprimée");
 
-                const folderRef = ref(storage, `profilePictures/${profileId}`);
+                const folderPath = type === "profile"
+                    ? `profilePictures/${profileId}`
+                    : `coverPictures/${profileId}`;
+                const folderRef = ref(storage, folderPath);
                 const result = await listAll(folderRef);
 
                 if (0 === result.items.length) {
@@ -422,8 +506,6 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
                 setImages(updatedImages);
             } catch (error) {
                 ShowToast("destructive", "Impossible de supprimer l'image.", "Erreur");
-            } finally {
-                setIsDeleting(false);
             }
         };
 
@@ -516,94 +598,134 @@ const ProfilePictureSection = React.memo(({imageUrl, name}: ProfilePictureSectio
         );
     };
 
+    const handleCancelUpdatePicture = () => {
+        setTempProfilePreview(null);
+        setTempCoverPreview(null);
+        setSelectedFile(null);
+        setErrorMessage(null);
+        setIsDialogOpen(false);
+    };
+
+    const handleOpenDialog = (type: "profile" | "cover") => {
+        setSelectedType(type);
+
+        if (type === "profile") {
+            setTempProfilePreview(currentAvatar);
+        } else {
+            setTempCoverPreview(coverImage);
+        }
+
+        setIsDialogOpen(true);
+    };
+
     return (
         <>
-            <div className="flex flex-col items-center">
-                <ImageFromLocalStorage currentAvatar={currentAvatar} preview={preview} name={name}/>
-                <Button
-                    className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md mt-4"
-                    onClick={() => setIsDialogOpen(true)}
-                >
-                    Modifier
-                </Button>
+            <div className="flex flex-col items-center space-y-3">
+                <ProfileAndCoverImage
+                    profileImage={imageUrl}
+                    coverImage={""}
+                    profilePreview={null}
+                    coverPreview={null}
+                />
+
+                <div className="flex space-x-4 mt-6">
+                    <Button
+                        className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md"
+                        onClick={() => handleOpenDialog("profile")}
+                    >
+                        Modifier Profil
+                    </Button>
+                    <Button
+                        className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md"
+                        onClick={() => handleOpenDialog("cover")}
+                    >
+                        Modifier Couverture
+                    </Button>
+                </div>
             </div>
 
             <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <AlertDialogOverlay/>
-                <AlertDialogContent className="max-w-2xl w-full bg-tertiary-black border-none">
+                <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Changer la photo de Profil</AlertDialogTitle>
+                        <AlertDialogTitle>
+                            {selectedType === "profile" ? "Changer la photo de profil" : "Changer la photo de couverture"}
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Voulez-vous vraiment changer votre photo de profil ?
+                            Sélectionnez une image à téléverser.
                         </AlertDialogDescription>
-                        {errorMessage && (
-                            <Alert variant="destructive" className="border-red-500 text-red-500 mt-4">
-                                <AlertCircle className="h-4 w-4 text-red-500"/>
-                                <AlertDescription>{errorMessage}</AlertDescription>
-                            </Alert>
-                        )}
-
-                        {isLoading ? (
-                            <div className="flex justify-center py-4">
-                                <Loader2 className="h-5 w-5 animate-spin text-black"/>
-                            </div>
-                        ) : null}
-
-                        <div className="flex flex-col items-center space-y-3 mb-4">
-                            {tempPreview ? (
-                                <Avatar className="w-32 h-32">
-                                    <AvatarImage src={tempPreview} className="object-cover object-center"/>
-                                    <AvatarFallback/>
-                                </Avatar>
-                            ) : (
-                                <ImageFromLocalStorage currentAvatar={currentAvatar} preview={preview} name={name}/>
-                            )}
-                        </div>
-
-                        <UploadedImagesList userId={userId} profileId={profileId}/>
-
-                        <Input
-                            id="profile-upload"
-                            type="file"
-                            accept="image/jpeg, image/png, image/jpg"
-                            onChange={handleFileChange}
-                        />
-                        <div>Recommandé: La taille de l&apos;image doit faire <strong>150x150</strong></div>
                     </AlertDialogHeader>
+
+                    <div className="flex flex-col items-center space-y-3">
+                        {errorMessage && (
+                            <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+                        )}
+                        <Avatar className={selectedType === "cover" ? "w-full h-48 rounded-lg" : "w-32 h-32"}>
+                            {selectedType === "profile" ? (
+                                <AvatarImage
+                                    src={tempProfilePreview || currentAvatar || ""}
+                                    className="object-cover object-center"
+                                />
+                            ) : (
+                                <AvatarImage
+                                    src={tempCoverPreview || coverImage || ""}
+                                    alt="Cover Image"
+                                    className="w-full h-48 object-cover rounded-lg"
+                                />
+                            )}
+
+                            <AvatarFallback
+                                className={`flex items-center justify-center bg-gray-400 text-sm font-semibold ${
+                                    selectedType === "cover" ? "text-gray-300 w-full h-48" : "text-gray-500 w-32 h-32"
+                                }`}
+                            >
+                                {selectedType === "profile" ? "150 x 150" : "600 x 400"}
+                            </AvatarFallback>
+                        </Avatar>
+                        <UploadedImagesList userId={userId} profileId={profileId} type={selectedType}/>
+                        <Input
+                            type="file"
+                            accept="image/jpeg, image/png"
+                            onChange={(e) => handleFileChange(e, selectedType)}
+                            className="w-full"
+                        />
+                    </div>
+
                     <AlertDialogFooter>
-                        <Button variant="outline" onClick={handleCancelUpdatePicture}
-                                className="mr-2 bg-gray-500 border-none">
+                        <Button variant="outline" onClick={handleCancelUpdatePicture}>
                             Annuler
                         </Button>
-                        <label htmlFor="profile-upload" className="cursor-pointer">
-                            <Button
-                                className="bg-purple-highlight hover:bg-purple-700 text-white"
-                                disabled={uploading}
-                                onClick={async () => {
-                                    if (!selectedFile) {
-                                        ShowToast("destructive", "Veuillez sélectionner une photo avant de confirmer.", "Erreur");
-                                        return;
-                                    }
+                        <Button
+                            onClick={async () => {
+                                if (!selectedFile) {
+                                    ShowToast("destructive", "Veuillez sélectionner une image.", "Erreur");
+                                    return;
+                                }
 
-                                    await handleUploadNewImage({
-                                        file: selectedFile,
-                                        profileId,
-                                        userId,
-                                        type: "profile",
-                                        onUploadSuccess: (url) => {
-                                            setPreview(url);
+                                await handleUploadNewImage({
+                                    file: selectedFile,
+                                    profileId,
+                                    userId,
+                                    type: selectedType,
+                                    onUploadSuccess: (url) => {
+                                        if (selectedType === "profile") {
                                             setCurrentAvatar(url);
-                                            refreshProfileImage(profileId);
-                                            setIsDialogOpen(false);
-                                        },
-                                        onError: (message) => setErrorMessage(message),
-                                        setLoading: setIsLoading,
-                                    });
-                                }}
-                            >
-                                Confirmer
-                            </Button>
-                        </label>
+                                            setTempProfilePreview(url);
+                                        } else {
+                                            setCoverImage(url);
+                                            setTempCoverPreview(url);
+                                        }
+                                        refreshProfileImage(profileId, selectedType);
+                                        setIsDialogOpen(false);
+                                    },
+                                    onError: (message) => ShowToast("destructive", message),
+                                    setLoading: setIsLoading,
+                                });
+                            }}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Enregistrement..." : "Confirmer"}
+                        </Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
@@ -636,7 +758,7 @@ export default function ProfileSettingsPage() {
             const data: Profile = await fetchUserProfileData(profileId);
             setProfile({...data, gender: genderMap[data.gender as string] || "Autre"});
         } catch (error) {
-            console.error("Error fetching user profile:", error);
+            ShowToast("destructive", "Erreur lors de la récupération du profil. Veuillez réessayer plus tard.", "Erreur");
         }
     }, [profileId]);
 
@@ -690,7 +812,7 @@ export default function ProfileSettingsPage() {
             handleDialogClose();
             await fetchUserProfile();
         } catch (err) {
-            console.error("Error updating profile:", err);
+            ShowToast("destructive", "Erreur lors de la modification du profil. Veuillez réessayer plus tard.", "Erreur");
         }
     };
 
@@ -821,8 +943,8 @@ export default function ProfileSettingsPage() {
 
                 <ProfilePictureSection
                     imageUrl="https://via.placeholder.com/150"
+                    coverUrl="https://via.placeholder.com/150"
                     name="Utilisateur"
-                    onPreviewComplete={() => console.log("Modifier")}
                 />
             </div>
 

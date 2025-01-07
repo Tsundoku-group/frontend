@@ -15,7 +15,6 @@ import {truncateString} from "@/utils/string-utils";
 import {ShowToast} from "@/components/ShowToast";
 import AddProfileButton from "@/components/AddProfileButton";
 import {useProfileContext} from "@/context/profileContext";
-import {getProfileImageUrl} from "@/utils/profileImageUtils";
 
 type UserProfile = {
     id: number;
@@ -42,12 +41,12 @@ function CustomDropDown(props: {
                     <div className="relative">
                         <Avatar>
                             <AvatarImage
-                                src={profileImageUrls[activeProfileInStorage?.id || ''] || ''}
+                                src={profileImageUrls[`${activeProfileInStorage?.id}-profile`] || ''}
                                 alt={activeProfileInStorage?.username || "Profile Image"}
                                 className="object-cover object-center"
                             />
                             <AvatarFallback>
-                                <User className="w-6 h-6 text-gray-500" />
+                                <User className="w-6 h-6 text-gray-500"/>
                             </AvatarFallback>
                         </Avatar>
                         <div
@@ -185,7 +184,7 @@ export default function Navbar() {
                     <div className="relative">
                         <Avatar className="w-12 h-12">
                             <AvatarImage
-                                src={profileImageUrls[profile.id] || ''}
+                                src={profileImageUrls[`${profile.id}-profile`] || ''}
                                 alt={activeProfileInStorage?.username || "Profile Image"}
                                 className="object-cover object-center"
                             />
@@ -221,7 +220,7 @@ export default function Navbar() {
         return statuses.map((status) => (
             <div
                 key={status}
-                className={`flex items-center p-2 text-white w-full hover:bg-gray-700 p-1 rounded-lg transition ease-in delay-100 ${
+                className={`flex items-center p-2 text-white w-full hover:bg-gray-700 rounded-lg transition ease-in delay-100 ${
                     activeStatus === status ? "bg-gray-800 border border-green-500" : ""
                 }`}
                 onClick={() => handleStatusProfileChange(activeProfileInStorage?.id as string, status)}
@@ -265,6 +264,7 @@ export default function Navbar() {
     const dropdownContent = useMemo(() => {
         const items = visibleItems === "profiles" ? profileItems : statusItems;
         const currentValue = visibleItems === "profiles" ? activeProfile || "" : activeStatus || "";
+        const profileId = activeProfileInStorage?.id || "";
 
         return (
             <DropdownMenuContent
@@ -277,7 +277,7 @@ export default function Navbar() {
                     style={{width: "100%"}}
                 >
                     <div className="w-full p-2 flex flex-col justify-center space-y-2 flex-shrink-0">
-                        <ProfileButton userId={userId} email={user?.email} profileImageUrl={profileImageUrls[activeProfileInStorage?.id as string]} />
+                        <ProfileButton userId={userId} profileId={profileId} email={user?.email}/>
                         <Button
                             className="flex justify-between w-full text-white bg-transparent outline-none focus:outline-none hover:bg-hover-bg-color hover:bg-gray-700 hover:text-gray-200 transition-colors duration-200 rounded-lg"
                             onClick={() => handleSwitch("", "profiles")}
@@ -357,7 +357,7 @@ export default function Navbar() {
                 </div>
             </DropdownMenuContent>
         );
-    }, [visibleItems, profileItems, statusItems, activeProfile, activeStatus, isSwitching, userId, user?.email, loading, userProfiles.length, handleSwitch, handleProfileChange, handleStatusProfileChange]);
+    }, [activeProfileInStorage?.id, visibleItems, profileItems, statusItems, activeProfile, activeStatus, isSwitching, userId, user?.email, loading, userProfiles.length, handleSwitch, handleProfileChange, handleStatusProfileChange]);
 
     useEffect(() => {
         if (activeProfileInStorage) {
@@ -384,5 +384,4 @@ export default function Navbar() {
             </div>
         </div>
     );
-}
-;
+};
