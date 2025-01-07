@@ -8,15 +8,13 @@ import {useProfileContext} from "@/context/profileContext";
 
 type ProfileButtonProps = {
     userId: number;
+    profileId: string;
     email: string;
-    imageUrl?: string;
-    name?: string;
-    profileImageUrl: string;
 };
 
-const ProfileButton = ({userId, email, name}: ProfileButtonProps) => {
+const ProfileButton = ({userId, profileId, email}: ProfileButtonProps) => {
     const router = useRouter();
-    const { activeProfileInStorage, profileImageUrls } = useProfileContext();
+    const { profileImageUrls } = useProfileContext();
 
     const handleNavigateProfilePage = () => {
         router.push(`/profile/${userId}`);
@@ -26,8 +24,8 @@ const ProfileButton = ({userId, email, name}: ProfileButtonProps) => {
         <div className="relative flex flex-col items-center cursor-pointer" onClick={handleNavigateProfilePage}>
             <Avatar className="w-16 h-16 relative">
                 <AvatarImage
-                    src={profileImageUrls[activeProfileInStorage?.id || ''] || ''}
-                    alt={activeProfileInStorage?.username || "Profile Image"}
+                    src={profileImageUrls[`${profileId}-profile`] || ''}
+                    alt="Profile Image"
                     className="object-cover object-center"
                 />
                 <AvatarFallback>
