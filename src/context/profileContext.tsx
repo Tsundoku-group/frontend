@@ -29,11 +29,6 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
 
-    const defaultImages = {
-        profile: "https://via.placeholder.com/150",
-        cover: "https://via.placeholder.com/600x400"
-    };
-
     const loadProfileImages = useCallback(
         async (profileId: string) => {
             if (profileImageUrls[`${profileId}-profile`] && profileImageUrls[`${profileId}-cover`]) {
@@ -70,15 +65,15 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
                     } else {
                         setProfileImageUrls(prev => ({
                             ...prev,
-                            [`${profileId}-${type}`]: defaultImages[type]
+                            [`${profileId}-${type}`]:""
                         }));
                     }
                 }
             } catch (error: any) {
                 setProfileImageUrls(prev => ({
                     ...prev,
-                    [`${profileId}-profile`]: defaultImages.profile,
-                    [`${profileId}-cover`]: defaultImages.cover
+                    [`${profileId}-profile`]: "",
+                    [`${profileId}-cover`]: ""
                 }));
             }
         }, []
