@@ -748,25 +748,13 @@ export default function ProfileSettingsPage() {
     const fetchUserProfile = useCallback(async () => {
         if (!profileId) return;
 
-        const genderMap: Record<string, string> = {
-            male: "Masculin",
-            female: "Féminin",
-            other: "Autre",
-        };
-
         try {
             const data: Profile = await fetchUserProfileData(profileId);
-            setProfile({...data, gender: genderMap[data.gender as string] || "Autre"});
+            setProfile({...data|| "Autre"});
         } catch (error) {
             ShowToast("destructive", "Erreur lors de la récupération du profil. Veuillez réessayer plus tard.", "Erreur");
         }
     }, [profileId]);
-
-    const reverseGenderMap: Record<string, string> = {
-        male: "Masculin",
-        female: "Féminin",
-        other: "Autre",
-    };
 
     useEffect(() => {
         fetchUserProfile();
@@ -805,8 +793,7 @@ export default function ProfileSettingsPage() {
 
     const handleConfirmUpdate = async (data: z.infer<typeof ProfileSchema>) => {
         try {
-            const transformedData = {...data, gender: reverseGenderMap[data.gender as string || "other"]};
-            const updatedProfile = await mutate(transformedData);
+            const updatedProfile = await mutate(data);
             setProfile(updatedProfile);
             handleDialogClose();
             await fetchUserProfile();
