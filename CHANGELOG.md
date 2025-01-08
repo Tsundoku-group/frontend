@@ -53,3 +53,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-46] Makefile [#46](https://trello.com/c/zNrZIUMV/46-t-46-makefile)
 - [t-47] nouveau profil: aller sur le nouveau profil [#47](https://trello.com/c/qrtZDlRq/47-t-47-nouveau-profil-aller-sur-le-nouveau-profil)
 - [t-48] correction: affiche image et données profil lorsqu'il n'y en a pas [#48](https://trello.com/c/GxhOcGQM/48-t-48-correction-affiche-image-et-donn%C3%A9es-profil-lorsquil-ny-en-a-pas)
+- [t-49] Correction: ajout du nouveau profil dans navbar [#49](https://trello.com/c/ldMBWtop/49-t-49-correction-ajout-du-nouveau-profil-dans-navbar)
