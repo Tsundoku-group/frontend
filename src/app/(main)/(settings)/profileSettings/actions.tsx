@@ -56,7 +56,7 @@ export async function fetchActiveProfilePictures(profileId: string): Promise<Rec
         );
 
         if (404 === response.status) {
-            throw new Error('Not found profile picture');
+            return {};
         }
 
         if (!response.response || response.status !== 200) {
