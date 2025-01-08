@@ -55,3 +55,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-48] correction: affiche image et données profil lorsqu'il n'y en a pas [#48](https://trello.com/c/GxhOcGQM/48-t-48-correction-affiche-image-et-donn%C3%A9es-profil-lorsquil-ny-en-a-pas)
 - [t-49] Correction: ajout du nouveau profil dans navbar [#49](https://trello.com/c/ldMBWtop/49-t-49-correction-ajout-du-nouveau-profil-dans-navbar)
 - [t-50] Fermer le dropdownContent de navbar au changement [#50](https://trello.com/c/7ZiX9vjt/50-t-50-fermer-le-dropdowncontent-de-navbar-au-changement)
+- [t-51] Correction: Formulaire d’ajout de profil [#51](https://trello.com/c/5o814qdV/51-t-51-correction-formulaire-dajout-de-profil)
