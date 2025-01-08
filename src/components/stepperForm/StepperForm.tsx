@@ -471,7 +471,7 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
                                     <div className="text-lg">Confirmer la soumission</div>
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    <div className="text-xs font-extralight">Voulez-vous vraiment soumettre ce profil?</div>
+                                    <span className="text-xs font-extralight">Voulez-vous vraiment soumettre ce profil?</span>
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
