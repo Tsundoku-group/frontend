@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useState} from 'react';
-import {DialogContent, DialogHeader, DialogTitle} from '@/components/ui/dialog';
+import {DialogContent, DialogDescription, DialogHeader, DialogTitle} from '@/components/ui/dialog';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {
@@ -136,6 +136,9 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
                 <DialogTitle>
                     <div className="text-xs">Créer un nouveau profil</div>
                 </DialogTitle>
+                <DialogDescription>
+                    Veuillez remplir les informations ci-dessous pour créer un nouveau profil.
+                </DialogDescription>
             </DialogHeader>
             <div className=" flex items-center p-2">
                 <ol className="flex items-center w-full text-sm font-medium text-center text-gray-500 dark:text-gray-400 sm:text-base">
@@ -473,7 +476,7 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel className="bg-gray-500 border-none">Annuler</AlertDialogCancel>
-                                <AlertDialogAction>
+                                <AlertDialogAction asChild>
                                     <Button
                                         onClick={handleSubmit(handleConfirmSubmit)}
                                         disabled={pending}
