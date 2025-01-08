@@ -19,13 +19,13 @@ type Props = {
 const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
     const queryClient = useQueryClient();
     const router = useRouter();
-    const {activeProfileInStorage} = useProfileContext();
+    const {activeProfileInStorage, profileImageUrls} = useProfileContext();
 
     useEffect(() => {
         if (activeProfileInStorage?.id && activeProfileInStorage.id.toString() !== profileId) {
             router.replace(`/profile/${activeProfileInStorage.id}`);
         }
-    }, [profileId, activeProfileInStorage, router]);
+    }, [profileId, activeProfileInStorage?.id, router]);
 
     const { data: profile, isLoading, isError } = useQuery<Profile>({
         queryKey: ['userProfile', profileId],
@@ -34,6 +34,10 @@ const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
         staleTime: 1000 * 60 * 60,
     });
 
+    const profileImageUrl = profileImageUrls[`${activeProfileInStorage?.id || ""}-profile`] || '' || '';
+    const coverImageUrl= profileImageUrls[`${activeProfileInStorage?.id || ""}-cover`] || '' || '';
+
+
     if (isLoading) return <div>Chargement du profil...</div>;
     if (isError || !profile) return <div>Profil introuvable.</div>;
 
@@ -41,16 +45,18 @@ const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
         <div className="min-h-screen grid grid-cols-12 grid-rows-[auto,1fr] gap-8 pt-8">
             <div className="col-span-8 row-span-1">
                 <ProfileHeader
-                    id={profile.id}
-                    firstName={profile.firstName}
-                    lastName={profile.lastName}
-                    username={profile.username}
+                    id={activeProfileInStorage?.id || profile.id}
+                    firstName={activeProfileInStorage?.firstName || profile.firstName}
+                    lastName={activeProfileInStorage?.lastName || profile.lastName}
+                    username={activeProfileInStorage?.username || profile.username}
                     friendsCount={142}
                     followersCount={503}
-                    bio={profile.bio}
-                    x={profile.x}
-                    instagram={profile.instagram}
-                    facebook={profile.facebook}
+                    bio={activeProfileInStorage?.bio || profile.bio}
+                    x={activeProfileInStorage?.x || profile.x}
+                    instagram={activeProfileInStorage?.instagram || profile.instagram}
+                    facebook={activeProfileInStorage?.facebook || profile.facebook}
+                    profileImageUrl={profileImageUrl}
+                    coverImageUrl={coverImageUrl}
                 />
             </div>
 
