@@ -4,8 +4,6 @@ export interface Profile {
     firstName?: string;
     lastName?: string;
     username?: string;
-    avatarUrl?: ProfilePicture;
-    coverUrl?: string;
     friendsCount?: number;
     followersCount?: number;
     birthday?: string | null;
@@ -17,6 +15,8 @@ export interface Profile {
     facebook?: string;
     createdAt?: string | null;
     status?: string | 'offline';
+    profileImageUrl?: string;
+    coverImageUrl?: string;
 }
 
 export interface ProfilePicture {
