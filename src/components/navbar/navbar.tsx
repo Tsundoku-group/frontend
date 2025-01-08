@@ -102,7 +102,7 @@ export default function Navbar() {
     const {activeProfileInStorage, setActiveProfileInStorage, profileImageUrls} = useProfileContext()
 
     const fetchProfiles = async () => {
-        if (userProfiles.length > 0) return;
+        if (!userId || userProfiles.length > 0) return;
 
         setLoading(true);
         try {
