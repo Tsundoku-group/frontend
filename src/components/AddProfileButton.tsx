@@ -8,15 +8,17 @@ import {ShowToast} from "@/components/ShowToast";
 
 type AddProfileButtonProps = {
     onProfileAdded: () => void;
+    onClose: () => void;
 };
 
-const AddProfileButton = ({onProfileAdded}: AddProfileButtonProps) => {
+const AddProfileButton = ({onProfileAdded, onClose}: AddProfileButtonProps) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
 
     const handleFormSuccess = () => {
         ShowToast("default", "Profil créé avec succès !");
         setDialogOpen(false);
         onProfileAdded();
+        onClose();
     };
 
     return (

@@ -6,13 +6,18 @@ import {useAuthContext} from "@/context/authContext";
 import {Button} from "@/components/ui/button";
 import {Plug} from "lucide-react";
 
-const LogoutButton = () => {
+type LogoutButtonProps = {
+    onClose: () => void;
+}
+
+const LogoutButton = ({onClose}: LogoutButtonProps) => {
     const {setIsAuthenticated, setUser} = useAuthContext();
     const handleLogout = async () => {
         try {
             await deleteSession();
             setIsAuthenticated(false);
             setUser(null);
+            onClose();
         } catch (error) {
             throw new Error('Failed to Logout');
         }

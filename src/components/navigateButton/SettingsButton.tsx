@@ -5,11 +5,16 @@ import {useRouter} from "next/navigation";
 import {Button} from "@/components/ui/button";
 import {Settings} from "lucide-react";
 
-const SettingsButton = () => {
+type SettingsButtonProps = {
+    onClose: () => void;
+}
+
+const SettingsButton = ({onClose}: SettingsButtonProps) => {
     const router = useRouter();
 
     const handleNavigateProfilePage = () => {
         router.push(`/profileSettings`);
+        onClose();
     }
 
     return (

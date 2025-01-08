@@ -10,14 +10,16 @@ type ProfileButtonProps = {
     userId: number;
     profileId: string;
     email: string;
+    onClose: () => void;
 };
 
-const ProfileButton = ({userId, profileId, email}: ProfileButtonProps) => {
+const ProfileButton = ({userId, profileId, email, onClose}: ProfileButtonProps) => {
     const router = useRouter();
     const { profileImageUrls } = useProfileContext();
 
     const handleNavigateProfilePage = () => {
         router.push(`/profile/${userId}`);
+        onClose();
     };
 
     return (
