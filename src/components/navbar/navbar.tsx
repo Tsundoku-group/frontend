@@ -101,8 +101,8 @@ export default function Navbar() {
     const userId = user?.userId as number;
     const {activeProfileInStorage, setActiveProfileInStorage, profileImageUrls} = useProfileContext()
 
-    const fetchProfiles = async (forceRefresh = false) => {
-        if (!forceRefresh && userProfiles.length > 0) return;
+    const fetchProfiles = async () => {
+        if (userProfiles.length > 0) return;
 
         setLoading(true);
         try {
@@ -265,6 +265,10 @@ export default function Navbar() {
         ));
     }, [activeStatus, activeProfile, handleStatusProfileChange]);
 
+    const handleProfileAdded = () => {
+        fetchProfiles();
+    }
+
     const dropdownContent = useMemo(() => {
         const items = visibleItems === "profiles" ? profileItems : statusItems;
         const currentValue = visibleItems === "profiles" ? activeProfile || "" : activeStatus || "";
@@ -347,7 +351,7 @@ export default function Navbar() {
                                 >
                                     {items}
                                 </RadioGroup>
-                                {visibleItems === "profiles" && userProfiles.length < 5 && <AddProfileButton onProfileAdded={() => fetchProfiles(true)}/>}
+                                {visibleItems === "profiles" && userProfiles.length < 5 && <AddProfileButton onProfileAdded={handleProfileAdded}/>}
                             </>
                         )}
                         <Button
