@@ -28,7 +28,11 @@ export const getProfileImageUrl = async (profileId: string): Promise<ImageUrls> 
         }
 
         return urls;
-    } catch (error) {
+    }  catch (error: any) {
+        if (error.response && error.response.status === 404) {
+            return {};
+        }
+
         throw error;
     }
 };
