@@ -101,6 +101,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
             lastName: profileData.lastName || "",
             username: profileData.username || "",
             status: profileData.status || 'offline',
+            friendsCount: profileData.friendsCount || 0,
         };
 
         localStorage.setItem("activeProfile", JSON.stringify(completeProfile));
