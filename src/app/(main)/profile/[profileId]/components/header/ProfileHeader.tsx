@@ -3,7 +3,6 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {Facebook, Instagram, Twitter, User, ZoomIn} from "lucide-react";
-import { Profile } from "@/models/Profile";
 import {
     Dialog,
     DialogContent,
@@ -12,7 +11,23 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 
-const ProfileHeader: React.FC<Profile> = React.memo(({firstName, lastName, username, friendsCount, followersCount, bio, x, instagram, facebook, profileImageUrl, coverImageUrl}) => {
+type ProfileHeaderProps = {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    friendsCount?: number;
+    followersCount?: number;
+    bio?: string;
+    x?: string;
+    instagram?: string;
+    facebook?: string;
+    profileImageUrl?: string;
+    coverImageUrl?: string;
+};
+
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({firstName, lastName, username, friendsCount, followersCount, bio, x, instagram, facebook, profileImageUrl, coverImageUrl
+}) => {
     return (
         <div className="max-w-6xl mx-auto relative">
             <div className="bg-gray-900 rounded-t-2xl text-white shadow-lg overflow-hidden">
@@ -109,7 +124,7 @@ const ProfileHeader: React.FC<Profile> = React.memo(({firstName, lastName, usern
             </div>
         </div>
     );
-});
+};
 
 ProfileHeader.displayName = 'ProfileHeader';
 
