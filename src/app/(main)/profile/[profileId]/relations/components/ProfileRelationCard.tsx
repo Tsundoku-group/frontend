@@ -13,7 +13,12 @@ import {
     AlertDialogHeader, AlertDialogOverlay,
     AlertDialogTitle
 } from "@/components/ui/alert-dialog";
-import {fetchRemoveFriend} from "@/app/(main)/profile/[profileId]/actions";
+import {
+    fetchAddProfileFriend,
+    fetchFollowProfile,
+    fetchRemoveFriend,
+    fetchUnfollowProfile
+} from "@/app/(main)/profile/[profileId]/actions";
 import {ShowToast} from "@/components/ShowToast";
 import {useProfileContext} from "@/context/profileContext";
 
@@ -25,30 +30,49 @@ interface ProfileRelationCardProps {
         lastname: string;
         username: string;
     };
+    relationType: 'friends' | 'followed' | 'followers';
 }
 
-const ProfileRelationCard = ({friendshipId, friend}: ProfileRelationCardProps) => {
+const ProfileRelationCard = ({friendshipId, friend, relationType}: ProfileRelationCardProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const [localIsFriend, setLocalIsFriend] = useState<boolean>(true);
+    const [actionType, setActionType] = useState<"removeFriend" | "follow" | "unfollow" | "addFriend" | null>(null);
+    const [relationState, setRelationState] = useState({
+        isFriend: relationType === 'friends',
+        isFollow: relationType === 'followed',
+    });
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
 
-    const handleRemoveFriend = async () => {
+    const handleAction = async () => {
         if (!profileId || !friend.friendId) return;
 
         setLoading(true);
         try {
-            await fetchRemoveFriend(friendshipId, profileId, friend.friendId);
-            setLocalIsFriend(false);
-            setIsOpen(false);
-            ShowToast("default", "Ami supprimé avec succès");
+            if ("removeFriend" === actionType ) {
+                await fetchRemoveFriend(friendshipId, profileId, friend.friendId);
+                setRelationState((prev) => ({ ...prev, isFriend: false }));
+                ShowToast("default", "Ami supprimé avec succès");
+            } else if ("follow" === actionType) {
+                await fetchFollowProfile(profileId, friend.friendId);
+                setRelationState((prev) => ({ ...prev, isFollow: true }));
+                ShowToast("default", "Utilisateur suivi avec succès");
+            } else if ("unfollow" === actionType) {
+                await fetchUnfollowProfile(friendshipId, profileId, friend.friendId);
+                setRelationState((prev) => ({ ...prev, isFollow: false }));
+                ShowToast("default", "Utilisateur désabonné avec succès");
+            } else if ("addFriend" === actionType) {
+                await fetchAddProfileFriend(profileId, friend.friendId);
+                setRelationState((prev) => ({ ...prev, isFriend: true }));
+                ShowToast("default", "Demande d'ami envoyée");
+            }
         } catch (error) {
-            ShowToast("destructive", "Une erreur est survenue lors de la suppression", "Erreur");
+            ShowToast("destructive", "Une erreur est survenue lors de l'action", "Erreur");
         } finally {
+            setLoading(false);
             setIsOpen(false);
         }
-    }
+    };
 
     return (
         <>
@@ -68,42 +92,112 @@ const ProfileRelationCard = ({friendshipId, friend}: ProfileRelationCardProps) =
                 <CardFooter className="flex justify-between items-center">
                     <button className="text-primary text-sm hover:underline">Voir le profil</button>
                     <div className="flex space-x-2">
-                        {!localIsFriend ? (
-                            <Button className="text-primary text-sm hover:underline">Ajouter en ami</Button>
-                        ) : (
+                        {relationType === 'friends' && relationState.isFriend && (
                             <Button
                                 className="text-green-500 text-sm flex items-center space-x-1 cursor-pointer hover:text-green-700"
-                                onClick={() => setIsOpen(true)}
+                                onClick={() => {
+                                    setActionType("removeFriend");
+                                    setIsOpen(true);
+                                }}
                             >
                                 <span>Ami</span>
-                                <Check className="w-4 h-4" />
+                                <Check className="w-4 h-4"/>
+                            </Button>
+                        )}
+
+                        {'friends' === relationType || 'followed' === relationType || 'followers' === relationType? (
+                            !relationState.isFriend && (
+                                <Button
+                                    className="text-primary text-sm hover:text-blue-700"
+                                    onClick={() => {
+                                        setActionType("addFriend");
+                                        setIsOpen(true);
+                                    }}
+                                >
+                                    Ajouter en ami
+                                </Button>
+                            )
+                        ) : null}
+
+                        {relationType === 'followers' && (
+                            relationState.isFollow ? (
+                                <Button
+                                    className="text-green-500 text-sm flex items-center space-x-1 cursor-pointer hover:text-green-700"
+                                    onClick={() => {
+                                        setActionType("unfollow");
+                                        setIsOpen(true);
+                                    }}
+                                >
+                                    <span>Suivi</span>
+                                    <Check className="w-4 h-4"/>
+                                </Button>
+                            ) : (
+                                <Button
+                                    className="text-blue-500 text-sm hover:text-blue-700"
+                                    onClick={() => {
+                                        setActionType("follow");
+                                        setIsOpen(true);
+                                    }}
+                                >
+                                    Suivre
+                                </Button>
+                            )
+                        )}
+
+                        {relationType === 'followed' && (
+                            <Button
+                                className="text-green-500 text-sm flex items-center space-x-1 cursor-pointer hover:text-green-700"
+                                onClick={() => {
+                                    setActionType("unfollow");
+                                    setIsOpen(true);
+                                }}
+                            >
+                                <span>Suivi</span>
+                                <Check className="w-4 h-4"/>
                             </Button>
                         )}
                     </div>
                 </CardFooter>
             </Card>
 
-            <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-                <AlertDialogOverlay/>
-                <AlertDialogContent className="bg-tertiary-black border-none">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Voulez-vous vraiment supprimer cet ami ?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Cette action supprimera définitivement l&apos;amitié avec {friend.firstname} {friend.lastname}.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel onClick={() => setIsOpen(false)} className="text-gray-500">Annuler</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleRemoveFriend}
-                            className="text-red-600"
-                            disabled={loading}
-                        >
-                            {loading ? "Suppression en cours..." : "Supprimer"}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            {isOpen && (
+                <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+                    <AlertDialogOverlay />
+                    <AlertDialogContent className="bg-tertiary-black border-none">
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                {actionType === "removeFriend"
+                                    ? "Voulez-vous vraiment supprimer cet ami ?"
+                                    : actionType === "unfollow"
+                                        ? "Voulez-vous vraiment vous désabonner ?"
+                                        : "Voulez-vous vraiment effectuer cette action ?"}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {actionType === "removeFriend"
+                                    ? `Cette action supprimera définitivement l'amitié avec ${friend.firstname} ${friend.lastname}.`
+                                    : actionType === "unfollow"
+                                        ? `Cette action vous désabonnera de ${friend.firstname} ${friend.lastname}.`
+                                        : `Cette action ajoutera ${friend.firstname} ${friend.lastname} à votre liste.`}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel
+                                onClick={() => setIsOpen(false)}
+                                className="text-gray-500"
+                            >
+                                Annuler
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={handleAction}
+                                className="text-blue-500"
+                                disabled={loading}
+                            >
+                                {loading ? "Action en cours..." : "Confirmer"}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            )}
         </>
     );
 };
