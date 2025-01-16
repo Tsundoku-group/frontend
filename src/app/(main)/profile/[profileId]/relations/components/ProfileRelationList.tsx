@@ -17,31 +17,48 @@ interface Relation {
 interface ListProfileRelation {
     relations: Relation[];
     loading: boolean;
+    relationType: 'friends' | 'followed' | 'followers';
 }
 
-const ProfileRelationList = React.memo(({relations, loading}: ListProfileRelation) => {
+const ProfileRelationList = React.memo(({relations, loading, relationType}: ListProfileRelation) => {
+    const getText = (type: 'friends' | 'followed' | 'followers') => {
+        switch (type) {
+            case 'friends':
+                return { loading: 'Chargement des amis...', empty: 'Aucun ami trouvé.' };
+            case 'followed':
+                return { loading: 'Chargement des utilisateurs suivis...', empty: 'Aucun utilisateur suivi trouvé.' };
+            case 'followers':
+                return { loading: 'Chargement des followers...', empty: 'Aucun follower trouvé.' };
+            default:
+                return { loading: 'Chargement...', empty: 'Aucun résultat trouvé.' };
+        }
+    };
+
+    const text = getText(relationType);
+
     if (loading) {
-        return <p>Chargement des amis...</p>;
+        return <p>{text.loading}</p>;
     }
 
     return (
         <Card className="bg-tertiary-black border-none p-2">
-            <div className="grid grid-cols-2 gap-4 ">
+            <div className="grid grid-cols-2 gap-4">
                 {Array.isArray(relations) && relations.length > 0 ? (
                     relations.map((relation: Relation) => (
                         <ProfileRelationCard
                             key={relation.friendshipId}
                             friendshipId={relation.friendshipId}
                             friend={relation.friend}
+                            relationType={relationType}
                         />
                     ))
                 ) : (
-                    <p>Aucun ami trouvé.</p>
+                    <p>{text.empty}</p>
                 )}
             </div>
         </Card>
-    )
-})
+    );
+});
 
 ProfileRelationList.displayName = 'ProfileRelationList';
 
