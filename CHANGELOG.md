@@ -59,4 +59,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-52] Correction: Nouveau profil doit afficher les données dans profilepage [#52](https://trello.com/c/9QfxZUQL/52-t-52-correction-nouveau-profil-doit-afficher-les-donn%C3%A9es-dans-profilepage)
 - [t-54] Correction: erreur 500 imageProfileUtils [#54](https://trello.com/c/H4hZRDIf/54-t-54-correction-erreur-500-imageprofileutils)
 - [t-55] Correction: gender [#55](https://trello.com/c/TXDLboOG/55-t-55-correction-gender)
-- [t-57] Afficher la liste d'amis et de followers [#57](https://trello.com/c/jg1pPog8/57-t-57-afficher-la-liste-damis-et-de-followers)
+- [t-57] Afficher la liste d'amis [#57](https://trello.com/c/jg1pPog8/57-t-57-afficher-la-liste-damis)
+- [t-58] Afficher la liste de followers [#58](https://trello.com/c/bGW7Ppbo/58-t-58)
