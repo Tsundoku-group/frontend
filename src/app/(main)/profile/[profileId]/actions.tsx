@@ -59,9 +59,51 @@ export const fetchAddProfileFriend = async (profileId: string, friendId: string)
             throw new Error('Failed to fetch profile');
         }
 
-        return response;
+        if (404 === response.status) {
+            return {
+                message: "Le profil du demandeur ou du destinataire n'a pas été trouvé.",
+                status: "not found",
+            }
+        }
+
+        if (409 === response.status) {
+            if (response.data.includes('pending'))
+                return {
+                    message: "Demande d'amitié déjà envoyée. Statut : en attente.",
+                    status: 'pending',
+                };
+            if (response.data.includes('rejected')) {
+                return {
+                    message: "La demande d'ami a été précédemment rejetée. Vous pouvez renvoyer la demande.",
+                    status: 'rejected',
+                };
+            }
+
+            if (response.data.includes('exists')) {
+                return {
+                    message: "Vous êtes déjà ami avec cet utilisateur",
+                    status: 'exists',
+                }
+            }
+
+            if (response.data.includes('request pending for you')) {
+                return {
+                    message: "Cet utilisateur vous a déjà envoyé une demande. Veuillez l'accepter dans vos demandes en attente.",
+                    status: 'pendingForYou',
+                }
+            }
+        }
+        if (201 === response.status) {
+            return {
+                message: "Demande d'amitié envoyée avec succès.",
+                status: 'success',
+            };
+        }
     } catch (error) {
-        return [];
+        return {
+            message: "Une erreur est survenue. Veillez réessayer plus tard.",
+            status: 'error',
+        };
     }
 }
 
@@ -89,7 +131,7 @@ export const fetchFollowersListFromProfile = async (profileId: string) => {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
         })
-        if(!response.response) {
+        if (!response.response) {
             throw new Error('Failed to fetch followers');
         }
 
@@ -120,7 +162,7 @@ export const fetchFollowedListFromProfile = async (profileId: string) => {
         return response.data.map((item: any) => ({
             friendshipId: item.friendshipId,
             friend: {
-                friendId: item.followerId,
+                friendId: item.followingId,
                 firstname: item.following.followingFirstname,
                 lastname: item.following.followingLastname,
                 username: item.following.followingUsername,
@@ -161,7 +203,7 @@ export const fetchUnfollowProfile = async (friendshipId: string, profileId: stri
             if (!response.response) {
                 throw new Error('Failed to fetch unfollow profile');
             }
-            
+
             return response;
         } catch (error) {
             return [];
