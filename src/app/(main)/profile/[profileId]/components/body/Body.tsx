@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {Tabs, TabsList, TabsTrigger, TabsContent} from "@/components/ui/tabs";
 import {Activity, LibraryBig, Users} from "lucide-react";
 import Shelves from "@/app/(main)/profile/[profileId]/components/body/shelves/Shelves";
 import ItemProfileRelation from "@/app/(main)/profile/[profileId]/relations/components/item/ItemProfileRelation";
@@ -27,14 +27,27 @@ const Body = () => {
                         value="friends"
                         className="text-gray-600 px-4 py-2 rounded-md focus:bg-tertiary-black data-[state=active]:bg-tertiary-black focus:text-white data-[state=active]:text-white"
                     >
-                        <Users className="w-4 h-4 mr-2" />
-                        Amis
+                        <Users className="w-4 h-4 mr-2"/>
+                        Ami(e)s
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="followers"
+                        className="text-gray-600 px-4 py-2 rounded-md focus:bg-tertiary-black data-[state=active]:bg-tertiary-black focus:text-white data-[state=active]:text-white"
+                    >
+                        <Users className="w-4 h-4 mr-2"/>
+                        Followers
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="followed"
+                        className="text-gray-600 px-4 py-2 rounded-md focus:bg-tertiary-black data-[state=active]:bg-tertiary-black focus:text-white data-[state=active]:text-white">
+                        <Users className="w-4 h-4 mr-2"/>
+                        Suivi(e)s
                     </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="shelves">
                     <div className="mt-4">
-                        <Shelves />
+                        <Shelves/>
                     </div>
                 </TabsContent>
 
@@ -48,7 +61,21 @@ const Body = () => {
                 <TabsContent value="friends">
                     <div className="mt-4">
                         <h4 className="text-lg font-semibold mb-5">Ami(e)s</h4>
-                        <ItemProfileRelation />
+                        <ItemProfileRelation relationType="friends"/>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="followers">
+                    <div className="mt-4">
+                        <h4 className="text-lg font-semibold mb-5">Followers</h4>
+                        <ItemProfileRelation relationType="followers"/>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="followed">
+                    <div className="mt-4">
+                        <h4 className="text-lg font-semibold mb-5">suivi(e)s</h4>
+                        <ItemProfileRelation relationType="followed"/>
                     </div>
                 </TabsContent>
             </Tabs>
