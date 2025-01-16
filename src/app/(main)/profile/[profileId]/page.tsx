@@ -33,7 +33,6 @@ const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
         initialData: () => queryClient.getQueryData(['userProfile', profileId]) as Profile,
         staleTime: 1000 * 60 * 60,
     });
-    console.log(activeProfileInStorage);
 
     const profileImageUrl = profileImageUrls[`${activeProfileInStorage?.id || ""}-profile`] || '' || '';
     const coverImageUrl= profileImageUrls[`${activeProfileInStorage?.id || ""}-cover`] || '' || '';
@@ -50,7 +49,7 @@ const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
                     lastName={activeProfileInStorage?.lastName || profile.lastName}
                     username={activeProfileInStorage?.username || profile.username}
                     friendsCount={activeProfileInStorage?.friendsCount || profile.friendsCount || 0}
-                    followersCount={503}
+                    followersCount={activeProfileInStorage?.followersCount || profile.followersCount || 0}
                     bio={activeProfileInStorage?.bio || profile.bio}
                     x={activeProfileInStorage?.x || profile.x}
                     instagram={activeProfileInStorage?.instagram || profile.instagram}

@@ -47,6 +47,24 @@ export const fetchFriendsListFromProfile = async (profileId: string): Promise<Re
     }
 }
 
+export const fetchAddProfileFriend = async (profileId: string, friendId: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/friendship/request/${profileId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({friendId: friendId})
+        });
+
+        if (!response.response) {
+            throw new Error('Failed to fetch profile');
+        }
+
+        return response;
+    } catch (error) {
+        return [];
+    }
+}
+
 export const fetchRemoveFriend = async (friendshipId: string, profileId: string, friendId: string) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/friendship/remove/${friendshipId}`, {
@@ -62,5 +80,91 @@ export const fetchRemoveFriend = async (friendshipId: string, profileId: string,
         return response;
     } catch (error) {
         return [];
+    }
+}
+
+export const fetchFollowersListFromProfile = async (profileId: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/followers/${profileId}/followers`, {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+        })
+        if(!response.response) {
+            throw new Error('Failed to fetch followers');
+        }
+
+        return response.data.map((item: any) => ({
+            friendshipId: item.friendshipId,
+            friend: {
+                friendId: item.followerId,
+                firstname: item.following.followingFirstname,
+                lastname: item.following.followingLastname,
+                username: item.following.followingUsername,
+            },
+        })) as Relation[];
+    } catch (error) {
+        return [];
+    }
+}
+
+export const fetchFollowedListFromProfile = async (profileId: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/followers/${profileId}/followed`, {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+        })
+        if (!response.response) {
+            throw new Error('Failed to fetch followed');
+        }
+
+        return response.data.map((item: any) => ({
+            friendshipId: item.friendshipId,
+            friend: {
+                friendId: item.followerId,
+                firstname: item.following.followingFirstname,
+                lastname: item.following.followingLastname,
+                username: item.following.followingUsername,
+            },
+        })) as Relation[];
+    } catch (error) {
+        return [];
+    }
+}
+
+export const fetchFollowProfile = async (profileId: string, followingId: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/followers/follow/${profileId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({'followingId': followingId}),
+        })
+
+        if (!response.response) {
+            throw new Error('Failed to fetch profile');
+        }
+
+        return response;
+    } catch (error) {
+        return [];
+    }
+}
+
+export const fetchUnfollowProfile = async (friendshipId: string, profileId: string, friendId: string) => {
+    {
+        try {
+            const response = await fetchWithAuth(`${symfonyUrl}/api/followers/unfollow/${friendshipId}`, {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({'followerId': profileId, 'followingId': friendId}),
+            })
+
+            if (!response.response) {
+                throw new Error('Failed to fetch unfollow profile');
+            }
+            
+            return response;
+        } catch (error) {
+            return [];
+        }
     }
 }
