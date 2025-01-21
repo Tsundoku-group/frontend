@@ -9,28 +9,40 @@ interface Friend {
     username: string;
 }
 
+interface Suggestion {
+    friend: {
+        friendId: string;
+        firstname: string;
+        lastname: string;
+        username: string;
+        commonFriendsCount: number;
+    }
+}
+
 interface Relation {
-    friendshipId: string;
+    friendshipId: string | null;
     friend: Friend;
 }
 
 interface ListProfileRelation {
-    relations: Relation[];
+    relations: Relation[] | Suggestion[];
     loading: boolean;
-    relationType: 'friends' | 'followed' | 'followers';
+    relationType: 'friends' | 'followed' | 'followers' | 'suggestions';
 }
 
 const ProfileRelationList = React.memo(({relations, loading, relationType}: ListProfileRelation) => {
-    const getText = (type: 'friends' | 'followed' | 'followers') => {
+    const getText = (type: 'friends' | 'followed' | 'followers' | 'suggestions') => {
         switch (type) {
             case 'friends':
-                return { loading: 'Chargement des amis...', empty: 'Aucun ami trouvé.' };
+                return {loading: 'Chargement des amis...', empty: 'Aucun ami trouvé.'};
             case 'followed':
-                return { loading: 'Chargement des utilisateurs suivis...', empty: 'Aucun utilisateur suivi trouvé.' };
+                return {loading: 'Chargement des utilisateurs suivis...', empty: 'Aucun utilisateur suivi trouvé.'};
             case 'followers':
-                return { loading: 'Chargement des followers...', empty: 'Aucun follower trouvé.' };
+                return {loading: 'Chargement des followers...', empty: 'Aucun follower trouvé.'};
+            case 'suggestions':
+                return {loading: 'Chargement des suggestions...', empty: 'Aucune suggestion trouvée.'};
             default:
-                return { loading: 'Chargement...', empty: 'Aucun résultat trouvé.' };
+                return {loading: 'Chargement...', empty: 'Aucun résultat trouvé.'};
         }
     };
 
@@ -44,14 +56,35 @@ const ProfileRelationList = React.memo(({relations, loading, relationType}: List
         <Card className="bg-tertiary-black border-none p-2">
             <div className="grid grid-cols-2 gap-4">
                 {Array.isArray(relations) && relations.length > 0 ? (
-                    relations.map((relation: Relation) => (
-                        <ProfileRelationCard
-                            key={relation.friendshipId}
-                            friendshipId={relation.friendshipId}
-                            friend={relation.friend}
-                            relationType={relationType}
-                        />
-                    ))
+                    relations.map((item) => {
+                        if ('suggestions' === relationType) {
+                            const suggestion = item as Suggestion;
+                            return (
+                                <ProfileRelationCard
+                                    key={suggestion.friend.friendId}
+                                    friendshipId={null}
+                                    friend={{
+                                        friendId: suggestion.friend.friendId,
+                                        firstname: suggestion.friend.firstname,
+                                        lastname: suggestion.friend.lastname,
+                                        username: suggestion.friend.username,
+                                        commonFriendsCount: suggestion.friend.commonFriendsCount
+                                    }}
+                                    relationType={relationType}
+                                />
+                            );
+                        }
+
+                        const relation = item as Relation;
+                        return (
+                            <ProfileRelationCard
+                                key={relation.friendshipId}
+                                friendshipId={relation.friendshipId}
+                                friend={relation.friend}
+                                relationType={relationType}
+                            />
+                        );
+                    })
                 ) : (
                     <p>{text.empty}</p>
                 )}
