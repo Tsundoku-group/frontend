@@ -10,6 +10,14 @@ interface Friend {
     username: string;
 }
 
+interface Suggestion {
+    friendId: string;
+    firstname: string;
+    lastname: string;
+    username: string;
+    commonFriendsCount: number;
+}
+
 interface Relation {
     friendshipId: string;
     friend: Friend;
@@ -107,7 +115,7 @@ export const fetchAddProfileFriend = async (profileId: string, friendId: string)
     }
 }
 
-export const fetchRemoveFriend = async (friendshipId: string, profileId: string, friendId: string) => {
+export const fetchRemoveFriend = async (friendshipId: string | null, profileId: string, friendId: string) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/friendship/remove/${friendshipId}`, {
             method: 'DELETE',
@@ -173,6 +181,32 @@ export const fetchFollowedListFromProfile = async (profileId: string) => {
     }
 }
 
+export const fetchSuggestedFriendListFromProfile = async (profileId: string, limit: number, offset: number) => {
+    try {
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/friendship/${profileId}/suggestions?limit=${limit}&offset=${offset}`,
+            {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+            }
+        );
+
+        if (!response.response) {
+            throw new Error('Failed to fetch friends suggestions');
+        }
+
+        return response.data.suggestions.map((item: any) => ({
+            friendId: item.id,
+            firstname: item.firstName,
+            lastname: item.lastName,
+            username: item.username,
+            commonFriendsCount: item.commonFriendsCount,
+        })) as Suggestion[];
+    } catch (error) {
+        return [];
+    }
+}
+
 export const fetchFollowProfile = async (profileId: string, followingId: string) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/followers/follow/${profileId}`, {
@@ -191,7 +225,7 @@ export const fetchFollowProfile = async (profileId: string, followingId: string)
     }
 }
 
-export const fetchUnfollowProfile = async (friendshipId: string, profileId: string, friendId: string) => {
+export const fetchUnfollowProfile = async (friendshipId: string | null, profileId: string, friendId: string) => {
     {
         try {
             const response = await fetchWithAuth(`${symfonyUrl}/api/followers/unfollow/${friendshipId}`, {
