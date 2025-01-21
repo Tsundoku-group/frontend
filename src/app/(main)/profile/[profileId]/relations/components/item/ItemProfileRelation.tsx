@@ -5,16 +5,26 @@ import ItemSearchProfileBar from "@/app/(main)/profile/[profileId]/relations/com
 import {
     fetchFollowedListFromProfile,
     fetchFollowersListFromProfile,
-    fetchFriendsListFromProfile
+    fetchFriendsListFromProfile,
+    fetchSuggestedFriendListFromProfile,
 } from "@/app/(main)/profile/[profileId]/actions";
 import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 interface Friend {
     friendId: string;
     firstname: string;
     lastname: string;
     username: string;
+}
+
+interface Suggestion {
+    friendId: string;
+    firstname: string;
+    lastname: string;
+    username: string;
+    commonFriendsCount: number;
 }
 
 interface Relation {
@@ -26,49 +36,76 @@ interface ItemProfileRelationProps {
     relationType: 'friends' | 'followed' | 'followers';
 }
 
-const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({ relationType }) => {
+const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({relationType}) => {
     const [profileRelationList, setProfileRelationList] = useState<Relation[]>([]);
     const [filteredProfileRelations, setFilteredProfileRelations] = useState<Relation[]>([]);
-    const [allProfileRelation, setAllProfileRelation] = useState<Relation[]>([]);
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [loading, setLoading] = useState(false);
+    const [activeTab, setActiveTab] = useState<'friends' | 'suggestions' | null>(null);
+
+    const itemsPerPage = 20;
+    const [currentPage, setCurrentPage] = useState(1);
+    const [suggestionsPage, setSuggestionsPage] = useState(1);
 
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id as string;
 
-    useEffect(() => {
-        const getFriendsList = async () => {
-            if (!profileId) return;
-            setLoading(true);
+    const offset = (currentPage - 1) * itemsPerPage;
+    const suggestionsOffset = (suggestionsPage - 1) * itemsPerPage;
 
-            try {
-                let data: Relation[] = [];
+    const paginatedRelations = filteredProfileRelations.slice(offset, offset + itemsPerPage);
+    const paginatedSuggestions = suggestions.slice(suggestionsOffset, suggestionsOffset + itemsPerPage);
 
-                if (relationType === 'friends') {
-                    data = await fetchFriendsListFromProfile(profileId);
-                } else if (relationType === 'followed') {
-                    data = await fetchFollowedListFromProfile(profileId);
-                } else if (relationType === 'followers') {
-                    data = await fetchFollowersListFromProfile(profileId);
-                }
-
-                setProfileRelationList(data);
-                setFilteredProfileRelations(data);
-                setAllProfileRelation(data);
-            } catch (error: any) {
-                ShowToast('destructive', 'Un problème est survenue ! Veuillez réessayer plus tard.', 'Erreur')
-            } finally {
-                setLoading(false);
+    const fetchRelations = async (
+        type: 'friends' | 'followed' | 'followers',
+        limit: number,
+        offset: number
+    ) => {
+        try {
+            switch (type) {
+                case 'friends':
+                    return await fetchFriendsListFromProfile(profileId);
+                case 'followed':
+                    return await fetchFollowedListFromProfile(profileId);
+                case 'followers':
+                    return await fetchFollowersListFromProfile(profileId);
+                default:
+                    return [];
             }
-        };
-
-        getFriendsList();
-    }, [profileId, relationType]);
-
-    const resetSearchProfileBar = () => {
-        setFilteredProfileRelations(allProfileRelation);
+        } catch (error) {
+            ShowToast('destructive', 'Un problème est survenu ! Veuillez réessayer plus tard.', 'Erreur');
+            return [];
+        }
     };
 
-    const getPlaceholder = (type: 'friends' | 'followed' | 'followers') => {
+    const fetchSuggestions = async (limit: number, offset: number) => {
+        try {
+            const data = await fetchSuggestedFriendListFromProfile(profileId, limit, offset);
+            setSuggestions(data);
+        } catch (error) {
+            ShowToast('destructive', 'Un problème est survenu ! Veuillez réessayer plus tard.', 'Erreur');
+        }
+    };
+
+    useEffect(() => {
+        if (relationType === 'friends' && activeTab === 'suggestions') {
+            fetchSuggestions(itemsPerPage, suggestionsOffset);
+        } else {
+            setLoading(true);
+            fetchRelations(relationType, itemsPerPage, offset)
+                .then((data) => {
+                    setProfileRelationList(data);
+                    setFilteredProfileRelations(data);
+                })
+                .finally(() => setLoading(false));
+        }
+    }, [profileId, relationType, activeTab, currentPage, suggestionsPage]);
+
+    const resetSearchProfileBar = () => {
+        setFilteredProfileRelations(profileRelationList);
+    };
+
+    const getPlaceholder = (type: string) => {
         switch (type) {
             case 'friends':
                 return 'Rechercher un(e) ami(e)...';
@@ -76,25 +113,118 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({ relationType 
                 return 'Rechercher un(e) utilisateur(trice) suivi(e)...';
             case 'followers':
                 return 'Rechercher un(e) follower...';
+            case 'suggestions':
+                return 'Rechercher de nouveaux ami(e)s...';
             default:
                 return 'Rechercher...';
         }
     };
 
-    return (
-        <Card className="bg-tertiary-black border-none p-4">
+    const renderSuggestions = () => (
+        <>
             <div className="mb-5">
                 <ItemSearchProfileBar
-                    placeholder={getPlaceholder(relationType)}
+                    placeholder="Rechercher de nouveaux ami(e)s..."
+                    items={suggestions}
+                    setFilteredItems={setSuggestions}
+                    getLabel={(suggestion) =>
+                        `${suggestion.firstname} ${suggestion.lastname} (${suggestion.username})`
+                    }
+                    resetItems={() => setSuggestions(suggestions)}
+                />
+            </div>
+            <div className="w-full">
+                <ProfileRelationList
+                    relations={paginatedSuggestions.map((s) => ({
+                        friendshipId: null,
+                        friend: {
+                            friendId: s.friendId,
+                            firstname: s.firstname,
+                            lastname: s.lastname,
+                            username: s.username,
+                            commonFriendsCount: s.commonFriendsCount,
+                        },
+                    }))}
+                    loading={loading}
+                    relationType="suggestions"
+                />
+            </div>
+            <div className="flex justify-between mt-4">
+                <button
+                    className="btn btn-primary"
+                    disabled={suggestionsPage === 1}
+                    onClick={() => setSuggestionsPage((prev) => Math.max(prev - 1, 1))}
+                >
+                    Précédent
+                </button>
+                <button
+                    className="btn btn-primary"
+                    disabled={paginatedSuggestions.length < itemsPerPage}
+                    onClick={() => setSuggestionsPage((prev) => prev + 1)}
+                >
+                    Suivant
+                </button>
+            </div>
+        </>
+    );
+
+    const renderContent = (type: 'friends' | 'followed' | 'followers') => (
+        <>
+            <div className="mb-5">
+                <ItemSearchProfileBar
+                    placeholder={getPlaceholder(type)}
                     items={profileRelationList}
                     setFilteredItems={setFilteredProfileRelations}
-                    getLabel={(relation) => `${relation.friend.firstname} ${relation.friend.lastname} ${relation.friend.username}`}
+                    getLabel={(relation) =>
+                        `${relation.friend.firstname} ${relation.friend.lastname} ${relation.friend.username}`
+                    }
                     resetItems={resetSearchProfileBar}
                 />
             </div>
             <div className="w-full">
-                <ProfileRelationList relations={filteredProfileRelations} loading={loading} relationType={relationType}/>
+                <ProfileRelationList
+                    relations={paginatedRelations}
+                    loading={loading}
+                    relationType={type}
+                />
             </div>
+            <div className="flex justify-between mt-4">
+                <button
+                    className="btn btn-primary"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                >
+                    Précédent
+                </button>
+                <button
+                    className="btn btn-primary"
+                    disabled={paginatedRelations.length < itemsPerPage}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                >
+                    Suivant
+                </button>
+            </div>
+        </>
+    );
+
+    return (
+        <Card className="bg-tertiary-black border-none p-4">
+            {relationType === 'friends' ? (
+                <Tabs
+                    defaultValue="friends"
+                    className="w-full"
+                    onValueChange={(value) => setActiveTab(value as 'friends' | 'suggestions')}
+                >
+                    <TabsList>
+                        <TabsTrigger value="friends">Tous mes ami(e)s</TabsTrigger>
+                        <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="friends">{renderContent('friends')}</TabsContent>
+                    <TabsContent value="suggestions">{renderSuggestions()}</TabsContent>
+                </Tabs>
+            ) : (
+                renderContent(relationType)
+            )}
         </Card>
     );
 };
