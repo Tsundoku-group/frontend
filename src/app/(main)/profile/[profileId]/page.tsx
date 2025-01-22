@@ -1,14 +1,14 @@
 'use client';
 
-import React, {Suspense, useEffect, useState} from 'react';
+import React, {Suspense, useState} from 'react';
 import ProfileHeader from "@/app/(main)/profile/[profileId]/components/header/ProfileHeader";
 import Body from "@/app/(main)/profile/[profileId]/components/body/Body";
 import RightbarWrapper from "@/app/(main)/profile/[profileId]/components/rightbar/RightbarWrapper";
-import { Profile } from "@/models/Profile";
+import {ProfileResult} from "@/models/Profile";
 import { fetchUserProfile } from "@/app/(main)/profile/[profileId]/actions";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useProfileContext } from "@/context/profileContext";
 import {useRouter} from "next/navigation";
-import {useProfileContext} from "@/context/profileContext";
 
 type Props = {
     params: {
@@ -19,51 +19,70 @@ type Props = {
 const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
     const [activeTab, setActiveTab] = useState<string>("shelves");
     const queryClient = useQueryClient();
-    const router = useRouter();
-    const {activeProfileInStorage, profileImageUrls} = useProfileContext();
+    const { activeProfileInStorage, profileImageUrls } = useProfileContext();
+    const router  = useRouter();
 
-    useEffect(() => {
-        if (activeProfileInStorage?.id && activeProfileInStorage.id.toString() !== profileId) {
-            router.replace(`/profile/${activeProfileInStorage.id}`);
-        }
-    }, [profileId, activeProfileInStorage?.id, router]);
+    const isOwnProfile = activeProfileInStorage?.id.toString() === profileId;
 
-    const { data: profile, isLoading, isError } = useQuery<Profile>({
+    const { data: result, isLoading } = useQuery<ProfileResult>({
         queryKey: ['userProfile', profileId],
         queryFn: () => fetchUserProfile(profileId),
-        initialData: () => queryClient.getQueryData(['userProfile', profileId]) as Profile,
+        initialData: () => queryClient.getQueryData<ProfileResult>(['userProfile', profileId]),
         staleTime: 1000 * 60 * 60,
     });
 
-    const profileImageUrl = profileImageUrls[`${activeProfileInStorage?.id || ""}-profile`] || '' || '';
-    const coverImageUrl= profileImageUrls[`${activeProfileInStorage?.id || ""}-cover`] || '' || '';
-
     if (isLoading) return <div>Chargement du profil...</div>;
-    if (isError || !profile) return <div>Profil introuvable.</div>;
+
+    if (result?.error) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center text-center">
+                <h1 className="text-4xl font-bold text-red-highlight mb-4">Profil introuvable</h1>
+                <p className="text-lg text-gray-600 mb-6">
+                    Le profil que vous cherchez n&apos;existe pas ou a été supprimé.
+                </p>
+                <button
+                    onClick={() => router.push('/')}
+                    className="px-6 py-3 bg-tertiary-black text-white rounded-lg shadow hover:bg-secondary-black"
+                >
+                    Retour à l&apos;accueil
+                </button>
+            </div>
+        );
+    }
+    const profile = result?.data;
+
+    const profileImageUrl = isOwnProfile
+        ? profileImageUrls[`${activeProfileInStorage?.id || ""}-profile`] || ''
+        : profile?.profileImageUrl;
+
+    const coverImageUrl = isOwnProfile
+        ? profileImageUrls[`${activeProfileInStorage?.id || ""}-cover`] || ''
+        : profile?.coverImageUrl;
 
     return (
         <div className="min-h-screen grid grid-cols-12 grid-rows-[auto,1fr] gap-8 pt-8">
             <div className="col-span-8 row-span-1">
                 <ProfileHeader
-                    id={activeProfileInStorage?.id || profile.id}
-                    firstName={activeProfileInStorage?.firstName || profile.firstName}
-                    lastName={activeProfileInStorage?.lastName || profile.lastName}
-                    username={activeProfileInStorage?.username || profile.username}
-                    friendsCount={activeProfileInStorage?.friendsCount || profile.friendsCount || 0}
-                    followersCount={activeProfileInStorage?.followersCount || profile.followersCount || 0}
-                    bio={activeProfileInStorage?.bio || profile.bio}
-                    x={activeProfileInStorage?.x || profile.x}
-                    instagram={activeProfileInStorage?.instagram || profile.instagram}
-                    facebook={activeProfileInStorage?.facebook || profile.facebook}
+                    id={profile?.id}
+                    firstName={profile?.firstName}
+                    lastName={profile?.lastName}
+                    username={profile?.username}
+                    friendsCount={profile?.friendsCount || 0}
+                    followersCount={profile?.followersCount || 0}
+                    bio={profile?.bio}
+                    x={profile?.x}
+                    instagram={profile?.instagram}
+                    facebook={profile?.facebook}
                     profileImageUrl={profileImageUrl}
                     coverImageUrl={coverImageUrl}
                     setActiveTab={setActiveTab}
+                    isOwnProfile={isOwnProfile}
                 />
             </div>
 
             <Suspense fallback={<div>Chargement du contenu...</div>}>
                 <div className="col-span-8 row-start-2">
-                    <Body activeTab={activeTab} setActiveTab={setActiveTab}/>
+                    <Body profileId={profile?.id} activeTab={activeTab} setActiveTab={setActiveTab} isOwnProfile={isOwnProfile}/>
                 </div>
             </Suspense>
 

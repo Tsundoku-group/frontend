@@ -5,11 +5,13 @@ import Shelves from "@/app/(main)/profile/[profileId]/components/body/shelves/Sh
 import ItemProfileRelation from "@/app/(main)/profile/[profileId]/relations/components/item/ItemProfileRelation";
 
 interface BodyProps {
+    profileId?: string;
     activeTab: string;
     setActiveTab: (tab: string) => void;
+    isOwnProfile: boolean;
 }
 
-const Body = ({activeTab, setActiveTab}: BodyProps) => {
+const Body = ({profileId, activeTab, setActiveTab, isOwnProfile}: BodyProps) => {
     return (
         <div className="mt-4 px-4">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -66,21 +68,21 @@ const Body = ({activeTab, setActiveTab}: BodyProps) => {
                 <TabsContent value="friends">
                     <div className="mt-4">
                         <h4 className="text-lg font-semibold mb-5">Ami(e)s</h4>
-                        <ItemProfileRelation relationType="friends"/>
+                        <ItemProfileRelation profileId={profileId} relationType="friends" isOwnProfile={isOwnProfile}/>
                     </div>
                 </TabsContent>
 
                 <TabsContent value="followers">
                     <div className="mt-4">
                         <h4 className="text-lg font-semibold mb-5">Followers</h4>
-                        <ItemProfileRelation relationType="followers"/>
+                        <ItemProfileRelation profileId={profileId} relationType="followers" isOwnProfile={isOwnProfile}/>
                     </div>
                 </TabsContent>
 
                 <TabsContent value="followed">
                     <div className="mt-4">
                         <h4 className="text-lg font-semibold mb-5">suivi(e)s</h4>
-                        <ItemProfileRelation relationType="followed"/>
+                        <ItemProfileRelation profileId={profileId} relationType="followed" isOwnProfile={isOwnProfile}/>
                     </div>
                 </TabsContent>
             </Tabs>

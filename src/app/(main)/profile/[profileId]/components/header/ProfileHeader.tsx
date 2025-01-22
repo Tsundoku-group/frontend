@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 
 type ProfileHeaderProps = {
-    id: string;
+    id?: string;
     firstName?: string;
     lastName?: string;
     username?: string;
@@ -25,6 +25,7 @@ type ProfileHeaderProps = {
     profileImageUrl?: string;
     coverImageUrl?: string;
     setActiveTab: (tab: string) => void;
+    isOwnProfile: boolean;
 };
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
@@ -39,7 +40,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                                          facebook,
                                                          profileImageUrl,
                                                          coverImageUrl,
-                                                         setActiveTab
+                                                         setActiveTab,
                                                      }) => {
     return (
         <div className="max-w-6xl mx-auto relative">
