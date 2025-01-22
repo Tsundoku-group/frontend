@@ -22,6 +22,7 @@ import {
 } from "@/app/(main)/profile/[profileId]/actions";
 import {ShowToast} from "@/components/ShowToast";
 import {useProfileContext} from "@/context/profileContext";
+import {useRouter} from "next/navigation";
 
 interface ProfileRelationCardProps {
     friendshipId: string | null;
@@ -33,9 +34,10 @@ interface ProfileRelationCardProps {
         commonFriendsCount?: number;
     };
     relationType: "friends" | "followed" | "followers" | "suggestions";
+    isOwnProfile: boolean;
 }
 
-const ProfileRelationCard = ({friendshipId, friend, relationType}: ProfileRelationCardProps) => {
+const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}: ProfileRelationCardProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [actionType, setActionType] = useState<"removeFriend" | "follow" | "unfollow" | "addFriend" | null>(null);
@@ -45,6 +47,11 @@ const ProfileRelationCard = ({friendshipId, friend, relationType}: ProfileRelati
     });
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
+    const router = useRouter();
+
+    const handleViewProfile = () => {
+        router.push(`/profile/${friendshipId}`);
+    }
 
     const handleAction = async () => {
         if (!profileId || !friend.friendId) return;
@@ -106,7 +113,7 @@ const ProfileRelationCard = ({friendshipId, friend, relationType}: ProfileRelati
                     <div className="col-span-2 text-sm">
                         <div className="font-semibold">{friend.lastname} {friend.firstname}</div>
                         <div className="text-sm text-gray-400">@{friend.username}</div>
-                        {relationType === "suggestions" && friend.commonFriendsCount ? (
+                        {relationType === "suggestions" && friend.commonFriendsCount && isOwnProfile? (
                             <div className="text-sm text-gray-400 mt-1">
                                 {friend.commonFriendsCount} ami(e)(s) en commun
                             </div>
@@ -114,22 +121,9 @@ const ProfileRelationCard = ({friendshipId, friend, relationType}: ProfileRelati
                     </div>
                 </CardHeader>
                 <CardFooter className="flex justify-between items-center">
-                    <button className="text-primary text-sm hover:underline">Voir le profil</button>
+                    <button onClick={handleViewProfile} className="text-primary text-sm hover:underline">Voir le profil</button>
                     <div className="flex space-x-2">
-                        {relationType === "friends" && relationState.isFriend ? (
-                            <Button
-                                className="text-green-500 text-sm flex items-center space-x-1 cursor-pointer hover:text-green-700"
-                                onClick={() => {
-                                    setActionType("removeFriend");
-                                    setIsOpen(true);
-                                }}
-                            >
-                                <span>Ami</span>
-                                <Check className="w-4 h-4"/>
-                            </Button>
-                        ) : null}
-
-                        {["friends", "followers", "followed", 'suggestions'].includes(relationType) && !relationState.isFriend ? (
+                        {["friends", "followers", "followed", "suggestions"].includes(relationType) && !relationState.isFriend ? (
                             <Button
                                 className="text-primary text-sm hover:text-blue-700"
                                 onClick={() => {
@@ -141,43 +135,47 @@ const ProfileRelationCard = ({friendshipId, friend, relationType}: ProfileRelati
                             </Button>
                         ) : null}
 
-                        {relationType === "followers" ? (
-                            relationState.isFollow ? (
-                                <Button
-                                    className="text-green-500 text-sm flex items-center space-x-1 cursor-pointer hover:text-green-700"
-                                    onClick={() => {
-                                        setActionType("unfollow");
-                                        setIsOpen(true);
-                                    }}
-                                >
-                                    <span>Suivi</span>
-                                    <Check className="w-4 h-4"/>
-                                </Button>
-                            ) : (
-                                <Button
-                                    className="text-blue-500 text-sm hover:text-blue-700"
-                                    onClick={() => {
-                                        setActionType("follow");
-                                        setIsOpen(true);
-                                    }}
-                                >
-                                    Suivre
-                                </Button>
-                            )
-                        ) : null}
-
-                        {relationType === "followed" ? (
+                        {relationType === "followers" && !relationState.isFollow ? (
                             <Button
-                                className="text-green-500 text-sm flex items-center space-x-1 cursor-pointer hover:text-green-700"
+                                className="text-blue-500 text-sm hover:text-blue-700"
                                 onClick={() => {
-                                    setActionType("unfollow");
+                                    setActionType("follow");
                                     setIsOpen(true);
                                 }}
                             >
-                                <span>Suivi</span>
-                                <Check className="w-4 h-4"/>
+                                Suivre
                             </Button>
                         ) : null}
+
+                        {isOwnProfile && (
+                            <>
+                                {relationType === "friends" && relationState.isFriend ? (
+                                    <Button
+                                        className="text-green-500 text-sm flex items-center space-x-1 cursor-pointer hover:text-green-700"
+                                        onClick={() => {
+                                            setActionType("removeFriend");
+                                            setIsOpen(true);
+                                        }}
+                                    >
+                                        <span>Ami</span>
+                                        <Check className="w-4 h-4" />
+                                    </Button>
+                                ) : null}
+
+                                {relationType === "followed" ? (
+                                    <Button
+                                        className="text-green-500 text-sm flex items-center space-x-1 cursor-pointer hover:text-green-700"
+                                        onClick={() => {
+                                            setActionType("unfollow");
+                                            setIsOpen(true);
+                                        }}
+                                    >
+                                        <span>Suivi</span>
+                                        <Check className="w-4 h-4" />
+                                    </Button>
+                                ) : null}
+                            </>
+                        )}
                     </div>
                 </CardFooter>
             </Card>
