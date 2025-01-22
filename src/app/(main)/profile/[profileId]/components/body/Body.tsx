@@ -4,10 +4,15 @@ import {Activity, LibraryBig, Users} from "lucide-react";
 import Shelves from "@/app/(main)/profile/[profileId]/components/body/shelves/Shelves";
 import ItemProfileRelation from "@/app/(main)/profile/[profileId]/relations/components/item/ItemProfileRelation";
 
-const Body = () => {
+interface BodyProps {
+    activeTab: string;
+    setActiveTab: (tab: string) => void;
+}
+
+const Body = ({activeTab, setActiveTab}: BodyProps) => {
     return (
         <div className="mt-4 px-4">
-            <Tabs defaultValue="shelves">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="flex justify-start space-x-4 bg-primary-black pb-2">
                     <TabsTrigger
                         value="shelves"

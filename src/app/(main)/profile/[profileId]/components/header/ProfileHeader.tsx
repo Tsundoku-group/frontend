@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Facebook, Instagram, Twitter, User, ZoomIn} from "lucide-react";
 import {
     Dialog,
@@ -24,16 +24,29 @@ type ProfileHeaderProps = {
     facebook?: string;
     profileImageUrl?: string;
     coverImageUrl?: string;
+    setActiveTab: (tab: string) => void;
 };
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({firstName, lastName, username, friendsCount, followersCount, bio, x, instagram, facebook, profileImageUrl, coverImageUrl
-}) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({
+                                                         firstName,
+                                                         lastName,
+                                                         username,
+                                                         friendsCount,
+                                                         followersCount,
+                                                         bio,
+                                                         x,
+                                                         instagram,
+                                                         facebook,
+                                                         profileImageUrl,
+                                                         coverImageUrl,
+                                                         setActiveTab
+                                                     }) => {
     return (
         <div className="max-w-6xl mx-auto relative">
             <div className="bg-gray-900 rounded-t-2xl text-white shadow-lg overflow-hidden">
                 <div className="w-full h-24 bg-gray-700 rounded-t-2xl overflow-hidden">
                     {coverImageUrl ? (
-                        <img src={coverImageUrl} alt="Cover" className="w-full h-full object-cover" />
+                        <img src={coverImageUrl} alt="Cover" className="w-full h-full object-cover"/>
                     ) : (
                         <div className="w-full h-full bg-gradient-to-r from-indigo-600 to-purple-600"></div>
                     )}
@@ -43,11 +56,17 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({firstName, lastName, usern
             <div className="bg-gray-900 rounded-b-2xl text-white shadow-lg p-8 relative">
                 <div className="flex items-center justify-center w-full px-8 -mt-20 relative">
                     <div className="absolute left-0 flex items-center space-x-6 pt-4 text-sm text-gray-200">
-                        <div className="flex items-center space-x-2">
+                        <div
+                            onClick={() => setActiveTab("friends")}
+                            className="flex items-center space-x-2 cursor-pointer hover:text-blue-500 transition duration-200"
+                        >
                             <User className="w-5 h-5"/>
                             <span>{friendsCount} amis</span>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div
+                            onClick={() => setActiveTab("followers")}
+                            className="flex items-center space-x-2 cursor-pointer hover:text-blue-500 transition duration-200"
+                        >
                             <User className="w-5 h-5"/>
                             <span>{followersCount} followers</span>
                         </div>
@@ -65,12 +84,13 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({firstName, lastName, usern
                                                 className="object-cover object-center"
                                             />
                                             <AvatarFallback>
-                                                <User className="w-6 h-6 text-gray-500" />
+                                                <User className="w-6 h-6 text-gray-500"/>
                                             </AvatarFallback>
                                         </Avatar>
 
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
-                                            <span className="text-white text-lg font-semibold"><ZoomIn /></span>
+                                        <div
+                                            className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+                                            <span className="text-white text-lg font-semibold"><ZoomIn/></span>
                                         </div>
                                     </div>
                                 </DialogTrigger>
