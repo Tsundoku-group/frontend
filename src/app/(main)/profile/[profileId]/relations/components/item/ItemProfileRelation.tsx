@@ -11,6 +11,7 @@ import {
 import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {Button} from "@/components/ui/button";
 
 interface Friend {
     friendId: string;
@@ -64,11 +65,11 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({relationType})
         try {
             switch (type) {
                 case 'friends':
-                    return await fetchFriendsListFromProfile(profileId);
+                    return await fetchFriendsListFromProfile(profileId, limit, offset);
                 case 'followed':
-                    return await fetchFollowedListFromProfile(profileId);
+                    return await fetchFollowedListFromProfile(profileId, limit, offset);
                 case 'followers':
-                    return await fetchFollowersListFromProfile(profileId);
+                    return await fetchFollowersListFromProfile(profileId, limit, offset);
                 default:
                     return [];
             }
@@ -150,20 +151,20 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({relationType})
                 />
             </div>
             <div className="flex justify-between mt-4">
-                <button
-                    className="btn btn-primary"
+                <Button
+                    className="btn btn-primary cursor-pointer"
                     disabled={suggestionsPage === 1}
                     onClick={() => setSuggestionsPage((prev) => Math.max(prev - 1, 1))}
                 >
                     Précédent
-                </button>
-                <button
-                    className="btn btn-primary"
+                </Button>
+                <Button
+                    className="btn btn-primary cursor-pointer"
                     disabled={paginatedSuggestions.length < itemsPerPage}
                     onClick={() => setSuggestionsPage((prev) => prev + 1)}
                 >
                     Suivant
-                </button>
+                </Button>
             </div>
         </>
     );
@@ -189,20 +190,20 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({relationType})
                 />
             </div>
             <div className="flex justify-between mt-4">
-                <button
-                    className="btn btn-primary"
+                <Button
+                    className="btn btn-primary cursor-pointer"
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 >
                     Précédent
-                </button>
-                <button
-                    className="btn btn-primary"
+                </Button>
+                <Button
+                    className="btn btn-primary cursor-pointer"
                     disabled={paginatedRelations.length < itemsPerPage}
                     onClick={() => setCurrentPage((prev) => prev + 1)}
                 >
                     Suivant
-                </button>
+                </Button>
             </div>
         </>
     );
