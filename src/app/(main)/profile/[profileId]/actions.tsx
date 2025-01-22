@@ -38,12 +38,14 @@ export const fetchUserProfile = async (profileId: string): Promise<Profile> => {
     return response.data as Profile;
 }
 
-export const fetchFriendsListFromProfile = async (profileId: string): Promise<Relation[]> => {
+export const fetchFriendsListFromProfile = async (profileId: string, limit: number, offset: number): Promise<Relation[]> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/friendship/list/${profileId}`, {
-            method: 'GET',
-            headers: {'Content-Type': 'application/json'},
-        });
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/friendship/list/${profileId}?limit=${limit}&offset=${offset}`,
+            {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+            });
 
         if (!response.response) {
             throw new Error('Failed to fetch profile');
@@ -133,12 +135,14 @@ export const fetchRemoveFriend = async (friendshipId: string | null, profileId: 
     }
 }
 
-export const fetchFollowersListFromProfile = async (profileId: string) => {
+export const fetchFollowersListFromProfile = async (profileId: string, limit: number, offset: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/followers/${profileId}/followers`, {
-            method: 'GET',
-            headers: {'Content-Type': 'application/json'},
-        })
+        const response = await fetchWithAuth(`
+        ${symfonyUrl}/api/followers/${profileId}/followers?limit=${limit}&offset=${offset}`,
+            {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+            })
         if (!response.response) {
             throw new Error('Failed to fetch followers');
         }
@@ -157,12 +161,14 @@ export const fetchFollowersListFromProfile = async (profileId: string) => {
     }
 }
 
-export const fetchFollowedListFromProfile = async (profileId: string) => {
+export const fetchFollowedListFromProfile = async (profileId: string, limit: number, offset: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/followers/${profileId}/followed`, {
-            method: 'GET',
-            headers: {'Content-Type': 'application/json'},
-        })
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/followers/${profileId}/followed?limit=${limit}&offset=${offset}`,
+            {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+            })
         if (!response.response) {
             throw new Error('Failed to fetch followed');
         }
