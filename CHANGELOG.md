@@ -63,3 +63,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-58] Afficher la liste de followers [#58](https://trello.com/c/bGW7Ppbo/58-t-58)
 - [t-59] Bouton ajouter en amis dans liste amis/followers/suivies [#59](https://trello.com/c/gCAw9Hqe/59-t-59-bouton-ajouter-en-amis-dans-liste-amis-followers-suivies)
 - [t-60] Affichage des amis en communs [#60](https://trello.com/c/kdfVotnS/60-t-60-affichage-des-amis-en-communs)
+- [t-61] lien profil + followers sur la carte profil [#61](https://trello.com/c/ToMmkMZq/61-t-61-lien-profil-followers-sur-la-carte-profil)
