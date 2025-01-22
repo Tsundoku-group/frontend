@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useEffect } from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 import ProfileHeader from "@/app/(main)/profile/[profileId]/components/header/ProfileHeader";
 import Body from "@/app/(main)/profile/[profileId]/components/body/Body";
 import RightbarWrapper from "@/app/(main)/profile/[profileId]/components/rightbar/RightbarWrapper";
@@ -17,6 +17,7 @@ type Props = {
 };
 
 const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
+    const [activeTab, setActiveTab] = useState<string>("shelves");
     const queryClient = useQueryClient();
     const router = useRouter();
     const {activeProfileInStorage, profileImageUrls} = useProfileContext();
@@ -56,12 +57,13 @@ const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
                     facebook={activeProfileInStorage?.facebook || profile.facebook}
                     profileImageUrl={profileImageUrl}
                     coverImageUrl={coverImageUrl}
+                    setActiveTab={setActiveTab}
                 />
             </div>
 
             <Suspense fallback={<div>Chargement du contenu...</div>}>
                 <div className="col-span-8 row-start-2">
-                    <Body />
+                    <Body activeTab={activeTab} setActiveTab={setActiveTab}/>
                 </div>
             </Suspense>
 
