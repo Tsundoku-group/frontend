@@ -17,6 +17,7 @@ export interface Profile {
     status?: string | 'offline';
     profileImageUrl?: string;
     coverImageUrl?: string;
+    error?: string;
 }
 
 export interface ProfilePicture {
@@ -24,4 +25,9 @@ export interface ProfilePicture {
     profileId: string;
     url: string;
     type: string;
+}
+
+export type ProfileResult = {
+    data?: Profile;
+    error?: string;
 }
