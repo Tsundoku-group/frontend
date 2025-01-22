@@ -41,7 +41,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                                          profileImageUrl,
                                                          coverImageUrl,
                                                          setActiveTab,
-                                                         isOwnProfile,
                                                      }) => {
     return (
         <div className="max-w-6xl mx-auto relative">
