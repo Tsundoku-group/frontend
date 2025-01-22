@@ -28,9 +28,10 @@ interface ListProfileRelation {
     relations: Relation[] | Suggestion[];
     loading: boolean;
     relationType: 'friends' | 'followed' | 'followers' | 'suggestions';
+    isOwnProfile: boolean;
 }
 
-const ProfileRelationList = React.memo(({relations, loading, relationType}: ListProfileRelation) => {
+const ProfileRelationList = React.memo(({relations, loading, relationType, isOwnProfile}: ListProfileRelation) => {
     const getText = (type: 'friends' | 'followed' | 'followers' | 'suggestions') => {
         switch (type) {
             case 'friends':
@@ -71,6 +72,7 @@ const ProfileRelationList = React.memo(({relations, loading, relationType}: List
                                         commonFriendsCount: suggestion.friend.commonFriendsCount
                                     }}
                                     relationType={relationType}
+                                    isOwnProfile={isOwnProfile}
                                 />
                             );
                         }
@@ -82,6 +84,7 @@ const ProfileRelationList = React.memo(({relations, loading, relationType}: List
                                 friendshipId={relation.friendshipId}
                                 friend={relation.friend}
                                 relationType={relationType}
+                                isOwnProfile={isOwnProfile}
                             />
                         );
                     })

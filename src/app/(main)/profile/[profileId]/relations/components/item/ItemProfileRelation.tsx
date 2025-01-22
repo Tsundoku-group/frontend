@@ -8,7 +8,6 @@ import {
     fetchFriendsListFromProfile,
     fetchSuggestedFriendListFromProfile,
 } from "@/app/(main)/profile/[profileId]/actions";
-import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Button} from "@/components/ui/button";
@@ -34,10 +33,12 @@ interface Relation {
 }
 
 interface ItemProfileRelationProps {
+    profileId?: string;
     relationType: 'friends' | 'followed' | 'followers';
+    isOwnProfile: boolean;
 }
 
-const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({relationType}) => {
+const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({profileId, relationType, isOwnProfile}) => {
     const [profileRelationList, setProfileRelationList] = useState<Relation[]>([]);
     const [filteredProfileRelations, setFilteredProfileRelations] = useState<Relation[]>([]);
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -47,9 +48,6 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({relationType})
     const itemsPerPage = 20;
     const [currentPage, setCurrentPage] = useState(1);
     const [suggestionsPage, setSuggestionsPage] = useState(1);
-
-    const {activeProfileInStorage} = useProfileContext();
-    const profileId = activeProfileInStorage?.id as string;
 
     const offset = (currentPage - 1) * itemsPerPage;
     const suggestionsOffset = (suggestionsPage - 1) * itemsPerPage;
@@ -63,16 +61,19 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({relationType})
         offset: number
     ) => {
         try {
+            let data = [];
             switch (type) {
                 case 'friends':
-                    return await fetchFriendsListFromProfile(profileId, limit, offset);
+                    data = await fetchFriendsListFromProfile(profileId, limit, offset);
+                    break;
                 case 'followed':
-                    return await fetchFollowedListFromProfile(profileId, limit, offset);
+                    data = await fetchFollowedListFromProfile(profileId, limit, offset);
+                    break;
                 case 'followers':
-                    return await fetchFollowersListFromProfile(profileId, limit, offset);
-                default:
-                    return [];
+                    data = await fetchFollowersListFromProfile(profileId, limit, offset);
+                    break;
             }
+            return Array.isArray(data) ? data : [];
         } catch (error) {
             ShowToast('destructive', 'Un problème est survenu ! Veuillez réessayer plus tard.', 'Erreur');
             return [];
@@ -148,6 +149,7 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({relationType})
                     }))}
                     loading={loading}
                     relationType="suggestions"
+                    isOwnProfile={isOwnProfile}
                 />
             </div>
             <div className="flex justify-between mt-4">
@@ -187,6 +189,7 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({relationType})
                     relations={paginatedRelations}
                     loading={loading}
                     relationType={type}
+                    isOwnProfile={isOwnProfile}
                 />
             </div>
             <div className="flex justify-between mt-4">
@@ -217,11 +220,17 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({relationType})
                     onValueChange={(value) => setActiveTab(value as 'friends' | 'suggestions')}
                 >
                     <TabsList>
-                        <TabsTrigger value="friends">Tous mes ami(e)s</TabsTrigger>
-                        <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
+                        <TabsTrigger value="friends">
+                            {isOwnProfile ? 'Tous mes ami(e)s' : 'Tous ses ami(e)s'}
+                        </TabsTrigger>
+                        {isOwnProfile && (
+                            <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
+                        )}
                     </TabsList>
                     <TabsContent value="friends">{renderContent('friends')}</TabsContent>
-                    <TabsContent value="suggestions">{renderSuggestions()}</TabsContent>
+                    {isOwnProfile && (
+                        <TabsContent value="suggestions">{renderSuggestions()}</TabsContent>
+                    )}
                 </Tabs>
             ) : (
                 renderContent(relationType)
