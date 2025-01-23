@@ -372,9 +372,26 @@ export default function Navbar() {
 
     useEffect(() => {
         if (activeProfileInStorage) {
-            setActiveStatus(activeProfileInStorage.status || "offline");
+            const updateStatusOnLogin = async () => {
+                const currentStatus = activeProfileInStorage.status || 'offline';
+
+                if (currentStatus === 'offline') {
+                    const success = await setUserProfileStatus(activeProfileInStorage.id, 'online');
+                    if (success) {
+                        setActiveStatus('online');
+                        setActiveProfileInStorage({
+                            ...activeProfileInStorage,
+                            status: 'online',
+                        }, false);
+                    }
+                } else {
+                    setActiveStatus(currentStatus);
+                }
+            };
+
+            updateStatusOnLogin();
         }
-    }, [activeProfileInStorage]);
+    }, [activeProfileInStorage, setActiveProfileInStorage]);
 
     return (
         <div className="h-16 flex justify-between items-center">
