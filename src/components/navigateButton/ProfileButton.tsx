@@ -7,18 +7,17 @@ import {Edit2, User} from "lucide-react";
 import {useProfileContext} from "@/context/profileContext";
 
 type ProfileButtonProps = {
-    userId: number;
     profileId: string;
     email: string;
     onClose: () => void;
 };
 
-const ProfileButton = ({userId, profileId, email, onClose}: ProfileButtonProps) => {
+const ProfileButton = ({profileId, email, onClose}: ProfileButtonProps) => {
     const router = useRouter();
     const { profileImageUrls } = useProfileContext();
 
     const handleNavigateProfilePage = () => {
-        router.push(`/profile/${userId}`);
+        router.push(`/profile/${profileId}`);
         onClose();
     };
 
