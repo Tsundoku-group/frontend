@@ -24,6 +24,6 @@ const RightbarWrapper = React.memo(({children}: Props) => {
     );
 });
 
-RightbarWrapper.displayName = 'leftbarWrapper'
+RightbarWrapper.displayName = 'rightbarWrapper'
 
 export default RightbarWrapper;
