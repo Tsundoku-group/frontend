@@ -5,6 +5,8 @@ import {deleteSession} from "@/app/_lib/session";
 import {useAuthContext} from "@/context/authContext";
 import {Button} from "@/components/ui/button";
 import {Plug} from "lucide-react";
+import {useProfileContext} from "@/context/profileContext";
+import {setUserProfileStatus} from "@/components/navbar/actions";
 
 type LogoutButtonProps = {
     onClose: () => void;
@@ -12,8 +14,13 @@ type LogoutButtonProps = {
 
 const LogoutButton = ({onClose}: LogoutButtonProps) => {
     const {setIsAuthenticated, setUser} = useAuthContext();
+    const {activeProfileInStorage} = useProfileContext();
+
     const handleLogout = async () => {
         try {
+            if (activeProfileInStorage) {
+                await setUserProfileStatus(activeProfileInStorage.id, "offline");
+            }
             await deleteSession();
             setIsAuthenticated(false);
             setUser(null);
