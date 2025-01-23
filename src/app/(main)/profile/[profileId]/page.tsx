@@ -1,13 +1,14 @@
 'use client';
 
-import React, {Suspense, useState} from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 import ProfileHeader from "@/app/(main)/profile/[profileId]/components/header/ProfileHeader";
 import Body from "@/app/(main)/profile/[profileId]/components/body/Body";
 import RightbarWrapper from "@/app/(main)/profile/[profileId]/components/rightbar/RightbarWrapper";
 import {ProfileResult} from "@/models/Profile";
-import { fetchUserProfile } from "@/app/(main)/profile/[profileId]/actions";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useProfileContext } from "@/context/profileContext";
+import {fetchUserProfile} from "@/app/(main)/profile/[profileId]/actions";
+import {getProfileImageUrl} from "@/utils/profileImageUtils";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {useProfileContext} from "@/context/profileContext";
 import {useRouter} from "next/navigation";
 
 type Props = {
@@ -16,20 +17,35 @@ type Props = {
     };
 };
 
-const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
+const ProfilePage = React.memo(({params: {profileId}}: Props) => {
     const [activeTab, setActiveTab] = useState<string>("shelves");
     const queryClient = useQueryClient();
-    const { activeProfileInStorage, profileImageUrls } = useProfileContext();
-    const router  = useRouter();
+    const {activeProfileInStorage, profileImageUrls} = useProfileContext();
+    const [imagesOtherProfiles, setImagesOtherProfiles] = useState<{ profileImageUrl: string; coverImageUrl: string } | null>(null);
+    const router = useRouter();
 
     const isOwnProfile = activeProfileInStorage?.id.toString() === profileId;
 
-    const { data: result, isLoading } = useQuery<ProfileResult>({
+    const {data: result, isLoading} = useQuery<ProfileResult>({
         queryKey: ['userProfile', profileId],
         queryFn: () => fetchUserProfile(profileId),
         initialData: () => queryClient.getQueryData<ProfileResult>(['userProfile', profileId]),
         staleTime: 1000 * 60 * 60,
     });
+
+    useEffect(() => {
+        if (!isOwnProfile && profileId) {
+            getProfileImageUrl(profileId).then((images) => {
+                setImagesOtherProfiles({
+                    profileImageUrl: images.profile || "",
+                    coverImageUrl: images.cover || "",
+                })
+            }).catch((error) => {
+                console.error("Erreur lors de la récupération des images Firebase :", error);
+                setImagesOtherProfiles({ profileImageUrl: "", coverImageUrl: "" });
+            });
+        }
+    }, [isOwnProfile, profileId]);
 
     if (isLoading) return <div>Chargement du profil...</div>;
 
@@ -53,11 +69,11 @@ const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
 
     const profileImageUrl = isOwnProfile
         ? profileImageUrls[`${activeProfileInStorage?.id || ""}-profile`] || ''
-        : profile?.profileImageUrl;
+        : imagesOtherProfiles?.profileImageUrl || profile?.profileImageUrl;
 
     const coverImageUrl = isOwnProfile
         ? profileImageUrls[`${activeProfileInStorage?.id || ""}-cover`] || ''
-        : profile?.coverImageUrl;
+        : imagesOtherProfiles?.coverImageUrl || profile?.coverImageUrl;
 
     return (
         <div className="min-h-screen grid grid-cols-12 grid-rows-[auto,1fr] gap-8 pt-8">
@@ -82,13 +98,14 @@ const ProfilePage = React.memo(({ params: { profileId } }: Props) => {
 
             <Suspense fallback={<div>Chargement du contenu...</div>}>
                 <div className="col-span-8 row-start-2">
-                    <Body profileId={profile?.id} activeTab={activeTab} setActiveTab={setActiveTab} isOwnProfile={isOwnProfile}/>
+                    <Body profileId={profile?.id} activeTab={activeTab} setActiveTab={setActiveTab}
+                          isOwnProfile={isOwnProfile}/>
                 </div>
             </Suspense>
 
             <Suspense fallback={<div>Chargement de la sidebar...</div>}>
                 <div className="col-span-4 row-span-full row-start-1">
-                    <RightbarWrapper />
+                    <RightbarWrapper/>
                 </div>
             </Suspense>
         </div>
