@@ -216,15 +216,14 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({profileId, rel
             {relationType === 'friends' ? (
                 <Tabs
                     defaultValue="friends"
-                    className="w-full"
                     onValueChange={(value) => setActiveTab(value as 'friends' | 'suggestions')}
                 >
-                    <TabsList>
-                        <TabsTrigger value="friends">
+                    <TabsList className="bg-tertiary-black">
+                        <TabsTrigger value="friends"  className="text-gray-600 px-4 py-2 rounded-md focus:bg-secondary-black data-[state=active]:bg-secondary-black focus:text-white data-[state=active]:text-white">
                             {isOwnProfile ? 'Tous mes ami(e)s' : 'Tous ses ami(e)s'}
                         </TabsTrigger>
                         {isOwnProfile && (
-                            <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
+                            <TabsTrigger value="suggestions" className="text-gray-600 px-4 py-2 rounded-md focus:bg-secondary-black data-[state=active]:bg-secondary-black focus:text-white data-[state=active]:text-white">Suggestions</TabsTrigger>
                         )}
                     </TabsList>
                     <TabsContent value="friends">{renderContent('friends')}</TabsContent>
