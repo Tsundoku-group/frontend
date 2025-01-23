@@ -69,3 +69,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-64] Changement avatar dans clubsCard [#64](https://trello.com/c/51IHoEig/64-t-64-changement-avatar-dans-clubscard)
 - [t-65] Css pour liste amis/followers/suivies [#65](https://trello.com/c/udpkQ45b/65-t-65-css-pour-liste-amis-followers-suivies)
 - [t-66] Correction: followers [#66](https://trello.com/c/2hyTFvzW/66-t-66-correction-followers)
+  [t-68] Correction: sidebar navigation vers page profile [#68](https://trello.com/c/0f1ogZrM/68-t-68-correction-sidebar-navigation-vers-page-profile)
