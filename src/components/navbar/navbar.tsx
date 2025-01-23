@@ -285,7 +285,7 @@ export default function Navbar() {
                     style={{width: "100%"}}
                 >
                     <div className="w-full p-2 flex flex-col justify-center space-y-2 flex-shrink-0">
-                        <ProfileButton userId={userId} profileId={profileId} email={user?.email} onClose={() => setIsDropdownOpen(false)} />
+                        <ProfileButton profileId={profileId} email={user?.email} onClose={() => setIsDropdownOpen(false)} />
                         <Button
                             className="flex justify-between w-full text-white bg-transparent outline-none focus:outline-none hover:bg-hover-bg-color hover:bg-gray-700 hover:text-gray-200 transition-colors duration-200 rounded-lg"
                             onClick={() => handleSwitch("", "profiles")}
@@ -365,7 +365,7 @@ export default function Navbar() {
                 </div>
             </DropdownMenuContent>
         );
-    }, [activeProfileInStorage?.id, visibleItems, profileItems, statusItems, activeProfile, activeStatus, isSwitching, userId, user?.email, loading, userProfiles.length, handleSwitch, handleProfileChange, handleStatusProfileChange]);
+    }, [activeProfileInStorage?.id, visibleItems, profileItems, statusItems, activeProfile, activeStatus, isSwitching, user?.email, loading, userProfiles.length, handleSwitch, handleProfileChange, handleStatusProfileChange]);
 
     useEffect(() => {
         if (activeProfileInStorage) {
