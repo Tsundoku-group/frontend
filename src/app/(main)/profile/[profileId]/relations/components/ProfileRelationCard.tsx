@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Card, CardFooter, CardHeader} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {Check, User} from "lucide-react";
@@ -22,6 +22,7 @@ import {
 } from "@/app/(main)/profile/[profileId]/actions";
 import {ShowToast} from "@/components/ShowToast";
 import {useProfileContext} from "@/context/profileContext";
+import {getProfileImageUrl} from "@/utils/profileImageUtils";
 import {useRouter} from "next/navigation";
 
 interface ProfileRelationCardProps {
@@ -41,6 +42,7 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [actionType, setActionType] = useState<"removeFriend" | "follow" | "unfollow" | "addFriend" | null>(null);
+    const [profileImageUrl, setProfileImageUrl] = useState<string>("");
     const [relationState, setRelationState] = useState({
         isFriend: relationType === "friends",
         isFollow: relationType === "followed",
@@ -52,6 +54,17 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
     const handleViewProfile = () => {
         router.push(`/profile/${friend.friendId}`);
     }
+
+    useEffect(() => {
+        const fetchOtherProfileImages = async () => {
+            const otherProfileImages = await getProfileImageUrl(friend.friendId);
+            if (otherProfileImages.profile) {
+                setProfileImageUrl(otherProfileImages.profile);
+            }
+        }
+
+        fetchOtherProfileImages();
+    }, [friend.friendId]);
 
     const handleAction = async () => {
         if (!profileId || !friend.friendId) return;
@@ -105,7 +118,7 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
             <Card className="w-full bg-secondary-black text-white border-none">
                 <CardHeader className="grid grid-cols-3 items-center p-4">
                     <Avatar className="col-span-1 w-20 h-20">
-                        <AvatarImage src="" alt="Avatar"/>
+                        <AvatarImage src={profileImageUrl} alt="Avatar"/>
                         <AvatarFallback className="bg-gray-600">
                             <User/>
                         </AvatarFallback>
@@ -113,7 +126,7 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
                     <div className="col-span-2 text-sm">
                         <div className="font-semibold">{friend.lastname} {friend.firstname}</div>
                         <div className="text-sm text-gray-400">@{friend.username}</div>
-                        {relationType === "suggestions" && friend.commonFriendsCount && isOwnProfile? (
+                        {relationType === "suggestions" && friend.commonFriendsCount && isOwnProfile ? (
                             <div className="text-sm text-gray-400 mt-1">
                                 {friend.commonFriendsCount} ami(e)(s) en commun
                             </div>
@@ -121,7 +134,9 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
                     </div>
                 </CardHeader>
                 <CardFooter className="flex justify-between items-center">
-                    <button onClick={handleViewProfile} className="text-primary text-sm hover:underline">Voir le profil</button>
+                    <button onClick={handleViewProfile} className="text-primary text-sm hover:underline">Voir le
+                        profil
+                    </button>
                     <div className="flex space-x-2">
                         {["friends", "followers", "followed", "suggestions"].includes(relationType) && !relationState.isFriend ? (
                             <Button
@@ -158,7 +173,7 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
                                         }}
                                     >
                                         <span>Ami</span>
-                                        <Check className="w-4 h-4" />
+                                        <Check className="w-4 h-4"/>
                                     </Button>
                                 ) : null}
 
@@ -171,7 +186,7 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
                                         }}
                                     >
                                         <span>Suivi</span>
-                                        <Check className="w-4 h-4" />
+                                        <Check className="w-4 h-4"/>
                                     </Button>
                                 ) : null}
                             </>
