@@ -73,3 +73,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-69] Correction: navbar navigation vers page profile [#69](https://trello.com/c/vH5jMgKf/69-t-69-correction-navbar-navigation-vers-page-profile)
 - [t-67] Affichage images profils/couverture pour les profils des autres users[#67](https://trello.com/c/DMS98kYU/67-t-67-affichage-images-profils-couverture-pour-les-profils-des-autres-users)
 - [t-71] Correction: voir le profil [#71](https://trello.com/c/orOFa3l6/71-t-71-correction-voir-le-profil)
+- [t-70] Affichage des images dans les Card friends/followers/suivies dans ProfilePage.tsx [#70](https://trello.com/c/i5Bootd5/70-t-70-affichage-des-images-dans-les-card-friends-followers-suivies-dans-profilepagetsx)
