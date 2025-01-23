@@ -24,7 +24,7 @@ type UserProfile = {
 
 function CustomDropDown(props: {
     dropdownContent: React.JSX.Element;
-    firstName: string;
+    firstName: string | undefined;
     lastName: string;
     isDropdownOpen: boolean;
     status: 'online' | 'do_not_disturb' | 'away' | 'offline';
@@ -285,7 +285,8 @@ export default function Navbar() {
                     style={{width: "100%"}}
                 >
                     <div className="w-full p-2 flex flex-col justify-center space-y-2 flex-shrink-0">
-                        <ProfileButton profileId={profileId} email={user?.email} onClose={() => setIsDropdownOpen(false)} />
+                        <ProfileButton profileId={profileId} email={user?.email}
+                                       onClose={() => setIsDropdownOpen(false)}/>
                         <Button
                             className="flex justify-between w-full text-white bg-transparent outline-none focus:outline-none hover:bg-hover-bg-color hover:bg-gray-700 hover:text-gray-200 transition-colors duration-200 rounded-lg"
                             onClick={() => handleSwitch("", "profiles")}
@@ -351,7 +352,9 @@ export default function Navbar() {
                                 >
                                     {items}
                                 </RadioGroup>
-                                {visibleItems === "profiles" && userProfiles.length < 5 && <AddProfileButton onProfileAdded={handleProfileAdded}  onClose={() => setIsDropdownOpen(false)} />}
+                                {visibleItems === "profiles" && userProfiles.length < 5 &&
+                                    <AddProfileButton onProfileAdded={handleProfileAdded}
+                                                      onClose={() => setIsDropdownOpen(false)}/>}
                             </>
                         )}
                         <Button
@@ -376,14 +379,17 @@ export default function Navbar() {
     return (
         <div className="h-16 flex justify-between items-center">
             <div className="text-text-white text-lg">
-                Bienvenue, <span
-                className="text-green-highlight">{activeProfileInStorage?.firstName}{activeProfileInStorage?.lastName}</span> !
+                Bienvenue, <span className="text-green-highlight">
+                {activeProfileInStorage?.firstName && activeProfileInStorage?.lastName
+                    ? `${activeProfileInStorage.firstName} ${activeProfileInStorage.lastName}`
+                    : activeProfileInStorage?.username}
+            </span> !
             </div>
             <div className="flex items-center">
                 <Bell className="text-text-white mr-4"/>
                 <CustomDropDown
                     dropdownContent={dropdownContent}
-                    firstName={activeProfileInStorage?.firstName || "Utilisateur"}
+                    firstName={activeProfileInStorage?.firstName || activeProfileInStorage?.username}
                     lastName={activeProfileInStorage?.lastName || ""}
                     isDropdownOpen={isDropdownOpen}
                     setIsDropdownOpen={setIsDropdownOpen}
