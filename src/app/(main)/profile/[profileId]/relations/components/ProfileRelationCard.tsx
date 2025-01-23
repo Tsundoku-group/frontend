@@ -50,7 +50,7 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
     const router = useRouter();
 
     const handleViewProfile = () => {
-        router.push(`/profile/${friendshipId}`);
+        router.push(`/profile/${friend.friendId}`);
     }
 
     const handleAction = async () => {
