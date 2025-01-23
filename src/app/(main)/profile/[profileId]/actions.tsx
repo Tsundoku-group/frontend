@@ -154,14 +154,14 @@ export const fetchFollowersListFromProfile = async (profileId?: string, limit?: 
         if (!response.response) {
             throw new Error('Failed to fetch followers');
         }
-
+        console.log(response.data);
         return response.data.map((item: any) => ({
             friendshipId: item.friendshipId,
             friend: {
                 friendId: item.followerId,
-                firstname: item.following.followingFirstname,
-                lastname: item.following.followingLastname,
-                username: item.following.followingUsername,
+                firstname: item.follower.followingFirstname,
+                lastname: item.follower.followingLastname,
+                username: item.follower.followingUsername,
             },
         })) as Relation[];
     } catch (error) {
