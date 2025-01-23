@@ -72,3 +72,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-68] Correction: sidebar navigation vers page profile [#68](https://trello.com/c/0f1ogZrM/68-t-68-correction-sidebar-navigation-vers-page-profile)
 - [t-69] Correction: navbar navigation vers page profile [#69](https://trello.com/c/vH5jMgKf/69-t-69-correction-navbar-navigation-vers-page-profile)
 - [t-67] Affichage images profils/couverture pour les profils des autres users[#67](https://trello.com/c/DMS98kYU/67-t-67-affichage-images-profils-couverture-pour-les-profils-des-autres-users)
+- [t-71] Correction: voir le profil [#71](https://trello.com/c/orOFa3l6/71-t-71-correction-voir-le-profil)
