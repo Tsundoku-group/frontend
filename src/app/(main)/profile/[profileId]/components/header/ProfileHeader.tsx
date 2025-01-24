@@ -66,7 +66,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                             <div className="flex items-center space-x-[-15px]">
                                 {lastTwoFriends.map((friend, index) => (
                                     <Avatar
-                                        key={friend.friendId}
+                                        key={`${friend.friendId}-${index}`}
                                         className={`w-8 h-8 ring-2 ring-black z-${20 - index * 10}`}
                                     >
                                         <AvatarImage src={friend.profilePhotoUrl}
