@@ -40,7 +40,7 @@ const ProfilePage = React.memo(({params: {profileId}}: Props) => {
                     profileImageUrl: images.profile || "",
                     coverImageUrl: images.cover || "",
                 })
-            }).catch((error) => {
+            }).catch(() => {
                 setImagesOtherProfiles({ profileImageUrl: "", coverImageUrl: "" });
             });
         }
