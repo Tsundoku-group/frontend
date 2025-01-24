@@ -41,7 +41,6 @@ const ProfilePage = React.memo(({params: {profileId}}: Props) => {
                     coverImageUrl: images.cover || "",
                 })
             }).catch((error) => {
-                console.error("Erreur lors de la récupération des images Firebase :", error);
                 setImagesOtherProfiles({ profileImageUrl: "", coverImageUrl: "" });
             });
         }
@@ -91,6 +90,7 @@ const ProfilePage = React.memo(({params: {profileId}}: Props) => {
                     facebook={profile?.facebook}
                     profileImageUrl={profileImageUrl}
                     coverImageUrl={coverImageUrl}
+                    lastTwoFriends={profile?.lastTwoFriends || []}
                     setActiveTab={setActiveTab}
                     isOwnProfile={isOwnProfile}
                 />
