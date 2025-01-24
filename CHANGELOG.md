@@ -76,3 +76,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-70] Affichage des images dans les Card friends/followers/suivies dans ProfilePage.tsx [#70](https://trello.com/c/i5Bootd5/70-t-70-affichage-des-images-dans-les-card-friends-followers-suivies-dans-profilepagetsx)
 - [t-72] Si pas de lastname ou firstname faire afficher l’username dans navbar [#72](https://trello.com/c/04F0eJWD/72-t-72-si-pas-de-lastname-ou-firstname-faire-afficher-lusername-dans-navbar)
 - [t-73] Connexion:  status doit être en ligne [#73](https://trello.com/c/z0FnxPIE/73-t-73-connexion-status-doit-%C3%AAtre-en-ligne)
+- [t-74] Afficher les photos de profil des amis dans cardProfile à amis [#74](https://trello.com/c/6imT8Elb/74-t-74-afficher-les-photos-de-profil-des-amis-dans-cardprofile-%C3%A0-amis)
