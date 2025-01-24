@@ -17,6 +17,7 @@ export interface Profile {
     status?: string | 'offline';
     profileImageUrl?: string;
     coverImageUrl?: string;
+    lastTwoFriends: [] | null;
     error?: string;
 }
 

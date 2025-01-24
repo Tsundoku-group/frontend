@@ -24,6 +24,7 @@ type ProfileHeaderProps = {
     facebook?: string;
     profileImageUrl?: string;
     coverImageUrl?: string;
+    lastTwoFriends: { friendId: number; profilePhotoUrl: string }[];
     setActiveTab: (tab: string) => void;
     isOwnProfile: boolean;
 };
@@ -40,6 +41,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                                          facebook,
                                                          profileImageUrl,
                                                          coverImageUrl,
+                                                         lastTwoFriends,
                                                          setActiveTab,
                                                      }) => {
     return (
@@ -56,14 +58,27 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
             <div className="bg-gray-900 rounded-b-2xl text-white shadow-lg p-8 relative">
                 <div className="flex items-center justify-center w-full px-8 -mt-20 relative">
-                    <div className="absolute left-0 flex items-center space-x-6 pt-4 text-sm text-gray-200">
+                    <div className="absolute left-0 flex items-center space-x-2 pt-4 text-sm text-gray-200">
                         <div
                             onClick={() => setActiveTab("friends")}
-                            className="flex items-center space-x-2 cursor-pointer hover:text-blue-500 transition duration-200"
+                            className="flex -space-x-3 cursor-pointer hover:text-blue-500 transition duration-200"
                         >
-                            <User className="w-5 h-5"/>
-                            <span>{friendsCount} amis</span>
+                            <div className="flex items-center space-x-[-15px]">
+                                {lastTwoFriends.map((friend, index) => (
+                                    <Avatar
+                                        key={friend.friendId}
+                                        className={`w-8 h-8 ring-2 ring-black z-${20 - index * 10}`}
+                                    >
+                                        <AvatarImage src={friend.profilePhotoUrl}
+                                                     alt={`Photo de l'ami ${friend.friendId}`}/>
+                                        <AvatarFallback className="bg-gray-400">
+                                            <User/>
+                                        </AvatarFallback>
+                                    </Avatar>
+                                ))}
+                            </div>
                         </div>
+                        <span className="ml-2">{friendsCount} contacts</span>
                         <div
                             onClick={() => setActiveTab("followers")}
                             className="flex items-center space-x-2 cursor-pointer hover:text-blue-500 transition duration-200"
