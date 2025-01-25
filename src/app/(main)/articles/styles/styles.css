@@ -1,0 +1,22 @@
+.status-btn, .status-btn-list {
+    background-color: var(--bg-tertiary-dark);
+    transition: background-color 0.4s ease;
+}
+.status-btn:hover {
+    background-color: var(--bg-primary-dark);
+}
+
+.status-btn-list div {
+    transition: background-color 0.4s ease;
+}
+
+.status-btn-list div:hover {
+    background-color: var(--bg-primary-dark);
+}
+
+.block {
+    background-color: var(--bg-secondary-dark);
+    border-radius: 2em;
+    border: 1px solid var(--bg-tertiary-dark);
+    padding: 3em;
+}

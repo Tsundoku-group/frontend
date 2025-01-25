@@ -58,14 +58,16 @@ export default function Sidebar() {
                     />
                 </div>
                 <div className="flex items-center justify-around mb-4 mt-4">
-                    <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -mr-5">
-                        <Home className="text-text-white"/>
-                    </div>
-                    <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -ml-5">
-                        <a href={`/profile/${user?.userId}`}>
+                    <a href="/home">
+                        <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -mr-5">
+                            <Home className="text-text-white"/>
+                        </div>
+                    </a>
+                    <a href={`/profile/${user?.userId}`}>
+                        <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -ml-5">
                             <User className="text-text-white"/>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
                 </div>
             </div>
 
@@ -101,7 +103,7 @@ export default function Sidebar() {
                         </a>
                     </li>
                     <li>
-                        <a href="#" className="flex items-center text-text-white hover:text-white">
+                        <a href="/articles" className="flex items-center text-text-white hover:text-white">
                             <PenTool className="mr-3"/>
                             <span>Articles</span>
                         </a>
