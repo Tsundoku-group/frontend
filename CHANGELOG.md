@@ -79,3 +79,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-74] Afficher les photos de profil des amis dans cardProfile à amis [#74](https://trello.com/c/6imT8Elb/74-t-74-afficher-les-photos-de-profil-des-amis-dans-cardprofile-%C3%A0-amis)
 - [t-75] Ajout du workflows dans github pour les secrets [#75](https://trello.com/c/fqFNJLW1/75-t-75-ajout-du-workflows-dans-github-pour-les-secrets)
 - [t-76] Ajout de jest [#76](https://trello.com/c/UCnulKpb/76-t-76-ajout-de-jest)
+- [t-77] configuraton de jest [#77](https://trello.com/c/hQf9s82h/77-t-77-configuraton-de-jest)
