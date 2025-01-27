@@ -77,3 +77,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-72] Si pas de lastname ou firstname faire afficher l’username dans navbar [#72](https://trello.com/c/04F0eJWD/72-t-72-si-pas-de-lastname-ou-firstname-faire-afficher-lusername-dans-navbar)
 - [t-73] Connexion:  status doit être en ligne [#73](https://trello.com/c/z0FnxPIE/73-t-73-connexion-status-doit-%C3%AAtre-en-ligne)
 - [t-74] Afficher les photos de profil des amis dans cardProfile à amis [#74](https://trello.com/c/6imT8Elb/74-t-74-afficher-les-photos-de-profil-des-amis-dans-cardprofile-%C3%A0-amis)
+- [t-75] Ajout du workflows dans github pour les secrets [#75](https://trello.com/c/fqFNJLW1/75-t-75-ajout-du-workflows-dans-github-pour-les-secrets)
