@@ -7,7 +7,7 @@ const symfonyUrl = process.env.SYMFONY_URL;
 
 export const fetchArchivedConversations = async (userId: string): Promise<ChatConversation[]> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/conversation/archived/${userId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${userId}/archived`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export const fetchArchivedConversations = async (userId: string): Promise<ChatCo
 
 export const handleUnarchiveConversation = async (conversationId: string) => {
     try {
-        return await fetchWithAuth(`${symfonyUrl}/api/conversation/unarchive/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${conversationId}/unarchive`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ export const handleUnarchiveConversation = async (conversationId: string) => {
 
 export const handleUnarchiveAllConversations = async (userId: string) => {
     try {
-        return await fetchWithAuth(`${symfonyUrl}/api/conversation/unarchive-all/${userId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${userId}/unarchive/all`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

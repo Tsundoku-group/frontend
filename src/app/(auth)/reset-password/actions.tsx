@@ -7,12 +7,11 @@ export const handleResetPassword = async (token: string | null, password: string
         return { success: false, message: 'Token non fourni.' };
     }
 
-    const response = await fetch(`${symfonyUrl}/reset-password`, {
+    const response = await fetch(`${symfonyUrl}/reset/password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),
     });
-    console.log(response)
 
     if (!response.ok) {
         return { success: false, message: 'Une erreur s\'est produite.' };
