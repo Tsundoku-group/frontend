@@ -4,7 +4,7 @@ const symfonyUrl = process.env.SYMFONY_URL;
 
 export const handleForgotPassword = async (email: string) => {
     try {
-        const response = await fetch(`${symfonyUrl}/forgot-password`, {
+        const response = await fetch(`${symfonyUrl}/reset/password/forgot`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email }),

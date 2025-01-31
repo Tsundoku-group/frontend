@@ -13,7 +13,7 @@ interface Friend {
 
 export async function fetchFriendsList(userId: string): Promise<Friend[]> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/friendship/list/${userId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${userId}/list`, {
             method: 'GET',
         });
 

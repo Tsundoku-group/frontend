@@ -7,7 +7,7 @@ const symfonyUrl = process.env.SYMFONY_URL;
 
 export async function fetchUserProfileData(profileId: string): Promise<Profile> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/profile/${profileId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ export async function fetchUserProfileData(profileId: string): Promise<Profile> 
 
 export async function updateUserProfileData(profileId: string, profileData: Partial<Profile>): Promise<Profile> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/profile/${profileId}/edit`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}/edit`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ export async function updateUserProfileData(profileId: string, profileData: Part
 
 export async function fetchActiveProfilePictures(profileId: string): Promise<Record<string, ProfilePicture>> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/get-active-photo/${profileId}`,
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/${profileId}/active`,
             {
                 method: 'GET',
                 headers: {
@@ -71,7 +71,7 @@ export async function fetchActiveProfilePictures(profileId: string): Promise<Rec
 
 export async function fetchUploadImageProfile(userId: string, profileId: string, imageUrl: string, type: string): Promise<ProfilePicture> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/add-photo`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/upload`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ export async function fetchUploadImageProfile(userId: string, profileId: string,
 
 export async function deleteUserProfilePictureUrl(id: string, profileId: string, url: string, type: string): Promise<{ response: boolean; status: number; data: any } | { response: boolean; status: number; message: string; error: any }> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/profile-photo/remove-photo`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/remove`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

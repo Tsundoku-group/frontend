@@ -7,7 +7,7 @@ const symfonyUrl = process.env.SYMFONY_URL;
 
 export const fetchUserConversations = async (userId: unknown): Promise<ChatConversation[]> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/conversation/get-all/${userId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${userId}/all`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ export const fetchUserConversations = async (userId: unknown): Promise<ChatConve
 
 export const fetchOneConversationById = async (conversationId: string): Promise<ChatParticipant[]> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/conversation/get-one/${conversationId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${conversationId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export const fetchOneConversationById = async (conversationId: string): Promise<
 
 export const fetchMessagesFromConversationId = async (conversationId: string, page = 1, limit = 20) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/message/get/${conversationId}?page=${page}&limit=${limit}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/message/${conversationId}?page=${page}&limit=${limit}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export const fetchMessagesFromConversationId = async (conversationId: string, pa
 
 export const sendMessage = async (payload: any, conversationId: string) => {
     try {
-        return await fetchWithAuth(`${symfonyUrl}/api/message/send/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/v1/message/${conversationId}/send`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export const sendMessage = async (payload: any, conversationId: string) => {
 
 export const fetchMarkMessagesAsRead = async (conversationId: string, userEmail: string) => {
     try {
-        return await fetchWithAuth(`${symfonyUrl}/api/message/mark-messages-read/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/v1/message/${conversationId}/mark/read`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ export const startNewConversation = async (userEmail: string, friendId: string) 
     };
 
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/conversation/create`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -140,7 +140,7 @@ export const startNewConversation = async (userEmail: string, friendId: string) 
 
 export const handleDeleteConversation = async (conversationId: string) => {
     try {
-        return await fetchWithAuth(`${symfonyUrl}/api/conversation/delete/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${conversationId}/delete`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -153,7 +153,7 @@ export const handleDeleteConversation = async (conversationId: string) => {
 
 export const handleArchiveConversation = async (conversationId: string) => {
     try {
-        return await fetchWithAuth(`${symfonyUrl}/api/conversation/archive/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${conversationId}/archive`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ export const handleArchiveConversation = async (conversationId: string) => {
 
 export const handleMuteConversationDuration = async (conversationId: string, duration: any) => {
     try {
-        return await fetchWithAuth(`${symfonyUrl}/api/conversation/mute/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${conversationId}/mute`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -180,7 +180,7 @@ export const handleMuteConversationDuration = async (conversationId: string, dur
 
 export const handleUnmuteConversation = async (conversationId: string) => {
     try {
-        return await fetchWithAuth(`${symfonyUrl}/api/conversation/unmute/${conversationId}`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${conversationId}/unmute`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -6,7 +6,7 @@ const symfonyUrl = process.env.SYMFONY_URL;
 
 export const fetchUserProfiles = async (userId: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/profile/all/${userId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${userId}/all`, {
             method: 'GET',
         });
 
@@ -28,7 +28,7 @@ export const fetchUserProfiles = async (userId: number) => {
 
 export const setUserProfileStatus = async (profileId: string, status: string) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/profile/update-status/${profileId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}/update/status`, {
             method: 'PUT',
             body: JSON.stringify({
                 status: status,
@@ -47,7 +47,7 @@ export const setUserProfileStatus = async (profileId: string, status: string) =>
 
 export const setActiveUserProfile = async (id: number, profileId: string) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/profile/set-active`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/active`, {
             method: 'POST',
             body: JSON.stringify({
                 id,
@@ -67,7 +67,7 @@ export const setActiveUserProfile = async (id: number, profileId: string) => {
 
 export const addNewUserProfile = async (payload: any) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/profile/new`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/new`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
