@@ -6,7 +6,7 @@ const symfonyUrl = process.env.SYMFONY_URL;
 
 export async function fetchVerifyPwd(currentPassword: string) {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/users/verify-password`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/users/password/verify`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ export async function fetchVerifyPwd(currentPassword: string) {
 
 export async function fetchUpdatePwd({ newPassword, captchaToken }: { newPassword: string; captchaToken: string }) {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/users/update-password`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/users/password/update`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export async function fetchUpdatePwd({ newPassword, captchaToken }: { newPasswor
 
 export async function fetchDeletePwd(userId: string) {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/users/delete-account-request/${userId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/users/${userId}/delete/request`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
