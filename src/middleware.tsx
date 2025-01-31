@@ -2,14 +2,35 @@ import { NextRequest, NextResponse } from 'next/server';
 import { decrypt } from '@/app/_lib/session';
 
 export default async function middleware(req: NextRequest) {
-    const protectedRoutes = ['/', '/home', '/friends', '/conversations', '/archives', '/accountSettings', '/profileSettings', '/accessibilitySettings', '/appearanceSettings', '/notificationSettings'];
-    const conversationPattern = /^\/conversations(\/.*)?$/;
+    const STATIC_PROTECTED_ROUTES = new Set([
+        '/',
+        '/home',
+        '/friends',
+        '/conversations',
+        '/archives',
+        '/accountSettings',
+        '/profileSettings',
+        '/accessibilitySettings',
+        '/appearanceSettings',
+        '/notificationSettings',
+        '/profile'
+    ]);
+
+    const DYNAMIC_PROTECTED_PATTERNS = [
+        /^\/conversations(\/.*)?$/,
+        /^\/profile\/\d+$/,
+    ];
+
+    function isProtectedRoute(path: string): boolean {
+        return STATIC_PROTECTED_ROUTES.has(path) || DYNAMIC_PROTECTED_PATTERNS.some(pattern => pattern.test(path));
+    }
+
     const currentPath = req.nextUrl.pathname;
-    const isProtectedRoute = protectedRoutes.includes(currentPath) || conversationPattern.test(currentPath);
+    const isProtected = isProtectedRoute(currentPath);
 
     const cookie = req.cookies.get('session');
 
-    if (isProtectedRoute) {
+    if (isProtected) {
         const cookieValue = cookie?.value;
         if (!cookieValue) {
             return NextResponse.redirect(new URL('/login', req.url));
