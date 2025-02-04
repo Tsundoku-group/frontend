@@ -83,3 +83,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-78] Ajout du test de la home page [#78](https://trello.com/c/FUlt5yCC/78-t-78-ajout-du-test-de-la-home-page)
 - [t-80] Changement des requetes HTTP pour correspondre au backend [#80](https://trello.com/c/uVPT2Jib/80-t-80-changement-des-requetes-http-pour-correspondre-au-backend)
 - [t-81] Ajout des pages dans middleware [#81](https://trello.com/c/BnwXnjKD/81-t-81-ajout-des-pages-dans-middleware)
+- [t-82] Ajout du composant pour créer un post [#82](https://trello.com/c/3YzEFTKc/82-t-82-ajout-du-composant-pour-cr%C3%A9er-un-post)
