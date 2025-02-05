@@ -6,7 +6,6 @@ const symfonyUrl = process.env.SYMFONY_URL;
 
 export const fetchRecentPosts =  async () => {
     try {
-        console.log("Fetching recent posts...");
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/recent`, {
             method: "GET",
             headers: {
@@ -16,9 +15,7 @@ export const fetchRecentPosts =  async () => {
 
         const data = response.data;
 
-        console.log(data);
         if (!response || !response.data || !Array.isArray(response.data.posts)) {
-            console.warn("fetchRecentPosts: Aucun post reçu.");
             return [];
         }
 
