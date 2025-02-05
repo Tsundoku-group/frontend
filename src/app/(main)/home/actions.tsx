@@ -51,4 +51,25 @@ export const fetchOlderPosts = async (pageParam: number, limit = 20) => {
     } catch (error) {
         return { posts: [], nextPage: undefined };
     }
-};
+}
+
+export const fetchLastCommentsFromPost = async (postId: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${postId}/comments`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+        console.log(response.data)
+        if (!response || !response.data) {
+            return { comments: []}
+        }
+
+        return {
+            comments: response.data.comments,
+        }
+    } catch (error) {
+        return { comments: [] };
+    }
+}
