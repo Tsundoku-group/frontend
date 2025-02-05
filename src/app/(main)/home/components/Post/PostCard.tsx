@@ -1,5 +1,6 @@
 import {Heart, MessageSquareMore, Send} from "lucide-react";
 import PostDate from "@/app/(main)/home/components/Post/PostDate";
+import CommentSection from "@/app/(main)/home/components/Comment/CommentSection";
 
 interface Post {
     id: string;
@@ -65,7 +66,7 @@ export default function PostCard({ post }: { post: Post }) {
                     <Heart className="w-5 h-5"/> J’aime
                 </button>
                 <button className="flex items-center gap-1 text-gray-400 hover:text-white">
-                    <MessageSquareMore className="w-5 h-5"/> Commenter
+                    <CommentSection postId={post.id} />
                 </button>
                 <button className="flex items-center gap-1 text-gray-400 hover:text-white">
                     <Send className="w-5 h-5"/> Partager
