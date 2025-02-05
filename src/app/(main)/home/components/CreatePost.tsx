@@ -21,7 +21,7 @@ export default function CreatePost() {
     };
 
     return (
-        <div className="p-8 rounded-2xl shadow-lg w-full"
+        <div className="p-8 rounded-2xl shadow-lg w-full mb-6"
              style={{
                  background: "linear-gradient(to right, #372048 1%, #1a1a2e 25%)",
              }}

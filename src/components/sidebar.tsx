@@ -2,13 +2,15 @@ import React, {useEffect, useState} from 'react';
 import {Home, User, BookOpen, Trophy, MessageCircle, Users, PenTool} from 'lucide-react';
 import {useSocket} from "@/context/socketContext";
 import {useProfileContext} from "@/context/profileContext";
+import {useRouter} from "next/navigation";
 
 export default function Sidebar() {
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [isClient, setIsClient] = useState(false);
     const socket = useSocket();
-   const {activeProfileInStorage} = useProfileContext();
-   const profileId = activeProfileInStorage?.id;
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id;
+    const router = useRouter();
 
     useEffect(() => {
         setIsClient(true);
@@ -43,6 +45,14 @@ export default function Sidebar() {
         }
     }, [profileId, socket, isClient]);
 
+    const handleBackToHome = () => {
+        router.push('/home');
+    }
+
+    const handleBackToProfilePage = () => {
+        router.push(`/profile/${profileId}`);
+    }
+
     return (
         <div className="fixed min-h-screen bg-secondary-black text-text-white flex flex-col">
             <div className="flex items-center justify-center h-20">
@@ -58,6 +68,7 @@ export default function Sidebar() {
                     />
                 </div>
                 <div className="flex items-center justify-around mb-4 mt-4">
+<<<<<<< HEAD
                     <a href="/home">
                         <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -mr-5">
                             <Home className="text-text-white"/>
@@ -68,6 +79,14 @@ export default function Sidebar() {
                             <User className="text-text-white"/>
                         </div>
                     </a>
+=======
+                    <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -mr-5" onClick={handleBackToHome}>
+                        <Home className="text-text-white"/>
+                    </div>
+                    <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -ml-5" onClick={handleBackToProfilePage}>
+                        <User className="text-text-white"/>
+                    </div>
+>>>>>>> abad9c7 (Updating)
                 </div>
             </div>
 
@@ -90,7 +109,8 @@ export default function Sidebar() {
                             <MessageCircle className="mr-3"/>
                             <span>Messages</span>
                             {unreadMessages > 0 && (
-                                <span className="ml-auto bg-red-500 text-xs rounded-full h-4 w-4 flex items-center justify-center text-white">
+                                <span
+                                    className="ml-auto bg-red-500 text-xs rounded-full h-4 w-4 flex items-center justify-center text-white">
                                     {unreadMessages}
                                 </span>
                             )}
