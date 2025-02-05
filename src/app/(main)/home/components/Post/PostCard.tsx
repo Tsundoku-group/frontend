@@ -1,4 +1,4 @@
-import {Heart, MessageSquareMore, Send} from "lucide-react";
+import {Heart, Send} from "lucide-react";
 import PostDate from "@/app/(main)/home/components/Post/PostDate";
 import CommentSection from "@/app/(main)/home/components/Comment/CommentSection";
 
