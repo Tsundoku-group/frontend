@@ -27,7 +27,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
                 className="flex items-center gap-1 text-gray-400 hover:text-white"
                 onClick={() => setShowComments(!showComments)}
             >
-                <MessageSquareMore className="w-5 h-5" /> Commenter
+                <MessageSquareMore className="w-5 h-5"/> Commenter
             </button>
 
             {showComments && (
