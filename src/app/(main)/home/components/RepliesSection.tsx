@@ -1,16 +1,16 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { fetchRepliesForComment } from "@/app/(main)/home/actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User } from "lucide-react";
+import {useQuery} from "@tanstack/react-query";
+import {fetchRepliesForComment} from "@/app/(main)/home/actions";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {User} from "lucide-react";
 
 interface RepliesSectionProps {
     commentId: string;
 }
 
-export default function RepliesSection({ commentId }: RepliesSectionProps) {
-    const { data, isLoading } = useQuery({
+export default function RepliesSection({commentId}: RepliesSectionProps) {
+    const {data, isLoading} = useQuery({
         queryKey: ["replies", commentId],
         queryFn: () => fetchRepliesForComment(commentId),
         staleTime: 1000 * 60 * 5,
@@ -26,12 +26,13 @@ export default function RepliesSection({ commentId }: RepliesSectionProps) {
                 <div className="space-y-4">
                     {replies.map((reply: any, index) => (
                         <div key={reply.id} className="relative flex items-start text-xs pl-6">
-                            <span className="absolute left-2.5 bottom-4 w-2 border-t-2 border-gray-700 before:content-[''] before:absolute before:w-3 before:h-3 before:-left-3 before:bottom-0 before:border-l-2 before:border-b-2 before:rounded-bl-md before:border-gray-700"></span>
+                            <span
+                                className="absolute left-2.5 bottom-4 w-2 border-t-2 border-gray-700 before:content-[''] before:absolute before:w-3 before:h-3 before:-left-3 before:bottom-0 before:border-l-2 before:border-b-2 before:rounded-bl-md before:border-gray-700"></span>
                             <div className="relative">
                                 <Avatar className="w-8 h-8 rounded-full bg-secondary-black">
-                                    <AvatarImage />
+                                    <AvatarImage/>
                                     <AvatarFallback>
-                                        <User />
+                                        <User/>
                                     </AvatarFallback>
                                 </Avatar>
                             </div>
