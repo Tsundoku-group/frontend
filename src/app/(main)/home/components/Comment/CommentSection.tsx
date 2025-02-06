@@ -25,7 +25,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
                     {comments.map((comment: any) => (
                         <div key={comment.id} className="flex gap-3 items-start text-sm">
                             <img src="" alt="" className="w-8 h-8 rounded-full object-cover"/>
-                            <div className="bg-gray-800 p-2 rounded-lg">
+                            <div className="bg-primary-black p-2 rounded-lg">
                                 <p className="text-white font-semibold"></p>
                                 <p className="text-gray-300">{comment.content}</p>
                             </div>
