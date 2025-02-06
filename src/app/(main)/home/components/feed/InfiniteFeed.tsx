@@ -21,29 +21,15 @@ export default function InfiniteFeed() {
             if (entry.isIntersecting) {
                 fetchNextPage();
             }
-        }, {rootMargin: "400px"});
+        }, {rootMargin: "600px"});
 
         if (lastPostRef.current) observer.observe(lastPostRef.current);
 
         return () => observer.disconnect();
     }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
     const posts = data?.pages.flatMap((page) => page.posts) || [];
     const lastPostRef = useRef(null);
-
-    useEffect(() => {
-        if (!hasNextPage || isFetchingNextPage) return;
-
-        const observer = new IntersectionObserver(([entry]) => {
-            if (entry.isIntersecting) {
-                console.log("🟢 Déclenchement du chargement de la prochaine page...");
-                fetchNextPage();
-            }
-        });
-
-        if (lastPostRef.current) observer.observe(lastPostRef.current);
-
-        return () => observer.disconnect();
-    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     return (
         <div className="w-full">
