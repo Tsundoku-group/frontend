@@ -39,8 +39,8 @@ export default function CommentSection({postId}: CommentSectionProps) {
                     {comments.map((comment: any) => (
                         <div key={comment.id} className="flex gap-3 items-start text-sm">
                             <Avatar className="w-8 h-8">
-                                <AvatarImage />
-                                <AvatarFallback><User /></AvatarFallback>
+                                <AvatarImage/>
+                                <AvatarFallback><User/></AvatarFallback>
                             </Avatar>
                             <div className="w-full">
                                 <div className="bg-primary-black p-2 rounded-lg">
@@ -74,7 +74,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
                                             className="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600"
                                             onClick={() => handleReplySubmit(comment.id)}
                                         >
-                                            <Send className="w-4 h-4" />
+                                            <Send className="w-4 h-4"/>
                                         </button>
                                     </div>
                                 )}
@@ -83,7 +83,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
                                     <button
                                         className="text-blue-400 text-xs mt-1 ml-3 hover:underline"
                                         onClick={() =>
-                                            setOpenReplies(prev => ({ ...prev, [comment.id]: !prev[comment.id] }))
+                                            setOpenReplies(prev => ({...prev, [comment.id]: !prev[comment.id]}))
                                         }
                                     >
                                         {openReplies[comment.id] ? "Masquer les réponses" : `Voir réponses (${comment.replyCount})`}
@@ -91,7 +91,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
                                 )}
 
                                 {openReplies[comment.id] && (
-                                    <RepliesSection commentId={comment.id} />
+                                    <RepliesSection commentId={comment.id}/>
                                 )}
                             </div>
                         </div>
