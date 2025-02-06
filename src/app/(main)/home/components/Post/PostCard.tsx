@@ -1,6 +1,7 @@
 import {Heart, Send} from "lucide-react";
 import PostDate from "@/app/(main)/home/components/Post/PostDate";
 import CommentSection from "@/app/(main)/home/components/Comment/CommentSection";
+import {useState} from "react";
 
 interface Post {
     id: string;
@@ -16,7 +17,9 @@ interface Post {
     createdAt: string;
 }
 
-export default function PostCard({ post }: { post: Post }) {
+export default function PostCard({post}: { post: Post }) {
+    const [showComments, setShowComments] = useState(false);
+
     return (
         <div className="bg-tertiary-black p-4 rounded-lg shadow-md w-full mb-6">
             <div className="flex items-center gap-4">
@@ -28,7 +31,7 @@ export default function PostCard({ post }: { post: Post }) {
                 <div>
                     <div className="text-white font-semibold">{post.author.name} <span
                         className="text-gray-400">@{post.author.username}</span></div>
-                    <PostDate date={post.createdAt} />
+                    <PostDate date={post.createdAt}/>
                 </div>
             </div>
 
@@ -50,7 +53,7 @@ export default function PostCard({ post }: { post: Post }) {
                 </div>
             )}
 
-            <div className="flex justify-between items-center mt-3 px-16 text-xs">
+            <div className="flex justify-between items-center mt-3 px-16">
                 <div className="flex items-center gap-1 text-gray-400">
                     <Heart className="w-4 h-4 text-red-400"/>
                     <span className="font-semibold">4</span>
@@ -65,13 +68,19 @@ export default function PostCard({ post }: { post: Post }) {
                 <button className="flex items-center gap-1 text-red-400 hover:text-red-500">
                     <Heart className="w-5 h-5"/> J’aime
                 </button>
-                <button className="flex items-center gap-1 text-gray-400 hover:text-white">
-                    <CommentSection postId={post.id} />
+                <button
+                    className="flex items-center gap-1 text-gray-400 hover:text-white"
+                    onClick={() => setShowComments(!showComments)}
+                >
+                    Commenter
                 </button>
+
                 <button className="flex items-center gap-1 text-gray-400 hover:text-white">
                     <Send className="w-5 h-5"/> Partager
                 </button>
             </div>
+
+            {showComments && <CommentSection postId={post.id}/>}
         </div>
     );
 }
