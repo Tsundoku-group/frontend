@@ -2,6 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { fetchRepliesForComment } from "@/app/(main)/home/actions";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {User} from "lucide-react";
 
 interface RepliesSectionProps {
     commentId: string;
@@ -24,7 +26,10 @@ export default function RepliesSection({ commentId }: RepliesSectionProps) {
                 <div className="space-y-2">
                     {replies.map((reply: any) => (
                         <div key={reply.id} className="flex gap-3 items-start text-xs">
-                            <img src="" alt="" className="w-6 h-6 rounded-full object-cover"/>
+                            <Avatar className="w-8 h-8 rounded-full">
+                                <AvatarImage></AvatarImage>
+                                <AvatarFallback><User /></AvatarFallback>
+                            </Avatar>
                             <div className="bg-secondary-black p-2 rounded-lg">
                                 <p className="text-white font-semibold"></p>
                                 <p className="text-gray-300">{reply.content}</p>
