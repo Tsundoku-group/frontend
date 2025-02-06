@@ -4,9 +4,8 @@ import {fetchWithAuth} from "@/services/fetchWithAuth";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
-export const fetchRecentPosts =  async () => {
+export const fetchRecentPosts = async () => {
     try {
-        console.log("Fetching recent posts...");
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/recent`, {
             method: "GET",
             headers: {
@@ -16,9 +15,7 @@ export const fetchRecentPosts =  async () => {
 
         const data = response.data;
 
-        console.log(data);
         if (!response || !response.data || !Array.isArray(response.data.posts)) {
-            console.warn("fetchRecentPosts: Aucun post reçu.");
             return [];
         }
 
@@ -34,11 +31,11 @@ export const fetchOlderPosts = async (pageParam: number, limit = 20) => {
             `${symfonyUrl}/api/v1/post/older?limit=${limit}&offset=${(pageParam - 1) * limit}`,
             {
                 method: "GET",
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
             }
         );
         if (!response || !response.data || !Array.isArray(response.data.posts)) {
-            return { posts: [], nextPage: undefined };
+            return {posts: [], nextPage: undefined};
         }
 
         const hasMore = response.data.posts.length === limit;
@@ -49,6 +46,48 @@ export const fetchOlderPosts = async (pageParam: number, limit = 20) => {
             nextPage
         };
     } catch (error) {
-        return { posts: [], nextPage: undefined };
+        return {posts: [], nextPage: undefined};
     }
-};
+}
+
+export const fetchLastCommentsFromPost = async (postId: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${postId}/comments`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        if (!response || !response.data) {
+            return {comments: []}
+        }
+
+        return {
+            comments: response.data.comments,
+        }
+    } catch (error) {
+        return {comments: []};
+    }
+}
+
+export const fetchRepliesForComment = async (commentId: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/children`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        if (!response || !response.data) {
+            return {comments: []}
+        }
+
+        return {
+            replies: response.data
+        }
+    } catch (error) {
+        return {comments: []};
+    }
+}
