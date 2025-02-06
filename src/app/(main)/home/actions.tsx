@@ -58,7 +58,7 @@ export const fetchLastCommentsFromPost = async (postId: string) => {
                 "Content-Type": "application/json",
             }
         });
-        console.log(response.data)
+
         if (!response || !response.data) {
             return { comments: []}
         }
