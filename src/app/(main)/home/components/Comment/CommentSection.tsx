@@ -1,14 +1,15 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { fetchLastCommentsFromPost } from "@/app/(main)/home/actions";
+import {useQuery} from "@tanstack/react-query";
+import {fetchLastCommentsFromPost} from "@/app/(main)/home/actions";
+import {CornerDownRight, Heart} from "lucide-react";
 
 interface CommentSectionProps {
     postId: string;
 }
 
-export default function CommentSection({ postId }: CommentSectionProps) {
-    const { data, isLoading } = useQuery({
+export default function CommentSection({postId}: CommentSectionProps) {
+    const {data, isLoading} = useQuery({
         queryKey: ["comments", postId],
         queryFn: () => fetchLastCommentsFromPost(postId),
         staleTime: 1000 * 60 * 5,
@@ -25,9 +26,19 @@ export default function CommentSection({ postId }: CommentSectionProps) {
                     {comments.map((comment: any) => (
                         <div key={comment.id} className="flex gap-3 items-start text-sm">
                             <img src="" alt="" className="w-8 h-8 rounded-full object-cover"/>
-                            <div className="bg-primary-black p-2 rounded-lg">
-                                <p className="text-white font-semibold"></p>
-                                <p className="text-gray-300">{comment.content}</p>
+                            <div>
+                                <div className="bg-primary-black p-2 rounded-lg w-full">
+                                    <p className="text-white font-semibold"></p>
+                                    <p className="text-gray-300">{comment.content}</p>
+                                </div>
+                                <div className="flex items-center gap-4 text-xs text-gray-500 mt-2 ml-2">
+                                    <button className="flex items-center gap-1 hover:text-red-400">
+                                        <Heart className="w-4 h-4"/> J’aime
+                                    </button>
+                                    <button className="flex items-center gap-1 hover:text-white">
+                                        <CornerDownRight className="w-4 h-4"/> Répondre
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
