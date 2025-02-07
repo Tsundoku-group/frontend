@@ -68,25 +68,12 @@ export default function Sidebar() {
                     />
                 </div>
                 <div className="flex items-center justify-around mb-4 mt-4">
-<<<<<<< HEAD
-                    <a href="/home">
-                        <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -mr-5">
-                            <Home className="text-text-white"/>
-                        </div>
-                    </a>
-                    <a href={`/profile/${user?.userId}`}>
-                        <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -ml-5">
-                            <User className="text-text-white"/>
-                        </div>
-                    </a>
-=======
                     <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -mr-5" onClick={handleBackToHome}>
                         <Home className="text-text-white"/>
                     </div>
                     <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -ml-5" onClick={handleBackToProfilePage}>
                         <User className="text-text-white"/>
                     </div>
->>>>>>> abad9c7 (Updating)
                 </div>
             </div>
 
