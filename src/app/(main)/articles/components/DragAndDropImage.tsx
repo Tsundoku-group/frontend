@@ -61,7 +61,7 @@ const DragAndDropImage = () => {
             if (file.size > maxFileSize) {
                 setErrorMessage("Fichier trop volumineux. Taille maximale : 1Mo");
                 setSuccessMessage("");
-                e.target.value = ""; // Clear input value
+                e.target.value = "";
                 return;
             }
             setSuccessMessage("Fichier valide");
@@ -69,7 +69,7 @@ const DragAndDropImage = () => {
         } else {
             setErrorMessage("Extension invalide. Formats acceptés : PNG, JPG, JPEG, SVG");
             setSuccessMessage("");
-            e.target.value = ""; // Clear input value
+            e.target.value = "";
         }
     };
 

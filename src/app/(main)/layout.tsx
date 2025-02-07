@@ -40,7 +40,7 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
                         <div className="col-span-2">
                             <Sidebar/>
                         </div>
-                        <div className="col-span-10 mr-[4em]">
+                        <div className="col-span-10 ml-[3em] mr-[4em] ">
                             <Navbar/>
                             <main style={{fontSize: 'var(--text-size)'}}>
                                 {children}

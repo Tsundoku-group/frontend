@@ -2,13 +2,48 @@ import React from 'react';
 import SlateEditor from './SlateEditor';
 import '../styles/styles.css';
 import DragAndDropImage from './DragAndDropImage';
+import { fetchWithAuth } from '@/services/fetchWithAuth';
 
 const ArticleForm = () => {
+    const [title, setTitle] = React.useState<string>('');
+    const [image, setImage] = React.useState<File | null>(null);
+    const [content, setContent] = React.useState<string>('');
+
+    // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    //     e.preventDefault();
+    //     console.log({ title, image, content });
+
+    //     const formData = new FormData();
+    //     formData.append('title', title);
+    //     if (image) {
+    //         formData.append('image', image);
+    //     }
+    //     formData.append('content', content);
+
+    //     try {
+    //             const response = await fetchWithAuth(`${symfonyUrl}/api/users/verify-password`, {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //                 body: JSON.stringify({currentPassword})
+    //             });
+        
+    //             if (!response.response) {
+    //                 throw new Error("Erreur lors de la vérification du mot de passe.");
+    //             }
+        
+    //             return response;
+    //         } catch (error) {
+    //             throw error;
+    //         }
+    // };
+
     return (
         <div className="mt-10">
             <div className="grid grid-cols-2 gap-10 mb-10">
                 <div>
-                    <label htmlFor="title">Titre de l'article</label>
+                    <label htmlFor="title">Titre article</label>
                     <input type="text" id="title" name="title" placeholder="Titre de ton article" className="w-full px-4 py-2 bg-secondary-black border border-tertiary-black rounded-3xl mb-4" />
                     <DragAndDropImage />
                 </div>
