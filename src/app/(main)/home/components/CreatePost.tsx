@@ -30,7 +30,6 @@ export default function CreatePost({ groupId }: { groupId: number}) {
             const newPost = await createNewPost(postData);
 
             if (newPost) {
-                console.log("Post créé avec succès :", newPost);
                 setContent("");
             } else {
                 console.error("Échec de la création du post");
