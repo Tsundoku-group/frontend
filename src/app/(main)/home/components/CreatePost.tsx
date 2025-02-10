@@ -7,6 +7,7 @@ import {Button} from "@/components/ui/button";
 import {createNewPost} from "@/app/(main)/home/actions";
 import {PostData} from "@/models/PostData";
 import {useProfileContext} from "@/context/profileContext";
+import {ShowToast} from "@/components/ShowToast";
 
 export default function CreatePost({ groupId }: { groupId: number}) {
     const [content, setContent] = useState("");
@@ -32,7 +33,7 @@ export default function CreatePost({ groupId }: { groupId: number}) {
             if (newPost) {
                 setContent("");
             } else {
-                console.error("Échec de la création du post");
+                ShowToast('destructive', 'Erreur lors de la création du post', 'Erreur')
             }
         } catch (error) {
             console.error("Erreur lors de l'ajout du post", error);
