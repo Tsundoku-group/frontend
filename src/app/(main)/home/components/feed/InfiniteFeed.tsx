@@ -2,7 +2,7 @@
 
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {fetchOlderPosts} from "@/app/(main)/home/actions";
-import PostCard from "@/app/(main)/home/components/Post/PostCard";
+import PostCard from "@/app/(main)/home/components/post/PostCard";
 import {useEffect, useRef} from "react";
 
 export default function InfiniteFeed() {

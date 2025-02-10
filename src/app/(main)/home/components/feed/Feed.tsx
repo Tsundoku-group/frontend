@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { fetchRecentPosts } from "@/app/(main)/home/actions";
-import PostCard from "@/app/(main)/home/components/Post/PostCard";
+import PostCard from "@/app/(main)/home/components/post/PostCard";
 import InfiniteFeed from "./InfiniteFeed";
 import {Skeleton} from "@/components/ui/skeleton";
 

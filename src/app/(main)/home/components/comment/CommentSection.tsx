@@ -25,11 +25,10 @@ export default function CommentSection({postId}: CommentSectionProps) {
     const comments = Array.isArray(data?.comments) ? data.comments : [];
 
     const handleReplySubmit = (commentId: string) => {
-        console.log(`Réponse envoyée pour le commentaire ${commentId}:`, replyContent);
         setReplyContent("");
         setReplyingTo(null);
     };
-    console.log(comments);
+
     return (
         <div className="mt-3 border-t border-gray-700 pt-3">
             {isLoading ? (

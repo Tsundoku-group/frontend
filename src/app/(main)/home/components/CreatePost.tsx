@@ -4,17 +4,37 @@ import React, {useState} from "react";
 import {Image, Smile, FileImage, User} from "lucide-react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
+import {createNewPost} from "@/app/(main)/home/actions";
+import {PostData} from "@/models/PostData";
+import {useProfileContext} from "@/context/profileContext";
+import {ShowToast} from "@/components/ShowToast";
 
-export default function CreatePost() {
+export default function CreatePost({ groupId }: { groupId: number}) {
     const [content, setContent] = useState("");
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!content.trim()) return;
+        if (!profileId) return;
 
         try {
-            console.log("Post envoyé :", content);
-            setContent("");
+            const postData: PostData = {
+                title: "",
+                content: content,
+                authorId: profileId,
+                groupId: groupId,
+                visibility: "public",
+            };
+
+            const newPost = await createNewPost(postData);
+
+            if (newPost) {
+                setContent("");
+            } else {
+                ShowToast('destructive', 'Erreur lors de la création du post', 'Erreur')
+            }
         } catch (error) {
             console.error("Erreur lors de l'ajout du post", error);
         }

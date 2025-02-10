@@ -1,8 +1,26 @@
 'use server'
 
 import {fetchWithAuth} from "@/services/fetchWithAuth";
+import {PostData} from "@/models/PostData";
 
 const symfonyUrl = process.env.SYMFONY_URL;
+
+export const createNewPost = async (postData: PostData) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post`, {
+            method: "POST",
+            body: JSON.stringify(postData)
+        });
+
+        if (!response) {
+            throw new Error('Failed to create post');
+        }
+
+        return response;
+    } catch (error) {
+        throw new Error("Erreur du serveur");
+    }
+}
 
 export const fetchRecentPosts = async () => {
     try {
@@ -21,7 +39,7 @@ export const fetchRecentPosts = async () => {
 
         return data.posts;
     } catch (error) {
-        console.error(error);
+        throw new Error("Erreur du serveur");
     }
 }
 
@@ -46,7 +64,7 @@ export const fetchOlderPosts = async (pageParam: number, limit = 20) => {
             nextPage
         };
     } catch (error) {
-        return {posts: [], nextPage: undefined};
+        throw new Error("Erreur du serveur");
     }
 }
 
@@ -67,7 +85,7 @@ export const fetchLastCommentsFromPost = async (postId: string) => {
             comments: response.data.comments,
         }
     } catch (error) {
-        return {comments: []};
+        throw new Error("Erreur du serveur");
     }
 }
 
@@ -88,6 +106,6 @@ export const fetchRepliesForComment = async (commentId: string) => {
             replies: response.data
         }
     } catch (error) {
-        return {comments: []};
+        throw new Error("Erreur du serveur");
     }
 }

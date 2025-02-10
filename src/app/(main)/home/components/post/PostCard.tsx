@@ -1,6 +1,6 @@
 import {Heart, Send, User} from "lucide-react";
-import PostDate from "@/app/(main)/home/components/Post/PostDate";
-import CommentSection from "@/app/(main)/home/components/Comment/CommentSection";
+import PostDate from "@/app/(main)/home/components/post/PostDate";
+import CommentSection from "@/app/(main)/home/components/comment/CommentSection";
 import {useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
