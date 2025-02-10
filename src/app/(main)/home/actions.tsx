@@ -11,14 +11,14 @@ export const createNewPost = async (postData: PostData) => {
             method: "POST",
             body: JSON.stringify(postData)
         });
-        console.log(postData)
+
         if (!response) {
-            console.error("Erreur lors de l'ajout du post");
+            throw new Error('Failed to create post');
         }
 
         return response;
     } catch (error) {
-        console.error("Erreur lors de l'ajout du post");
+        throw new Error("Erreur du serveur");
     }
 }
 
@@ -39,7 +39,7 @@ export const fetchRecentPosts = async () => {
 
         return data.posts;
     } catch (error) {
-        console.error(error);
+        throw new Error("Erreur du serveur");
     }
 }
 
@@ -64,7 +64,7 @@ export const fetchOlderPosts = async (pageParam: number, limit = 20) => {
             nextPage
         };
     } catch (error) {
-        return {posts: [], nextPage: undefined};
+        throw new Error("Erreur du serveur");
     }
 }
 
@@ -85,7 +85,7 @@ export const fetchLastCommentsFromPost = async (postId: string) => {
             comments: response.data.comments,
         }
     } catch (error) {
-        return {comments: []};
+        throw new Error("Erreur du serveur");
     }
 }
 
@@ -106,6 +106,6 @@ export const fetchRepliesForComment = async (commentId: string) => {
             replies: response.data
         }
     } catch (error) {
-        return {comments: []};
+        throw new Error("Erreur du serveur");
     }
 }
