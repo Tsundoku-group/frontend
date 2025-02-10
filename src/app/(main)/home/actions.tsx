@@ -1,8 +1,26 @@
 'use server'
 
 import {fetchWithAuth} from "@/services/fetchWithAuth";
+import {PostData} from "@/models/PostData";
 
 const symfonyUrl = process.env.SYMFONY_URL;
+
+export const createNewPost = async (postData: PostData) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post`, {
+            method: "POST",
+            body: JSON.stringify(postData)
+        });
+        console.log(postData)
+        if (!response) {
+            console.error("Erreur lors de l'ajout du post");
+        }
+
+        return response;
+    } catch (error) {
+        console.error("Erreur lors de l'ajout du post");
+    }
+}
 
 export const fetchRecentPosts = async () => {
     try {
