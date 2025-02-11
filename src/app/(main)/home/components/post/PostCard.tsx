@@ -6,7 +6,7 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useProfileContext} from "@/context/profileContext";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
-import {updatePost} from "@/app/(main)/home/actions";
+import {deletePost, updatePost} from "@/app/(main)/home/actions";
 import {useGroupContext} from "@/context/groupContext";
 import {ShowToast} from "@/components/ShowToast";
 import {
@@ -66,7 +66,10 @@ export default function PostCard({post}: { post: Post }) {
         if (!profileId) return;
 
         try {
-            await deletePost();
+            await deletePost({
+                id: post.id,
+                editorId: profileId
+            });
             setIsDeleting(false);
             ShowToast('default', 'Le post a bien été supprimé.')
         } catch (error) {
