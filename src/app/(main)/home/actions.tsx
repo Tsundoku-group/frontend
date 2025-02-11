@@ -22,6 +22,31 @@ export const createNewPost = async (postData: PostData) => {
     }
 }
 
+export const updatePost = async (postData: PostData) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${postData.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: "",
+                content: postData.content,
+                visibility: postData.visibility,
+                authorId: postData.authorId
+            })
+        });
+
+        if (!response) {
+            throw new Error('Failed to update post');
+        }
+
+        return response;
+    } catch (error) {
+        throw new Error("Erreur du serveur");
+    }
+}
+
 export const fetchRecentPosts = async () => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/recent`, {
