@@ -47,6 +47,26 @@ export const updatePost = async (postData: PostData) => {
     }
 }
 
+export const deletePost = async (postData: { id: string; editorId?: string; }) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${postData.id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(postData)
+        });
+
+        if (!response.response || 200 !== response.status) {
+            throw new Error('Failed to delete post');
+        }
+
+        return response.data;
+    } catch (error) {
+        throw new Error("Erreur du serveur");
+    }
+}
+
 export const fetchRecentPosts = async () => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/recent`, {

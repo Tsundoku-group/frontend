@@ -88,3 +88,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-84] Afficher les commentaires d'un post dans PostCard.tsx [#84](https://trello.com/c/Lkhs6ulR/84-t-84-afficher-les-commentaires-dun-post-dans-postcardtsx)
 - [t-85] Ajout d'un post [#85](https://trello.com/c/sbv5pKYN/85-t-85-ajout-dun-post)
 - [t-86] Modifier un post [#86](https://trello.com/c/UF5Eh55O/86-t-86-modifier-un-post)
+- [t-87] Delete un post [#87](https://trello.com/c/pzuYZg71/87-t-87-delete-un-post)
