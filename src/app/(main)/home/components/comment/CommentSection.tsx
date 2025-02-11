@@ -5,7 +5,10 @@ import {fetchLastCommentsFromPost} from "@/app/(main)/home/actions";
 import {CornerDownRight, Heart, Send, User} from "lucide-react";
 import {useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {Button} from "@/components/ui/button";
 import RepliesSection from "@/app/(main)/home/components/RepliesSection";
+import {useProfileContext} from "@/context/profileContext";
+import {ShowToast} from "@/components/ShowToast";
 
 interface CommentSectionProps {
     postId: string;
@@ -20,7 +23,9 @@ export default function CommentSection({postId}: CommentSectionProps) {
 
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
     const [replyContent, setReplyContent] = useState("");
+    const [commentContent, setCommentContent] = useState("");
     const [openReplies, setOpenReplies] = useState<{ [key: string]: boolean }>({});
+    const {activeProfileInStorage} = useProfileContext();
 
     const comments = Array.isArray(data?.comments) ? data.comments : [];
 
@@ -29,8 +34,35 @@ export default function CommentSection({postId}: CommentSectionProps) {
         setReplyingTo(null);
     };
 
+    const handlePostCommentSubmit = () => {
+        if (!commentContent.trim()) return;
+
+        // Simulation d'envoi de commentaire
+        ShowToast("default", "Commentaire ajouté !");
+        setCommentContent("");
+    };
+
+
     return (
         <div className="mt-3 border-t border-gray-700 pt-3">
+            <div className="flex items-center gap-3 mb-4">
+                <Avatar className="w-8 h-8">
+                    <AvatarImage src={activeProfileInStorage?.profileImageUrl || ""}/>
+                    <AvatarFallback><User/></AvatarFallback>
+                </Avatar>
+                <input
+                    type="text"
+                    className="w-full bg-gray-800 text-white p-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                    placeholder="Ajouter un commentaire..."
+                    value={commentContent}
+                    onChange={(e) => setCommentContent(e.target.value)}
+                />
+                <Button className="bg-purple-highlight text-white px-3 py-1 rounded-lg hover:bg-blue-600"
+                        onClick={handlePostCommentSubmit}>
+                    <Send className="w-4 h-4"/>
+                </Button>
+            </div>
+
             {isLoading ? (
                 <p className="text-gray-400 text-sm">Chargement des commentaires...</p>
             ) : comments.length > 0 ? (
