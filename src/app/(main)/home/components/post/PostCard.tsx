@@ -31,7 +31,9 @@ export default function PostCard({post}: { post: Post }) {
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
     const [isEditing, setIsEditing] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [editedContent, setEditedContent] = useState(post.content);
+
     const {groupId} = useGroupContext();
 
     const handleEditPost = async () => {
@@ -48,6 +50,17 @@ export default function PostCard({post}: { post: Post }) {
             });
             setIsEditing(false);
             setEditedContent("");
+        } catch (error) {
+            ShowToast('destructive', 'Une erreur est survenue. Veuillez réessayer.', 'Erreur')
+        }
+    }
+
+    const handleDeletePost = async () => {
+        if (!profileId) return;
+
+        try {
+            await deletePost();
+            setIsDeleting(false);
         } catch (error) {
             ShowToast('destructive', 'Une erreur est survenue. Veuillez réessayer.', 'Erreur')
         }
@@ -82,8 +95,8 @@ export default function PostCard({post}: { post: Post }) {
                                     Modifier <Pencil className="h-4 w-4 ml-7"/>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="text-red-highlight"
-                                                  onClick={() => setIsEditing(true)}>
-                                    Supprimer <Trash  className="h-4 w-4 ml-4"/>
+                                                  onClick={() => setIsDeleting(true)}>
+                                    Supprimer <Trash className="h-4 w-4 ml-4"/>
                                 </DropdownMenuItem>
                             </>
                         ) : null}
