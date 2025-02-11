@@ -1,4 +1,4 @@
-import {Heart, Send, User, EllipsisVertical, Pencil} from "lucide-react";
+import {Heart, Send, User, EllipsisVertical, Pencil, Trash} from "lucide-react";
 import PostDate from "@/app/(main)/home/components/post/PostDate";
 import CommentSection from "@/app/(main)/home/components/comment/CommentSection";
 import {useState} from "react";
@@ -76,9 +76,16 @@ export default function PostCard({post}: { post: Post }) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-primary-black border-none">
                         {post.author.id === profileId ? (
-                            <DropdownMenuItem className="text-white" onClick={() => setIsEditing(true)}>
-                                Modifier <Pencil className="h-4 w-4 ml-7"/>
-                            </DropdownMenuItem>
+                            <>
+                                <DropdownMenuItem className="text-white"
+                                                  onClick={() => setIsEditing(true)}>
+                                    Modifier <Pencil className="h-4 w-4 ml-7"/>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-highlight"
+                                                  onClick={() => setIsEditing(true)}>
+                                    Supprimer <Trash  className="h-4 w-4 ml-4"/>
+                                </DropdownMenuItem>
+                            </>
                         ) : null}
                     </DropdownMenuContent>
                 </DropdownMenu>
