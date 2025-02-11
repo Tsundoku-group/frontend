@@ -1,12 +1,19 @@
-import {Heart, Send, User} from "lucide-react";
+import {Heart, Send, User, EllipsisVertical, Pencil} from "lucide-react";
 import PostDate from "@/app/(main)/home/components/post/PostDate";
 import CommentSection from "@/app/(main)/home/components/comment/CommentSection";
 import {useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {useProfileContext} from "@/context/profileContext";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {Button} from "@/components/ui/button";
+import {updatePost} from "@/app/(main)/home/actions";
+import {useGroupContext} from "@/context/groupContext";
+import {ShowToast} from "@/components/ShowToast";
 
 interface Post {
     id: string;
     author: {
+        id: string;
         name: string;
         username: string;
         avatar: string;
@@ -16,26 +23,98 @@ interface Post {
     likes: number;
     commentsCount: number;
     createdAt: string;
+    visibility: string;
 }
 
 export default function PostCard({post}: { post: Post }) {
     const [showComments, setShowComments] = useState(false);
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id;
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedContent, setEditedContent] = useState(post.content);
+    const {groupId} = useGroupContext();
+
+    const handleEditPost = async () => {
+        if (!profileId) return;
+
+        try {
+            await updatePost({
+                id: post.id,
+                groupId: groupId,
+                title: "",
+                content: editedContent,
+                visibility: post.visibility as "public" | "private",
+                authorId: profileId
+            });
+            setIsEditing(false);
+            setEditedContent("");
+        } catch (error) {
+            ShowToast('destructive', 'Une erreur est survenue. Veuillez réessayer.', 'Erreur')
+        }
+    }
 
     return (
         <div className="bg-tertiary-black p-4 rounded-lg shadow-md w-full mb-6">
-            <div className="flex items-center gap-4 ml-4">
-                <Avatar className="w-16 h-16">
-                    <AvatarImage src={post.author.avatar} />
-                    <AvatarFallback><User /></AvatarFallback>
-                </Avatar>
-                <div>
-                    <div className="text-white font-semibold">{post.author.name} <span
-                        className="text-gray-400">@{post.author.username}</span></div>
-                    <PostDate date={post.createdAt}/>
+            <div className="flex items-center justify-between w-full px-4">
+                <div className="flex items-center gap-4">
+                    <Avatar className="w-16 h-16">
+                        <AvatarImage src={post.author.avatar}/>
+                        <AvatarFallback><User/></AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <div className="text-white font-semibold">
+                            {post.author.name} <span className="text-gray-400">@{post.author.username}</span>
+                        </div>
+                        <PostDate date={post.createdAt}/>
+                    </div>
                 </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger className="text-gray-400 hover:text-white">
+                    <span className="text-xs cursor-pointer">
+                        <EllipsisVertical className="w-4 h-4"/>
+                    </span>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-primary-black border-none">
+                        {post.author.id === profileId ? (
+                            <DropdownMenuItem className="text-white" onClick={() => setIsEditing(true)}>
+                                Modifier <Pencil className="h-4 w-4 ml-7"/>
+                            </DropdownMenuItem>
+                        ) : null}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
-            <div className="text-white mt-3 px-12 pb-6 text-sm">{post.content}</div>
+            <div className="mt-3 px-12 pb-6 text-sm">
+                {isEditing ? (
+                    <textarea
+                        className="w-full bg-gray-800 text-white p-2 rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+                        value={editedContent}
+                        onChange={(e) => setEditedContent(e.target.value)}
+                    />
+                ) : (
+                    <p className="text-white">{post.content}</p>
+                )}
+            </div>
+
+            {isEditing && (
+                <div className="flex justify-end px-12">
+                    <Button
+                        className="bg-purple-highlight text-white px-2 py-1 rounded-md mr-2 text-xs h-8 min-w-[60px]"
+                        onClick={handleEditPost}
+                    >
+                        Sauvegarder
+                    </Button>
+                    <Button
+                        className="bg-gray-500 text-white px-2 py-1 rounded-md text-xs h-8 min-w-[60px]"
+                        onClick={() => {
+                            setIsEditing(false);
+                            setEditedContent(post.content);
+                        }}
+                    >
+                        Annuler
+                    </Button>
+                </div>
+            )}
 
             {Array.isArray(post.images) && post.images.length > 0 && (
                 <div className="grid gap-2 mt-3 rounded-lg overflow-hidden"
@@ -58,7 +137,6 @@ export default function PostCard({post}: { post: Post }) {
                     <Heart className="w-4 h-4 text-red-400"/>
                     <span className="font-semibold">4</span>
                 </div>
-
                 <div className="text-gray-400">
                     {post.commentsCount} commentaires
                 </div>
