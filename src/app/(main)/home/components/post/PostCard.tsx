@@ -20,9 +20,9 @@ interface Post {
     id: string;
     author: {
         id: string;
-        name: string;
+        lastname: string;
+        firstname: string;
         username: string;
-        avatar: string;
     };
     content: string;
     images: string[];
@@ -84,13 +84,14 @@ export default function PostCard({post}: { post: Post }) {
                 <div className="flex items-center justify-between w-full px-4">
                     <div className="flex items-center gap-4">
                         <Avatar className="w-16 h-16">
-                            <AvatarImage src={post.author.avatar}/>
+                            <AvatarImage src=""/>
                             <AvatarFallback><User/></AvatarFallback>
                         </Avatar>
                         <div>
-                            <div className="text-white font-semibold">
-                                {post.author.name} <span className="text-gray-400">@{post.author.username}</span>
+                            <div className="text-white text-sm">
+                                {post.author.firstname} {post.author.firstname}
                             </div>
+                            <div className="text-gray-400 text-xs">@{post.author.username}</div>
                             <PostDate date={post.createdAt}/>
                         </div>
                     </div>
