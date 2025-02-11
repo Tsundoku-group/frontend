@@ -20,9 +20,9 @@ interface Post {
     id: string;
     author: {
         id: string;
-        name: string;
+        lastname: string;
+        firstname: string;
         username: string;
-        avatar: string;
     };
     content: string;
     images: string[];
@@ -39,6 +39,7 @@ export default function PostCard({post}: { post: Post }) {
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [editedContent, setEditedContent] = useState(post.content);
 
     const {groupId} = useGroupContext();
@@ -46,7 +47,7 @@ export default function PostCard({post}: { post: Post }) {
     const handleEditPost = async () => {
         if (!profileId) return;
 
-        setIsDeleting(true);
+        setIsEditing(true);
         try {
             await updatePost({
                 id: post.id,
@@ -57,8 +58,10 @@ export default function PostCard({post}: { post: Post }) {
                 authorId: profileId
             });
             setIsEditing(false);
+            setIsDeleting(false);
             setEditedContent("");
         } catch (error) {
+            setIsEditing(false);
             ShowToast('destructive', 'Une erreur est survenue. Veuillez réessayer.', 'Erreur')
         }
     }
@@ -66,6 +69,7 @@ export default function PostCard({post}: { post: Post }) {
     const handleDeletePost = async () => {
         if (!profileId) return;
 
+        setIsDeleting(true);
         try {
             await deletePost({
                 id: post.id,
@@ -84,17 +88,18 @@ export default function PostCard({post}: { post: Post }) {
                 <div className="flex items-center justify-between w-full px-4">
                     <div className="flex items-center gap-4">
                         <Avatar className="w-16 h-16">
-                            <AvatarImage src={post.author.avatar}/>
+                            <AvatarImage src=""/>
                             <AvatarFallback><User/></AvatarFallback>
                         </Avatar>
                         <div>
-                            <div className="text-white font-semibold">
-                                {post.author.name} <span className="text-gray-400">@{post.author.username}</span>
+                            <div className="text-white text-sm">
+                                {post.author.firstname} {post.author.firstname}
                             </div>
+                            <div className="text-gray-400 text-xs">@{post.author.username}</div>
                             <PostDate date={post.createdAt}/>
                         </div>
                     </div>
-                    <DropdownMenu open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
                         <DropdownMenuTrigger className="text-gray-400 hover:text-white">
                         <span className="text-xs cursor-pointer">
                             <EllipsisVertical className="w-4 h-4"/>
@@ -104,11 +109,18 @@ export default function PostCard({post}: { post: Post }) {
                             {post.author.id === profileId ? (
                                 <>
                                     <DropdownMenuItem className="text-white"
-                                                      onClick={() => setIsEditing(true)}>
+                                                      onClick={() => {
+                                                          setIsEditing(true);
+                                                          setIsDropdownOpen(false);
+                                                      }}>
+
                                         Modifier <Pencil className="h-4 w-4 ml-7"/>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem className="text-red-highlight"
-                                                      onClick={() => setIsDialogOpen(true)}>
+                                                      onClick={() => {
+                                                          setIsDialogOpen(true);
+                                                          setIsDropdownOpen(false);
+                                                      }}>
                                         Supprimer <Trash className="h-4 w-4 ml-4"/>
                                     </DropdownMenuItem>
 
