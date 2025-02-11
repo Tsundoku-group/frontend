@@ -10,7 +10,7 @@ import {deletePost, updatePost} from "@/app/(main)/home/actions";
 import {useGroupContext} from "@/context/groupContext";
 import {ShowToast} from "@/components/ShowToast";
 import {
-    AlertDialog, AlertDialogAction, AlertDialogCancel,
+    AlertDialog, AlertDialogAction,
     AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
@@ -46,6 +46,7 @@ export default function PostCard({post}: { post: Post }) {
     const handleEditPost = async () => {
         if (!profileId) return;
 
+        setIsDeleting(true);
         try {
             await updatePost({
                 id: post.id,
@@ -201,11 +202,12 @@ export default function PostCard({post}: { post: Post }) {
                     <AlertDialogFooter>
                         <Button className="bg-gray-500" onClick={() => setIsDialogOpen(false)}>Annuler</Button>
                         <AlertDialogAction className="bg-red-highlight"
+                                           disabled={isDeleting}
                                            onClick={() => {
                                                handleDeletePost();
                                                setIsDialogOpen(false);
                                            }}>
-                            Supprimer
+                            {isDeleting ? "Suppression..." : "Supprimer"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
