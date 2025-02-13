@@ -69,9 +69,9 @@ export default function RepliesSection({ commentId, postId }: RepliesSectionProp
                 <p className="text-gray-400 text-xs">Chargement des réponses...</p>
             ) : replies.length > 0 ? (
                 <div className="space-y-3 mt-2">
-                    {replies.map((reply: any) => (
-                        <div key={reply.id} className="flex items-start gap-3 text-xs">
-                            <Avatar className="w-6 h-6">
+                    {replies.map((reply: any, index: number) => (
+                        <div key={index} className="flex items-start gap-3 text-xs">
+                            <Avatar className="w-8 h-8">
                                 <AvatarImage />
                                 <AvatarFallback><User /></AvatarFallback>
                             </Avatar>
