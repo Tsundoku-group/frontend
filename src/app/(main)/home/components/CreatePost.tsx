@@ -8,36 +8,52 @@ import {createNewPost} from "@/app/(main)/home/actions";
 import {PostData} from "@/models/PostData";
 import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 export default function CreatePost({ groupId }: { groupId: number}) {
     const [content, setContent] = useState("");
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
 
-    const handleSubmit = async (e: React.FormEvent) => {
+
+    const queryClient = useQueryClient();
+
+    const { mutate: addPost } = useMutation({
+        mutationFn: async (postData: PostData) => {
+            return createNewPost(postData);
+        },
+        onSuccess: async (newPost) => {
+            console.log("🔍 Nouveau post reçu :", newPost);
+
+            if (!newPost) {
+                ShowToast("destructive", "Erreur : le post est vide ou incorrect", "Erreur");
+                return;
+            }
+
+            setContent("");
+            await queryClient.invalidateQueries({ queryKey: ["recentPosts"] });
+
+            ShowToast("default", "Post ajouté avec succès !");
+        },
+        onError: () => {
+            ShowToast("destructive", "Une erreur est survenue !", "Erreur");
+        },
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!content.trim()) return;
         if (!profileId) return;
 
-        try {
-            const postData: PostData = {
-                title: "",
-                content: content,
-                authorId: profileId,
-                groupId: groupId,
-                visibility: "public",
-            };
+        const postData: PostData = {
+            title: "",
+            content: content,
+            authorId: profileId,
+            groupId: groupId,
+            visibility: "public",
+        };
 
-            const newPost = await createNewPost(postData);
-
-            if (newPost) {
-                setContent("");
-            } else {
-                ShowToast('destructive', 'Erreur lors de la création du post', 'Erreur')
-            }
-        } catch (error) {
-            console.error("Erreur lors de l'ajout du post", error);
-        }
+        addPost(postData);
     };
 
     return (
