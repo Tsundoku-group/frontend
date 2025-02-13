@@ -93,7 +93,7 @@ export default function PostCard({post}: { post: Post }) {
                         </Avatar>
                         <div>
                             <div className="text-white text-sm">
-                                {post.author.firstname} {post.author.firstname}
+                                {post.author.firstname} {post.author.lastname}
                             </div>
                             <div className="text-gray-400 text-xs">@{post.author.username}</div>
                             <PostDate date={post.createdAt}/>
