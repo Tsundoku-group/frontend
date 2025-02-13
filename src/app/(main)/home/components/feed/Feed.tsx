@@ -10,7 +10,6 @@ export default function Feed() {
     const { data: posts, isLoading, error } = useQuery({
         queryKey: ["recentPosts"],
         queryFn: async () => {
-            console.log("useQuery is calling fetchRecentPosts...");
             return await fetchRecentPosts();
         },
         staleTime: 60000,
@@ -39,7 +38,7 @@ export default function Feed() {
     if (error) return <p className="text-center text-red-400">Erreur lors du chargement.</p>;
 
     return (
-        <div className="w-full  mx-auto">
+        <div className="w-full mx-auto">
             {posts && posts.length > 0 ? (
                 posts.map((post: any) => (
                     <PostCard key={post.id} post={post} />
