@@ -32,7 +32,7 @@ interface Post {
     visibility: string;
 }
 
-export default function PostCard({post}: { post: Post }) {
+export default function PostCard({ post, onDelete }: { post: Post, onDelete: (id: string) => void }) {
     const [showComments, setShowComments] = useState(false);
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
@@ -74,6 +74,7 @@ export default function PostCard({post}: { post: Post }) {
                 id: post.id,
                 editorId: profileId
             });
+            onDelete(post.id);
             setIsDeleting(false);
             ShowToast('default', 'Le post a bien été supprimé.')
         } catch (error) {
