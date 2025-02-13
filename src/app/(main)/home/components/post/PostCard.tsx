@@ -58,8 +58,7 @@ export default function PostCard({post}: { post: Post }) {
                 authorId: profileId
             });
             setIsEditing(false);
-            setIsDeleting(false);
-            setEditedContent("");
+            setEditedContent(editedContent);
         } catch (error) {
             setIsEditing(false);
             ShowToast('destructive', 'Une erreur est survenue. Veuillez réessayer.', 'Erreur')
@@ -137,7 +136,7 @@ export default function PostCard({post}: { post: Post }) {
                             value={editedContent}
                             onChange={(e) => setEditedContent(e.target.value)}/>
                     ) : (
-                        <p className="text-white">{post.content}</p>
+                        <div className="text-white">{editedContent}</div>
                     )}
                 </div>
 
