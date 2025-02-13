@@ -60,7 +60,6 @@ export const deletePost = async (postData: { id: string; editorId?: string; }) =
         if (!response.response || 200 !== response.status) {
             throw new Error('Failed to delete post');
         }
-
         return response.data;
     } catch (error) {
         throw new Error("Erreur du serveur");
@@ -133,6 +132,42 @@ export const fetchLastCommentsFromPost = async (postId: string) => {
         throw new Error("Erreur du serveur");
     }
 }
+
+export const createCommentOnPost = async (commentData: { postId: string; authorId: string; content: string }) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/add/post`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(commentData)
+        });
+
+        if (!response.response || 201 !== response.status) {
+            throw new Error('Failed to create comment');
+        }
+
+        return response.data;
+    } catch (error) {
+        throw new Error("Erreur du serveur");
+    }
+};
+
+export const replyToComment = async (replyData: { postId: string; parentId: string; authorId: string; content: string;  }) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/add/reply`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(replyData)
+        });
+
+        if (!response.response || 201 !== response.status) {
+            throw new Error('Failed to create reply');
+        }
+
+        return response.data;
+    } catch (error) {
+        throw new Error("Erreur du serveur");
+    }
+};
 
 export const fetchRepliesForComment = async (commentId: string) => {
     try {

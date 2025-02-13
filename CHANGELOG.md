@@ -90,3 +90,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-86] Modifier un post [#86](https://trello.com/c/UF5Eh55O/86-t-86-modifier-un-post)
 - [t-87] Delete un post [#87](https://trello.com/c/pzuYZg71/87-t-87-delete-un-post)
 - [t-88] Afficher le nom et username sur un post [#88](https://trello.com/c/9nQFoJam/88-t-88-afficher-le-nom-et-username-sur-un-post)
+- [t-89] Ajout de la feature pour ajouter un commentaire à un post [#89](https://trello.com/c/32xfUJhR/89-t-89-ajout-de-la-feature-pour-ajouter-un-commentaire-%C3%A0-un-post)

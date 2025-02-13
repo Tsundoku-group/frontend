@@ -1,11 +1,14 @@
 "use client";
 
 import {useQuery} from "@tanstack/react-query";
-import {fetchLastCommentsFromPost} from "@/app/(main)/home/actions";
+import {createCommentOnPost, fetchLastCommentsFromPost} from "@/app/(main)/home/actions";
 import {CornerDownRight, Heart, Send, User} from "lucide-react";
 import {useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {Button} from "@/components/ui/button";
 import RepliesSection from "@/app/(main)/home/components/RepliesSection";
+import {useProfileContext} from "@/context/profileContext";
+import {ShowToast} from "@/components/ShowToast";
 
 interface CommentSectionProps {
     postId: string;
@@ -18,33 +21,66 @@ export default function CommentSection({postId}: CommentSectionProps) {
         staleTime: 1000 * 60 * 5,
     });
 
-    const [replyingTo, setReplyingTo] = useState<string | null>(null);
-    const [replyContent, setReplyContent] = useState("");
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id;
+
+    const [commentContent, setCommentContent] = useState("");
     const [openReplies, setOpenReplies] = useState<{ [key: string]: boolean }>({});
 
     const comments = Array.isArray(data?.comments) ? data.comments : [];
 
-    const handleReplySubmit = (commentId: string) => {
-        setReplyContent("");
-        setReplyingTo(null);
+    const handlePostComment = async () => {
+        if (!profileId || !commentContent.trim()) return;
+
+        try {
+            await createCommentOnPost({
+                postId,
+                authorId: profileId,
+                content: commentContent,
+            });
+
+            setCommentContent("");
+            ShowToast("default", "Commentaire ajouté !");
+        } catch (error) {
+            ShowToast("destructive", "Une erreur est survenue ! Veuillez réessayer.", "Erreur");
+        }
     };
 
     return (
         <div className="mt-3 border-t border-gray-700 pt-3">
+            <div className="flex items-center gap-3 mb-4">
+                <Avatar className="w-8 h-8">
+                    <AvatarImage src={activeProfileInStorage?.profileImageUrl || ""}/>
+                    <AvatarFallback><User/></AvatarFallback>
+                </Avatar>
+                <input
+                    type="text"
+                    className="w-full bg-gray-800 text-white p-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                    placeholder="Ajouter un commentaire..."
+                    value={commentContent}
+                    onChange={(e) => setCommentContent(e.target.value)}
+                />
+                <Button className="bg-purple-highlight text-white px-3 py-1 rounded-lg hover:bg-blue-600"
+                        onClick={handlePostComment}>
+                    <Send className="w-4 h-4"/>
+                </Button>
+            </div>
+
             {isLoading ? (
                 <p className="text-gray-400 text-sm">Chargement des commentaires...</p>
             ) : comments.length > 0 ? (
                 <div className="space-y-3">
                     {comments.map((comment: any) => (
                         <div key={comment.id} className="flex gap-3 items-start text-sm">
-                            <Avatar className="w-8 h-8">
+                            <Avatar className="w-8 h-8 mt-4">
                                 <AvatarImage/>
                                 <AvatarFallback><User/></AvatarFallback>
                             </Avatar>
                             <div className="w-full">
                                 <div className="bg-primary-black p-2 rounded-lg">
-                                    <p className="text-white font-semibold"></p>
-                                    <p className="text-gray-300">{comment.content}</p>
+                                    <div
+                                        className="text-white font-semibold ">{comment.author?.firstname}{comment.author?.lastname}</div>
+                                    <div className="text-gray-300">{comment.content}</div>
                                 </div>
                                 <div className="flex items-center gap-4 text-xs text-gray-500 mt-2 ml-2">
                                     <button className="flex items-center gap-1 hover:text-red-400">
@@ -53,44 +89,25 @@ export default function CommentSection({postId}: CommentSectionProps) {
                                     <button
                                         className="flex items-center gap-1 hover:text-white"
                                         onClick={() =>
-                                            setReplyingTo(replyingTo === comment.id ? null : comment.id)
+                                            setOpenReplies(prev => ({...prev, [comment.id]: !prev[comment.id]}))
                                         }
                                     >
                                         <CornerDownRight className="w-4 h-4"/> Répondre
                                     </button>
+                                    {comment.replyCount > 0 && (
+                                        <button
+                                            className="flex items-center gap-1 text-blue-400 hover:text-blue-600"
+                                            onClick={() =>
+                                                setOpenReplies(prev => ({ ...prev, [comment.id]: !prev[comment.id] }))
+                                            }
+                                        >
+                                            Voir les réponses ({comment.replyCount})
+                                        </button>
+                                    )}
                                 </div>
 
-                                {replyingTo === comment.id && (
-                                    <div className="mt-3 flex items-center gap-2 ml-8">
-                                        <input
-                                            type="text"
-                                            className="w-full bg-gray-800 text-white p-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
-                                            placeholder="Écrire une réponse..."
-                                            value={replyContent}
-                                            onChange={(e) => setReplyContent(e.target.value)}
-                                        />
-                                        <button
-                                            className="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600"
-                                            onClick={() => handleReplySubmit(comment.id)}
-                                        >
-                                            <Send className="w-4 h-4"/>
-                                        </button>
-                                    </div>
-                                )}
-
-                                {comment.replyCount > 0 && (
-                                    <button
-                                        className="text-blue-400 text-xs mt-1 ml-3 hover:underline"
-                                        onClick={() =>
-                                            setOpenReplies(prev => ({...prev, [comment.id]: !prev[comment.id]}))
-                                        }
-                                    >
-                                        {openReplies[comment.id] ? "Masquer les réponses" : `Voir réponses (${comment.replyCount})`}
-                                    </button>
-                                )}
-
                                 {openReplies[comment.id] && (
-                                    <RepliesSection commentId={comment.id}/>
+                                    <RepliesSection commentId={comment.id} postId={postId}/>
                                 )}
                             </div>
                         </div>
