@@ -94,6 +94,16 @@ export default function CommentSection({postId}: CommentSectionProps) {
                                     >
                                         <CornerDownRight className="w-4 h-4"/> Répondre
                                     </button>
+                                    {comment.replyCount > 0 && (
+                                        <button
+                                            className="flex items-center gap-1 text-blue-400 hover:text-blue-600"
+                                            onClick={() =>
+                                                setOpenReplies(prev => ({ ...prev, [comment.id]: !prev[comment.id] }))
+                                            }
+                                        >
+                                            Voir les réponses ({comment.replyCount})
+                                        </button>
+                                    )}
                                 </div>
 
                                 {openReplies[comment.id] && (
