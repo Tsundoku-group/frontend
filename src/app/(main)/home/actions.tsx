@@ -133,11 +133,15 @@ export const fetchLastCommentsFromPost = async (postId: string) => {
     }
 }
 
-export const createCommentOnPost = async (commentData: { postId: string; authorId: string; content: string }) => {
+export const createCommentOnPost = async (commentData: {
+    postId: string;
+    authorId: string | undefined;
+    content: string
+}) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/add/post`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify(commentData)
         });
 
@@ -151,11 +155,60 @@ export const createCommentOnPost = async (commentData: { postId: string; authorI
     }
 };
 
-export const replyToComment = async (replyData: { postId: string; parentId: string; authorId: string; content: string;  }) => {
+export const updateCommentOnPost = async (
+    commentId: string,
+    authorId: string | undefined,
+    content: string
+) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/update`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({authorId, content})
+        });
+
+        if (!response.response || 200 !== response.status) {
+            throw new Error('Failed to update comment');
+        }
+
+        return response.data;
+    } catch (error) {
+        throw new Error("Erreur du serveur");
+    }
+}
+
+export const deleteCommentOnPost = async (commentId: string, authorId: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/delete`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({authorId})
+        });
+
+        if (!response.response || 200 !== response.status) {
+            throw new Error('Failed to delete comment');
+        }
+
+        return response.data;
+    } catch (error) {
+        throw new Error("Erreur du serveur");
+    }
+}
+
+export const replyToComment = async (replyData: {
+    postId: string;
+    parentId: string;
+    authorId: string;
+    content: string;
+}) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/add/reply`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify(replyData)
         });
 

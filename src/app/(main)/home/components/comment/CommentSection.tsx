@@ -31,7 +31,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
         queryFn: () => fetchLastCommentsFromPost(postId),
         staleTime: 1000 * 60 * 5,
     });
-    console.log(data)
+
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
     const queryClient = useQueryClient();
@@ -42,12 +42,12 @@ export default function CommentSection({postId}: CommentSectionProps) {
     const [editedContent, setEditedContent] = useState<{ [key: string]: string }>({});
 
     const comments = Array.isArray(data?.comments) ? data.comments : [];
-    const { mutate: addComment } = useMutation({
+    const {mutate: addComment} = useMutation({
         mutationFn: async (commentData: { postId: string; authorId: string; content: string }) => {
             return createCommentOnPost(commentData);
         },
         onMutate: async (newComment) => {
-            await queryClient.cancelQueries({ queryKey: ["comments", postId] });
+            await queryClient.cancelQueries({queryKey: ["comments", postId]});
             const previousComments = queryClient.getQueryData(["comments", postId]);
             const tempComment = {
                 id: `temp-${Date.now()}`,
@@ -58,13 +58,13 @@ export default function CommentSection({postId}: CommentSectionProps) {
 
             queryClient.setQueryData(["comments", postId], (old: any) => {
                 return old
-                    ? { ...old, comments: [tempComment, ...old.comments] }
-                    : { comments: [tempComment] };
+                    ? {...old, comments: [tempComment, ...old.comments]}
+                    : {comments: [tempComment]};
             });
 
             setCommentContent("");
 
-            return { previousComments };
+            return {previousComments};
         },
         onSuccess: () => {
             ShowToast("default", "Commentaire ajouté !");
@@ -77,7 +77,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ["comments", postId] }); // Recharge proprement
+            queryClient.invalidateQueries({queryKey: ["comments", postId]});
         },
     });
 
@@ -95,21 +95,21 @@ export default function CommentSection({postId}: CommentSectionProps) {
         },
     });
 
-    const { mutate: deleteComment } = useMutation({
+    const {mutate: deleteComment} = useMutation({
         mutationFn: async (commentId: string) => {
             return deleteCommentOnPost(commentId, profileId as string);
         },
         onMutate: async (commentId: string) => {
-            await queryClient.cancelQueries({ queryKey: ["comments", postId] });
+            await queryClient.cancelQueries({queryKey: ["comments", postId]});
             const previousComments = queryClient.getQueryData(["comments", postId]);
 
             queryClient.setQueryData(["comments", postId], (old: any) => {
                 return old
-                    ? { ...old, comments: old.comments.filter((c: any) => c.id !== commentId) }
+                    ? {...old, comments: old.comments.filter((c: any) => c.id !== commentId)}
                     : old;
             });
 
-            return { previousComments };
+            return {previousComments};
         },
         onSuccess: () => {
             ShowToast("default", "Commentaire supprimé !");
@@ -122,7 +122,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+            queryClient.invalidateQueries({queryKey: ["comments", postId]});
         },
     });
 
@@ -148,7 +148,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
                 <Button className="bg-purple-highlight text-white px-3 py-1 rounded-lg hover:bg-blue-600"
                         onClick={() => {
                             if (commentContent.trim()) {
-                                addComment({ postId, authorId: profileId as string, content: commentContent });
+                                addComment({postId, authorId: profileId as string, content: commentContent});
                             }
                         }}>
                     <Send className="w-4 h-4"/>
