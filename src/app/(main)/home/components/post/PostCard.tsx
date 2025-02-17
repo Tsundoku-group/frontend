@@ -32,7 +32,7 @@ interface Post {
     visibility: string;
 }
 
-export default function PostCard({post}: { post: Post }) {
+export default function PostCard({ post, onDelete }: { post: Post, onDelete: (id: string) => void }) {
     const [showComments, setShowComments] = useState(false);
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
@@ -58,8 +58,7 @@ export default function PostCard({post}: { post: Post }) {
                 authorId: profileId
             });
             setIsEditing(false);
-            setIsDeleting(false);
-            setEditedContent("");
+            setEditedContent(editedContent);
         } catch (error) {
             setIsEditing(false);
             ShowToast('destructive', 'Une erreur est survenue. Veuillez réessayer.', 'Erreur')
@@ -75,6 +74,7 @@ export default function PostCard({post}: { post: Post }) {
                 id: post.id,
                 editorId: profileId
             });
+            onDelete(post.id);
             setIsDeleting(false);
             ShowToast('default', 'Le post a bien été supprimé.')
         } catch (error) {
@@ -93,7 +93,7 @@ export default function PostCard({post}: { post: Post }) {
                         </Avatar>
                         <div>
                             <div className="text-white text-sm">
-                                {post.author.firstname} {post.author.firstname}
+                                {post.author.firstname} {post.author.lastname}
                             </div>
                             <div className="text-gray-400 text-xs">@{post.author.username}</div>
                             <PostDate date={post.createdAt}/>
@@ -137,7 +137,7 @@ export default function PostCard({post}: { post: Post }) {
                             value={editedContent}
                             onChange={(e) => setEditedContent(e.target.value)}/>
                     ) : (
-                        <p className="text-white">{post.content}</p>
+                        <div className="text-white">{editedContent}</div>
                     )}
                 </div>
 

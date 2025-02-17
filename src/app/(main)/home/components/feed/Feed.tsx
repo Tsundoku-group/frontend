@@ -1,20 +1,27 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchRecentPosts } from "@/app/(main)/home/actions";
 import PostCard from "@/app/(main)/home/components/post/PostCard";
 import InfiniteFeed from "./InfiniteFeed";
 import {Skeleton} from "@/components/ui/skeleton";
 
 export default function Feed() {
+    const queryClient = useQueryClient();
+
     const { data: posts, isLoading, error } = useQuery({
         queryKey: ["recentPosts"],
         queryFn: async () => {
-            console.log("useQuery is calling fetchRecentPosts...");
             return await fetchRecentPosts();
         },
         staleTime: 60000,
     });
+
+    const handleDeletePost = (postId: string) => {
+        queryClient.setQueryData(["recentPosts"], (oldData: any) => {
+            return oldData ? oldData.filter((post: any) => post.id !== postId) : [];
+        });
+    };
 
     if (isLoading) {
         return (
@@ -29,20 +36,20 @@ export default function Feed() {
                             </div>
                         </div>
                         <div className="h-32 w-full rounded-lg"/>
-
-                        <div className="h-6 w-full mt-4  rounded-lg"/>
+                        <div className="h-6 w-full mt-4 rounded-lg"/>
                     </div>
                 ))}
             </div>
         );
     }
+
     if (error) return <p className="text-center text-red-400">Erreur lors du chargement.</p>;
 
     return (
-        <div className="w-full  mx-auto">
+        <div className="w-full mx-auto">
             {posts && posts.length > 0 ? (
                 posts.map((post: any) => (
-                    <PostCard key={post.id} post={post} />
+                    <PostCard key={post.id} post={post} onDelete={handleDeletePost} />
                 ))
             ) : (
                 <p className="text-center text-gray-500">Aucun post à afficher.</p>
