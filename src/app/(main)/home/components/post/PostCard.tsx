@@ -15,6 +15,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import ReactionButton from "@/app/(main)/home/components/comment/ReactButton";
 
 interface Post {
     id: string;
@@ -30,6 +31,7 @@ interface Post {
     commentsCount: number;
     createdAt: string;
     visibility: string;
+    hasLiked: boolean;
 }
 
 export default function PostCard({ post, onDelete }: { post: Post, onDelete: (id: string) => void }) {
@@ -185,9 +187,13 @@ export default function PostCard({ post, onDelete }: { post: Post, onDelete: (id
                 </div>
 
                 <div className="flex justify-center items-center border-t border-gray-800 mt-3 pt-3 space-x-16 text-sm">
-                    <button className="flex items-center gap-1 text-red-400 hover:text-red-500">
-                        <Heart className="w-5 h-5"/> J’aime
-                    </button>
+                    <ReactionButton
+                        postId={post.id}
+                        profileId={profileId}
+                        receiverId={post.author.id}
+                        resourceType="POST"
+                        initialHasLiked={post.hasLiked}
+                    />
                     <button
                         className="flex items-center gap-1 text-gray-400 hover:text-white"
                         onClick={() => setShowComments(!showComments)}
