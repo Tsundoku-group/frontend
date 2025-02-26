@@ -404,7 +404,9 @@ export default function Navbar() {
             </span> !
             </div>
             <div className="flex items-center">
-                <NotificationDropdown />
+                <div className="flex mr-6">
+                    <NotificationDropdown/>
+                </div>
                 <CustomDropDown
                     dropdownContent={dropdownContent}
                     firstName={activeProfileInStorage?.firstName || activeProfileInStorage?.username}
