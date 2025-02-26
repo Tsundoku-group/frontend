@@ -15,6 +15,7 @@ import {truncateString} from "@/utils/string-utils";
 import {ShowToast} from "@/components/ShowToast";
 import AddProfileButton from "@/components/AddProfileButton";
 import {useProfileContext} from "@/context/profileContext";
+import NotificationDropdown from "@/components/navbar/component/NotificationDropdown";
 
 type UserProfile = {
     id: number;
@@ -403,7 +404,7 @@ export default function Navbar() {
             </span> !
             </div>
             <div className="flex items-center">
-                <Bell className="text-text-white mr-4"/>
+                <NotificationDropdown />
                 <CustomDropDown
                     dropdownContent={dropdownContent}
                     firstName={activeProfileInStorage?.firstName || activeProfileInStorage?.username}
