@@ -101,7 +101,7 @@ export const fetchNotifications = async (profileId: string) => {
             throw new Error(response?.message);
         }
 
-        const data = response?.data;
+        const data = response?.data?.notifications;
 
         if (Array.isArray(data)) {
             return data;
