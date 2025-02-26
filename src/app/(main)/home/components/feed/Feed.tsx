@@ -5,14 +5,17 @@ import { fetchRecentPosts } from "@/app/(main)/home/actions";
 import PostCard from "@/app/(main)/home/components/post/PostCard";
 import InfiniteFeed from "./InfiniteFeed";
 import {Skeleton} from "@/components/ui/skeleton";
+import {useProfileContext} from "@/context/profileContext";
 
 export default function Feed() {
     const queryClient = useQueryClient();
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id as string;
 
     const { data: posts, isLoading, error } = useQuery({
         queryKey: ["recentPosts"],
         queryFn: async () => {
-            return await fetchRecentPosts();
+            return await fetchRecentPosts(profileId);
         },
         staleTime: 60000,
     });
