@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/compon
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchNotifications } from "@/components/navbar/actions";
 import { useProfileContext } from "@/context/profileContext";
+import {truncateString} from "@/utils/string-utils";
 
 interface Notification {
     id: string;
@@ -48,11 +49,11 @@ export default function NotificationDropdown() {
     const getNotificationMessage = (notification: Notification) => {
         switch (notification.notificationType) {
             case "like":
-                return `L'utilisateur ${notification.actorId} a liké votre ${notification.resourceType.toLowerCase()}`;
+                return truncateString(`L'utilisateur ${notification.actorId} a liké votre ${notification.resourceType.toLowerCase()}`, 35);
             case "comment":
-                return `L'utilisateur ${notification.actorId} a commenté votre ${notification.resourceType.toLowerCase()}`;
+                return  truncateString(`L'utilisateur ${notification.actorId} a commenté votre ${notification.resourceType.toLowerCase()}`, 35);
             case "follow":
-                return `L'utilisateur ${notification.actorId} vous suit maintenant`;
+                return  truncateString(`L'utilisateur ${notification.actorId} vous suit maintenant`, 35);
             default:
                 return "Nouvelle notification";
         }
