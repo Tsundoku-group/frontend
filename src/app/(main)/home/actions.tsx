@@ -248,7 +248,7 @@ export async function likePost(
     receiverId: string,
     resourceType: "POST" | "COMMENT",
     resourceId: string,
-    reactionType: "LIKE" | "LOVE" | "HAHA" | "WOW" | "SAD" | "ANGRY"
+    reactType: "LIKE" | "LOVE" | "HAHA" | "WOW" | "SAD" | "ANGRY"
 ) {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/react/toggle`, {
@@ -259,7 +259,7 @@ export async function likePost(
                 receiverId,
                 resourceType,
                 resourceId,
-                reactionType,
+                reactType,
             }),
         });
 
@@ -269,7 +269,6 @@ export async function likePost(
 
         return response;
     } catch (error) {
-        console.error("Erreur API like:", error);
         throw error;
     }
 }
