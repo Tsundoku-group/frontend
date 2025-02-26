@@ -87,3 +87,26 @@ export const addNewUserProfile = async (payload: any) => {
         throw error;
     }
 };
+
+export const fetchNotifications = async (profileId: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/notification/${profileId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (!response.response || 200 !== response.status) {
+            throw new Error(response?.message);
+        }
+
+        const data = response?.data;
+
+        if (Array.isArray(data)) {
+            return data;
+        }
+    } catch (error) {
+        throw error;
+    }
+};
