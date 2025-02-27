@@ -7,10 +7,13 @@ import {Skeleton} from "@/components/ui/skeleton";
 import {fetchNotifications, markAsReadNotifications} from "@/components/navbar/actions";
 import {useProfileContext} from "@/context/profileContext";
 import {truncateString} from "@/utils/string-utils";
+import {startOfToday, differenceInDays, subDays, isSameDay} from "date-fns";
 
 interface Notification {
     id: string;
     actorId: string;
+    actorFirstName: string;
+    actorLastName: string;
     notificationType: "like" | "comment" | "follow";
     resourceType: "POST" | "COMMENT" | "FOLLOW";
     resourceId: string;
@@ -24,6 +27,7 @@ export default function NotificationDropdown() {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [hasUnread, setHasUnread] = useState(false);
+    const [showAll, setShowAll] = useState(false);
 
     useEffect(() => {
         if (!profileId) return;
@@ -34,7 +38,6 @@ export default function NotificationDropdown() {
                 if (Array.isArray(data)) {
                     const uniqueNotifications = Array.from(new Map(data.map(n => [JSON.stringify(n), n])).values());
                     setNotifications(uniqueNotifications);
-
                     setHasUnread(uniqueNotifications.some(n => !n.isRead));
                 } else {
                     setNotifications([]);
@@ -58,7 +61,7 @@ export default function NotificationDropdown() {
             const response = await markAsReadNotifications(profileId);
 
             if (response.status === 200) {
-                setNotifications((prev) => prev.map(n => ({ ...n, isRead: true })));
+                setNotifications((prev) => prev.map(n => ({...n, isRead: true})));
                 setHasUnread(false);
             }
         } catch (error) {
@@ -71,15 +74,51 @@ export default function NotificationDropdown() {
     const getNotificationMessage = (notification: Notification) => {
         switch (notification.notificationType) {
             case "like":
-                return truncateString(`L'utilisateur ${notification.actorId} a liké votre ${notification.resourceType.toLowerCase()}`, 35);
+                return (
+                    <>
+                        <strong>{notification.actorFirstName} {notification.actorLastName}</strong>&nbsp;a liké votre {notification.resourceType.toLowerCase()}
+                    </>
+                );
             case "comment":
-                return truncateString(`L'utilisateur ${notification.actorId} a commenté votre ${notification.resourceType.toLowerCase()}`, 35);
+                return (
+                    <>
+                        <strong>{notification.actorFirstName} {notification.actorLastName} </strong>&nbsp;a commenté votre {notification.resourceType.toLowerCase()}
+                    </>
+                );
             case "follow":
-                return truncateString(`L'utilisateur ${notification.actorId} vous suit maintenant`, 35);
+                return (
+                    <>
+                        <strong>{notification.actorFirstName} {notification.actorLastName} </strong>&nbsp;vous suit maintenant
+                    </>
+                );
             default:
                 return "Nouvelle notification";
         }
     };
+
+    const groupNotificationsByDate = () => {
+        const grouped: Record<string, Notification[]> = {};
+        const today = startOfToday();
+
+        notifications.forEach(notification => {
+            const notifDate = new Date(notification.createdAt);
+            let key: string;
+
+            if (isSameDay(notifDate, today)) key = "Aujourd'hui";
+            else if (isSameDay(notifDate, subDays(today, 1))) key = "Hier";
+            else {
+                const daysAgo = differenceInDays(today, notifDate);
+                key = daysAgo <= 7 ? `Il y a ${daysAgo} jours` : "Voir plus";
+            }
+
+            if (!grouped[key]) grouped[key] = [];
+            grouped[key].push(notification);
+        });
+
+        return grouped;
+    };
+
+    const groupedNotifications = groupNotificationsByDate();
 
     return (
         <DropdownMenu>
@@ -92,8 +131,9 @@ export default function NotificationDropdown() {
                 </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className="w-64 bg-tertiary-black border border-gray-700 mt-2 rounded-lg p-4 shadow-lg border-none absolute -right-4">
+                className="w-80 bg-tertiary-black border border-gray-700 mt-2 rounded-lg p-4 shadow-lg border-none absolute -right-4">
                 <div className="text-white text-sm font-semibold mb-2">Notifications</div>
+
                 {loading ? (
                     <div className="space-y-2">
                         <Skeleton className="h-6 w-full bg-gray-600"/>
@@ -101,18 +141,32 @@ export default function NotificationDropdown() {
                         <Skeleton className="h-6 w-full bg-gray-600"/>
                     </div>
                 ) : notifications.length > 0 ? (
-                    notifications.map((notification, index) => (
-                        <div
-                            key={notification.id || `notif-${index}`}
-                            className={`text-sm p-2 rounded-md flex items-center justify-between ${
-                                notification.isRead ? "text-gray-400" : "text-white font-semibold"
-                            } hover:bg-gray-700`}
-                        >
-                            {getNotificationMessage(notification)}
+                    Object.entries(groupedNotifications).map(([date, notifs]) => (
+                        <div key={date}>
+                            <div className="text-xs font-semibold text-gray-400 mb-1">{date}</div>
+                            {notifs.map((notification, idx) => (
+                                <div
+                                    key={notification.id || `notif-${idx}`}
+                                    className={`text-xs p-2 rounded-md flex items-center ${
+                                        notification.isRead ? "text-gray-400" : "text-white"
+                                    } hover:bg-gray-700`}
+                                >
+                                    {getNotificationMessage(notification)}
+                                </div>
+                            ))}
                         </div>
                     ))
                 ) : (
                     <p className="text-gray-400 text-xs text-center">Aucune notification</p>
+                )}
+
+                {groupedNotifications["Voir plus"] && !showAll && (
+                    <button
+                        onClick={() => setShowAll(true)}
+                        className="text-xs text-blue-400 hover:underline mt-2"
+                    >
+                        Voir plus
+                    </button>
                 )}
             </DropdownMenuContent>
         </DropdownMenu>
