@@ -110,3 +110,22 @@ export const fetchNotifications = async (profileId: string) => {
         throw error;
     }
 };
+
+export const markAsReadNotifications = async (profileId: string) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/notification/${profileId}/read`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (!response.response || 200 !== response.status) {
+            throw new Error(response?.message);
+        }
+
+        return response;
+    } catch (error) {
+        throw error;
+    }
+}
