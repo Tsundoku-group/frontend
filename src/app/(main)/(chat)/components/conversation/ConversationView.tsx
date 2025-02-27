@@ -41,7 +41,7 @@ const ConversationView = React.memo(({conversationId, context = "active"}: Props
     const {messages, participants, loading} = state;
 
     const {user} = useAuthContext();
-    const socket = useSocket();
+    const {socket} = useSocket();
     const userEmail = user?.email as string;
     const messageContainerRef = useRef<HTMLDivElement | null>(null);
 

@@ -31,7 +31,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
     const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
 
     const {user} = useAuthContext();
-    const socket = useSocket();
+    const {socket} = useSocket();
     const userEmail = user?.email;
     const userId = user?.userId;
 
