@@ -1,12 +1,13 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {Bell} from "lucide-react";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import {Skeleton} from "@/components/ui/skeleton";
-import {fetchNotifications, markAsReadNotifications} from "@/components/navbar/actions";
-import {useProfileContext} from "@/context/profileContext";
-import {startOfToday, differenceInDays, subDays, isSameDay} from "date-fns";
+import { useEffect, useState } from "react";
+import { Bell } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { fetchNotifications, markAsReadNotifications } from "@/components/navbar/actions";
+import { useProfileContext } from "@/context/profileContext";
+import { useSocket } from "@/context/socketContext";
+import { startOfToday, differenceInDays, subDays, isSameDay } from "date-fns";
 
 interface Notification {
     id: string;
@@ -22,12 +23,14 @@ interface Notification {
 }
 
 export default function NotificationDropdown() {
-    const {activeProfileInStorage} = useProfileContext();
+    const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id as string;
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [hasUnread, setHasUnread] = useState(false);
     const [showAll, setShowAll] = useState(false);
+
+    const { socket } = useSocket();
 
     useEffect(() => {
         if (!profileId) return;
@@ -36,7 +39,7 @@ export default function NotificationDropdown() {
             try {
                 const data = await fetchNotifications(profileId);
                 if (Array.isArray(data)) {
-                    const uniqueNotifications = Array.from(new Map(data.map(n => [JSON.stringify(n), n])).values());
+                    const uniqueNotifications = Array.from(new Map(data.map(n => [n.id, n])).values());
                     setNotifications(uniqueNotifications);
                     setHasUnread(uniqueNotifications.some(n => !n.isRead));
                 } else {
@@ -53,6 +56,21 @@ export default function NotificationDropdown() {
         loadNotifications();
     }, [profileId]);
 
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleNewNotification = (newNotification: Notification) => {
+            setNotifications((prev) => [newNotification, ...prev]);
+            setHasUnread(true);
+        };
+
+        socket.on("newNotification", handleNewNotification);
+
+        return () => {
+            socket.off("newNotification", handleNewNotification);
+        };
+    }, [socket]);
+
     const handleMarkAsRead = async () => {
         if (!profileId) return;
         setLoading(true);
@@ -61,7 +79,7 @@ export default function NotificationDropdown() {
             const response = await markAsReadNotifications(profileId);
 
             if (response.status === 200) {
-                setNotifications((prev) => prev.map(n => ({...n, isRead: true})));
+                setNotifications((prev) => prev.map(n => ({ ...n, isRead: true })));
                 setHasUnread(false);
             }
         } catch (error) {

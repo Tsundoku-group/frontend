@@ -190,6 +190,7 @@ export default function PostCard({ post, onDelete }: { post: Post, onDelete: (id
                     <ReactionButton
                         postId={post.id}
                         profileId={profileId}
+                        actorFirstName={activeProfileInStorage?.firstName}
                         receiverId={post.author.id}
                         resourceType="POST"
                         initialHasLiked={post.hasLiked}
