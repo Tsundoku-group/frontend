@@ -1,25 +1,48 @@
-import { useState } from "react";
-import { Heart } from "lucide-react";
-import { ShowToast } from "@/components/ShowToast";
-import { likePost } from "@/app/(main)/home/actions";
+import {useState} from "react";
+import {Heart} from "lucide-react";
+import {ShowToast} from "@/components/ShowToast";
+import {likePost} from "@/app/(main)/home/actions";
+import {useSocket} from "@/context/socketContext";
 
 interface ReactionButtonProps {
     postId: string;
     profileId?: string;
+    actorFirstName?: string;
     receiverId: string;
     resourceType: "POST" | "COMMENT";
     initialHasLiked: boolean;
 }
 
-export default function ReactionButton({ postId, profileId, receiverId, resourceType, initialHasLiked }: ReactionButtonProps) {
+export default function ReactionButton({
+                                           postId,
+                                           profileId,
+                                           actorFirstName,
+                                           receiverId,
+                                           resourceType,
+                                           initialHasLiked
+                                       }: ReactionButtonProps) {
     const [hasLiked, setHasLiked] = useState(initialHasLiked);
+    const {socket} = useSocket();
 
     const handleLikeToggle = async () => {
         if (!profileId) return;
 
         const newHasLiked = !hasLiked;
         setHasLiked(newHasLiked);
+        if (socket && newHasLiked) {
+            const notificationData = {
+                    receiverId,
+                    actorId: profileId,
+                    actorFirstName,
+                    notificationType: "like",
+                    resourceType,
+                    resourceId:
+                    postId,
+                    createdAt: new Date().toISOString()
+            };
 
+            socket.emit("sendNotification", notificationData);
+        }
         try {
             await likePost(profileId, receiverId, resourceType, postId, "LIKE");
         } catch (error) {
