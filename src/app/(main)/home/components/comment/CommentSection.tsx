@@ -68,7 +68,6 @@ export default function CommentSection({postId}: CommentSectionProps) {
                     resourceId: postId,
                     createdAt: new Date().toISOString(),
                 });
-                console.log("📩 Notification de commentaire envoyée !");
             }
             queryClient.setQueryData(["comments", postId], (old: any) => {
                 return old
