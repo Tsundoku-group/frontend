@@ -92,3 +92,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-88] Afficher le nom et username sur un post [#88](https://trello.com/c/9nQFoJam/88-t-88-afficher-le-nom-et-username-sur-un-post)
 - [t-89] Ajout de la feature pour ajouter un commentaire à un post [#89](https://trello.com/c/32xfUJhR/89-t-89-ajout-de-la-feature-pour-ajouter-un-commentaire-%C3%A0-un-post)
 - [t-90] Ajout de l'instantanée lors d'un post/comment/replyComment [#90](https://trello.com/c/YzkR5RuV/90-t-90-ajout-de-linstantan%C3%A9e-lors-dun-post-comment-replycomment)
+- [t-91] Ajout des likes sur postcard [#91](https://trello.com/c/mwONkFnm/91-t-91-ajout-des-likes-sur-postcard)
+- [t-92] Corrections Majeures Frontend [#92](https://trello.com/c/AFJZHg4E/92-t-92-corrections-majeures-frontend)
