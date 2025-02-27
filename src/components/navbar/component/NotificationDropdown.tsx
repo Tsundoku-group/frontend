@@ -96,8 +96,8 @@ export default function NotificationDropdown() {
                     <>
                         <strong>{notification.actorFirstName}&nbsp;</strong>
                         {notification.actorCount > 1
-                            ? ` et ${notification.actorCount - 1} autres vous suivent maintenant`
-                            : ` vous suit maintenant`}
+                            ? ` et ${notification.actorCount - 1} autres vous suivent`
+                            : ` vous suit`}
                     </>
                 );
             default:
