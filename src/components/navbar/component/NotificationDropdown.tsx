@@ -6,7 +6,6 @@ import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/componen
 import {Skeleton} from "@/components/ui/skeleton";
 import {fetchNotifications, markAsReadNotifications} from "@/components/navbar/actions";
 import {useProfileContext} from "@/context/profileContext";
-import {truncateString} from "@/utils/string-utils";
 import {startOfToday, differenceInDays, subDays, isSameDay} from "date-fns";
 
 interface Notification {
