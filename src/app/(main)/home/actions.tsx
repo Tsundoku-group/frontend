@@ -66,9 +66,9 @@ export const deletePost = async (postData: { id: string; editorId?: string; }) =
     }
 }
 
-export const fetchRecentPosts = async () => {
+export const fetchRecentPosts = async (profileId: string) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/recent`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${profileId}/recent`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -87,10 +87,10 @@ export const fetchRecentPosts = async () => {
     }
 }
 
-export const fetchOlderPosts = async (pageParam: number, limit = 20) => {
+export const fetchOlderPosts = async (pageParam: number, limit = 20, profileId: string) => {
     try {
         const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/post/older?limit=${limit}&offset=${(pageParam - 1) * limit}`,
+            `${symfonyUrl}/api/v1/post/${profileId}/older?limit=${limit}&offset=${(pageParam - 1) * limit}`,
             {
                 method: "GET",
                 headers: {"Content-Type": "application/json"},
@@ -240,5 +240,35 @@ export const fetchRepliesForComment = async (commentId: string) => {
         }
     } catch (error) {
         throw new Error("Erreur du serveur");
+    }
+}
+
+export async function likePost(
+    actorId: string,
+    receiverId: string,
+    resourceType: "POST" | "COMMENT",
+    resourceId: string,
+    reactType: "LIKE" | "LOVE" | "HAHA" | "WOW" | "SAD" | "ANGRY"
+) {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/react/toggle`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                actorId,
+                receiverId,
+                resourceType,
+                resourceId,
+                reactType,
+            }),
+        });
+
+        if (!response.response || 200 !== response.status) {
+            throw new Error("Erreur lors du like");
+        }
+
+        return response;
+    } catch (error) {
+        throw error;
     }
 }

@@ -20,6 +20,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem
 } from "@/components/ui/dropdown-menu";
+import {useSocket} from "@/context/socketContext";
 
 interface CommentSectionProps {
     postId: string;
@@ -35,6 +36,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
     const queryClient = useQueryClient();
+    const {socket} = useSocket();
 
     const [commentContent, setCommentContent] = useState("");
     const [openReplies, setOpenReplies] = useState<{ [key: string]: boolean }>({});
@@ -56,6 +58,17 @@ export default function CommentSection({postId}: CommentSectionProps) {
                 replyCount: 0,
             };
 
+            if (socket) {
+                socket.emit("sendNotification", {
+                    receiverId: newComment.authorId,
+                    actorId: profileId,
+                    actorFirstName: activeProfileInStorage?.firstName,
+                    notificationType: "comment",
+                    resourceType: "POST",
+                    resourceId: postId,
+                    createdAt: new Date().toISOString(),
+                });
+            }
             queryClient.setQueryData(["comments", postId], (old: any) => {
                 return old
                     ? {...old, comments: [tempComment, ...old.comments]}

@@ -1,51 +1,70 @@
-'use client';
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Socket } from 'socket.io-client';
-import { socket as initializeSocket } from '@/socket';
-import { useAuthContext } from "@/context/authContext";
+import { io, Socket } from 'socket.io-client';
+import { useProfileContext } from "@/context/profileContext";
 
-interface SocketProviderProps {
-    children: React.ReactNode;
+interface Notification {
+    id: string;
+    actorFirstName: string;
+    actorLastName: string;
+    notificationType: string;
+    resourceType: string;
+    createdAt: string;
+    isRead: boolean;
 }
 
-const SocketContext = createContext<Socket | null>(null);
+interface SocketContextType {
+    socket: Socket | null;
+    notifications: Notification[];
+    addNotification: (notification: Notification) => void;
+}
+
+const SocketContext = createContext<SocketContextType>({
+    socket: null,
+    notifications: [],
+    addNotification: () => {},
+});
 
 export const useSocket = () => useContext(SocketContext);
 
-export function SocketProvider({ children }: SocketProviderProps) {
+export function SocketProvider({ children }: { children: React.ReactNode }) {
     const [socket, setSocket] = useState<Socket | null>(null);
-    const { user } = useAuthContext();
-    const userId = user?.userId;
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const { activeProfileInStorage } = useProfileContext();
+    const profileId = activeProfileInStorage?.id;
 
     useEffect(() => {
-        const socketInstance = initializeSocket("http://localhost:3000");
+        if (!profileId || socket) return;
+
+        const socketInstance = io("http://localhost:3000");
 
         socketInstance.on('connect', () => {
+            console.log("✅ Connecté à WebSocket");
             setSocket(socketInstance);
-            if (userId) {
-                socketInstance.emit("registerUser", userId);
-            }
+            socketInstance.emit("joinNotificationRoom", profileId);
         });
 
-        socketInstance.on('connect_error', (err) => {
-            console.error('Erreur de connexion au serveur:', err);
+        socketInstance.on("newNotification", (notification: Notification) => {
+            setNotifications((prev) => [notification, ...prev]);
         });
 
+        socketInstance.on('connect_error', (err) => console.error('❌ Erreur WebSocket:', err));
         socketInstance.on('disconnect', () => {
-            console.log('Déconnecté du serveur');
+            console.log('❌ Déconnecté du WebSocket');
             setSocket(null);
         });
 
         return () => {
-            if (socketInstance) {
-                socketInstance.disconnect();
-            }
+            socketInstance.off("newNotification");
+            socketInstance.disconnect();
         };
-    }, [userId]);
+    }, [profileId]);
+
+    const addNotification = (notification: Notification) => {
+        setNotifications((prev) => [notification, ...prev]);
+    };
 
     return (
-        <SocketContext.Provider value={socket}>
+        <SocketContext.Provider value={{ socket, notifications, addNotification }}>
             {children}
         </SocketContext.Provider>
     );

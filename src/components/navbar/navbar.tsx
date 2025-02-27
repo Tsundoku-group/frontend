@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useEffect, useMemo, useState} from "react";
-import {Bell, ChevronDown, ChevronLeft, ChevronRight, User, UserPen} from "lucide-react";
+import {ChevronDown, ChevronLeft, ChevronRight, User, UserPen} from "lucide-react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import LogoutButton from "@/components/navigateButton/logoutButton";
 import ProfileButton from "@/components/navigateButton/ProfileButton";
@@ -15,6 +15,7 @@ import {truncateString} from "@/utils/string-utils";
 import {ShowToast} from "@/components/ShowToast";
 import AddProfileButton from "@/components/AddProfileButton";
 import {useProfileContext} from "@/context/profileContext";
+import NotificationDropdown from "@/components/navbar/component/NotificationDropdown";
 
 type UserProfile = {
     id: number;
@@ -403,7 +404,9 @@ export default function Navbar() {
             </span> !
             </div>
             <div className="flex items-center">
-                <Bell className="text-text-white mr-4"/>
+                <div className="flex mr-6">
+                    <NotificationDropdown/>
+                </div>
                 <CustomDropDown
                     dropdownContent={dropdownContent}
                     firstName={activeProfileInStorage?.firstName || activeProfileInStorage?.username}

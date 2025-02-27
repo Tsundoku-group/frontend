@@ -23,7 +23,6 @@ export default function CreatePost({ groupId }: { groupId: number}) {
             return createNewPost(postData);
         },
         onSuccess: async (newPost) => {
-            console.log("🔍 Nouveau post reçu :", newPost);
 
             if (!newPost) {
                 ShowToast("destructive", "Erreur : le post est vide ou incorrect", "Erreur");
