@@ -18,6 +18,7 @@ interface Notification {
     resourceId: string;
     createdAt: string;
     isRead: boolean;
+    actorCount: number;
 }
 
 export default function NotificationDropdown() {
@@ -75,19 +76,28 @@ export default function NotificationDropdown() {
             case "like":
                 return (
                     <>
-                        <strong>{notification.actorFirstName} {notification.actorLastName}</strong>&nbsp;a liké votre {notification.resourceType.toLowerCase()}
+                        <strong>{notification.actorFirstName}&nbsp;</strong>
+                        {notification.actorCount > 1
+                            ? ` et ${notification.actorCount - 1} autres ont liké votre ${notification.resourceType.toLowerCase()}`
+                            : ` a liké votre ${notification.resourceType.toLowerCase()}`}
                     </>
                 );
             case "comment":
                 return (
                     <>
-                        <strong>{notification.actorFirstName} {notification.actorLastName} </strong>&nbsp;a commenté votre {notification.resourceType.toLowerCase()}
+                        <strong>{notification.actorFirstName}&nbsp;</strong>
+                        {notification.actorCount > 1
+                            ? ` et ${notification.actorCount - 1} autres ont commenté votre ${notification.resourceType.toLowerCase()}`
+                            : ` a commenté votre ${notification.resourceType.toLowerCase()}`}
                     </>
                 );
             case "follow":
                 return (
                     <>
-                        <strong>{notification.actorFirstName} {notification.actorLastName} </strong>&nbsp;vous suit maintenant
+                        <strong>{notification.actorFirstName}&nbsp;</strong>
+                        {notification.actorCount > 1
+                            ? ` et ${notification.actorCount - 1} autres vous suivent maintenant`
+                            : ` vous suit maintenant`}
                     </>
                 );
             default:
