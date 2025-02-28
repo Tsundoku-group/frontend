@@ -112,9 +112,9 @@ export const fetchOlderPosts = async (pageParam: number, limit = 20, profileId: 
     }
 }
 
-export const fetchLastCommentsFromPost = async (postId: string) => {
+export const fetchLastCommentsFromPost = async (postId: string, profileId: string) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${postId}/comments`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${postId}/${profileId}/comments`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -222,15 +222,15 @@ export const replyToComment = async (replyData: {
     }
 };
 
-export const fetchRepliesForComment = async (commentId: string) => {
+export const fetchRepliesForComment = async (commentId: string, profileId: string) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/children`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/${profileId}/children`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
             }
         });
-
+        console.log(response)
         if (!response || !response.data) {
             return {comments: []}
         }
@@ -248,12 +248,12 @@ export async function likePost(
     receiverId: string,
     resourceType: "POST" | "COMMENT",
     resourceId: string,
-    reactType: "LIKE" | "LOVE" | "HAHA" | "WOW" | "SAD" | "ANGRY"
+    reactType: "LIKE" | "SAD"
 ) {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/react/toggle`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 actorId,
                 receiverId,
