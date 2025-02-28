@@ -34,7 +34,7 @@ interface Post {
     hasLiked: boolean;
 }
 
-export default function PostCard({ post, onDelete }: { post: Post, onDelete: (id: string) => void }) {
+export default function PostCard({post, onDelete}: { post: Post, onDelete: (id: string) => void }) {
     const [showComments, setShowComments] = useState(false);
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
