@@ -22,7 +22,7 @@ interface RepliesSectionProps {
     };
 }
 
-export default function RepliesSection({commentId, postId, comment}: RepliesSectionProps) {
+export default function RepliesSection({commentId, postId}: RepliesSectionProps) {
     const {data, isLoading} = useQuery({
         queryKey: ["replies", commentId],
         queryFn: () => fetchRepliesForComment(commentId, profileId as string),

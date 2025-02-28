@@ -7,7 +7,7 @@ import {
     updateCommentOnPost,
     deleteCommentOnPost
 } from "@/app/(main)/home/actions";
-import {CornerDownRight, Heart, Send, User, EllipsisVertical, Pencil, Trash} from "lucide-react";
+import {CornerDownRight, Send, User, EllipsisVertical, Pencil, Trash} from "lucide-react";
 import {useEffect, useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
