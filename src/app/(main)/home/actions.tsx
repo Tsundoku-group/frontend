@@ -11,7 +11,6 @@ export const createNewPost = async (postData: PostData) => {
             method: "POST",
             body: JSON.stringify(postData)
         });
-
         if (!response) {
             throw new Error('Failed to create post');
         }
