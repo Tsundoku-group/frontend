@@ -14,7 +14,7 @@ export default function InfiniteFeed() {
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
         queryKey: ["olderPosts"],
         queryFn: ({ pageParam = 1 }) => fetchOlderPosts(pageParam, 20, profileId),
-        getNextPageParam: (lastPage, allPages) => {
+        getNextPageParam: (lastPage) => {
             return lastPage?.nextPage ?? null;
         },
         initialPageParam: 1,
