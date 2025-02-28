@@ -9,19 +9,25 @@ import {useState, useEffect} from "react";
 import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";
 import PostDate from "@/app/(main)/home/components/post/PostDate";
+import ReactionCommentButton from "@/app/(main)/home/components/ReactionCommentButton";
 
 interface RepliesSectionProps {
     postId: string;
     commentId: string;
+    comment: {
+        author: {
+            id: string,
+        },
+        hasLiked: boolean;
+    };
 }
 
-export default function RepliesSection({commentId, postId}: RepliesSectionProps) {
+export default function RepliesSection({commentId, postId, comment}: RepliesSectionProps) {
     const {data, isLoading} = useQuery({
         queryKey: ["replies", commentId],
-        queryFn: () => fetchRepliesForComment(commentId),
+        queryFn: () => fetchRepliesForComment(commentId, profileId as string),
         staleTime: 1000 * 60 * 5,
     });
-
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
     const queryClient = useQueryClient();
@@ -97,17 +103,35 @@ export default function RepliesSection({commentId, postId}: RepliesSectionProps)
             {isLoading ? (
                 <p className="text-gray-400 text-xs">Chargement des réponses...</p>
             ) : localReplies.length > 0 ? (
-                <div className="space-y-3 mt-2">
+                <div className="space-y-3 mt-2 w-full">
                     {localReplies.map((reply: any, index: number) => (
-                        <div key={reply.id ?? `temp-reply-${index}`} className="flex items-start gap-3 text-xs">
-                            <Avatar className="w-8 h-8">
-                                <AvatarImage src={reply.author?.profileImageUrl || ""}/>
-                                <AvatarFallback><User/></AvatarFallback>
-                            </Avatar>
-                            <div className="bg-secondary-black p-2 rounded-lg">
-                                <div className="text-white font-semibold">{reply?.authorFirstName} {reply?.authorLastName}</div>
-                                <div className="text-gray-300">{reply.content}</div>
-                                <PostDate date={reply.createdAt} />
+                        <div
+                            key={reply.id ?? `temp-reply-${index}`}
+                            className="flex flex-col text-xs w-full"
+                        >
+                            <div className="flex gap-2 w-full">
+                                <Avatar className="w-8 h-8 flex-shrink-0 mt-4">
+                                    <AvatarImage src={reply.author?.profileImageUrl || ""}/>
+                                    <AvatarFallback><User/></AvatarFallback>
+                                </Avatar>
+
+                                <div className="bg-secondary-black p-4 rounded-lg flex-1 w-full">
+                                    <div className="text-white font-semibold">
+                                        {reply?.authorFirstName} {reply?.authorLastName}
+                                    </div>
+                                    <div className="text-gray-300">{reply.content}</div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-4 text-xs text-gray-500 mt-2 ml-12">
+                                <ReactionCommentButton
+                                    commentId={reply._id}
+                                    profileId={profileId}
+                                    receiverId={reply.authorId}
+                                    resourceType={"COMMENT"}
+                                    initialHasLiked={reply.hasLiked}
+                                />
+                                <PostDate date={reply.createdAt}/>
                             </div>
                         </div>
                     ))}

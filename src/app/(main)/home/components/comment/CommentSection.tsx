@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {useSocket} from "@/context/socketContext";
 import PostDate from "@/app/(main)/home/components/post/PostDate";
+import ReactionCommentButton from "@/app/(main)/home/components/ReactionCommentButton";
 
 interface CommentSectionProps {
     postId: string;
@@ -30,7 +31,7 @@ interface CommentSectionProps {
 export default function CommentSection({postId}: CommentSectionProps) {
     const {data, isLoading} = useQuery({
         queryKey: ["comments", postId],
-        queryFn: () => fetchLastCommentsFromPost(postId),
+        queryFn: () => fetchLastCommentsFromPost(postId, profileId as string),
         staleTime: 1000 * 60 * 5,
     });
 
@@ -163,8 +164,8 @@ export default function CommentSection({postId}: CommentSectionProps) {
                 <p className="text-gray-400 text-sm">Chargement des commentaires...</p>
             ) : localComments.length > 0 ? (
                 <div className="space-y-3">
-                    {localComments.map((comment: any) => (
-                        <div key={comment.id} className="flex gap-3 items-start text-sm">
+                    {localComments.map((comment: any, index: number) => (
+                        <div key={comment.id ?? `temp-reply-${index}`} className="flex gap-3 items-start text-sm">
                             <Avatar className="w-8 h-8 mt-4">
                                 <AvatarImage/>
                                 <AvatarFallback><User/></AvatarFallback>
@@ -242,9 +243,12 @@ export default function CommentSection({postId}: CommentSectionProps) {
                                 </div>
 
                                 <div className="flex items-center gap-4 text-xs text-gray-500 mt-2 ml-2">
-                                    <button className="flex items-center gap-1 hover:text-red-400">
-                                        <Heart className="w-4 h-4"/> J’aime
-                                    </button>
+                                    <ReactionCommentButton
+                                        commentId={comment.id}
+                                        profileId={profileId}
+                                        receiverId={comment.author.id}
+                                        resourceType={"COMMENT"}
+                                        initialHasLiked={comment.hasLiked}/>
                                     <button
                                         className="flex items-center gap-1 hover:text-white"
                                         onClick={() =>
@@ -270,7 +274,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
                                 </div>
 
                                 {openReplies[comment.id] && (
-                                    <RepliesSection commentId={comment.id} postId={postId}/>
+                                    <RepliesSection commentId={comment.id} postId={postId} comment={comment}/>
                                 )}
                             </div>
                         </div>
