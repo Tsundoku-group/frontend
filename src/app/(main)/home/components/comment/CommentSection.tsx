@@ -73,14 +73,14 @@ export default function CommentSection({postId}: CommentSectionProps) {
 
             return {previousComments};
         },
-        onSuccess: (savedComment, newComment, context) => {
+        onSuccess: (savedComment) => {
             ShowToast("default", "Commentaire ajouté !");
 
             queryClient.setQueryData(["comments", postId], (old: any) => ({
                 comments: [savedComment, ...(old?.comments || [])],
             }));
         },
-        onError: (err, newComment, context) => {
+        onError: () => {
             ShowToast("destructive", "Erreur lors de l'ajout du commentaire", "Erreur");
         },
     });
