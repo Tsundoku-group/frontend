@@ -8,7 +8,7 @@ import {
     deleteCommentOnPost
 } from "@/app/(main)/home/actions";
 import {CornerDownRight, Heart, Send, User, EllipsisVertical, Pencil, Trash} from "lucide-react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
 import RepliesSection from "@/app/(main)/home/components/RepliesSection";
@@ -21,6 +21,7 @@ import {
     DropdownMenuItem
 } from "@/components/ui/dropdown-menu";
 import {useSocket} from "@/context/socketContext";
+import PostDate from "@/app/(main)/home/components/post/PostDate";
 
 interface CommentSectionProps {
     postId: string;
@@ -42,8 +43,14 @@ export default function CommentSection({postId}: CommentSectionProps) {
     const [openReplies, setOpenReplies] = useState<{ [key: string]: boolean }>({});
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const [editedContent, setEditedContent] = useState<{ [key: string]: string }>({});
+    const [localComments, setLocalComments] = useState<Array<any>>([]);
 
-    const comments = Array.isArray(data?.comments) ? data.comments : [];
+    useEffect(() => {
+        if (data?.comments) {
+            setLocalComments(data.comments);
+        }
+    }, [data]);
+
     const {mutate: addComment} = useMutation({
         mutationFn: async (commentData: { postId: string; authorId: string; content: string }) => {
             return createCommentOnPost(commentData);
@@ -51,12 +58,6 @@ export default function CommentSection({postId}: CommentSectionProps) {
         onMutate: async (newComment) => {
             await queryClient.cancelQueries({queryKey: ["comments", postId]});
             const previousComments = queryClient.getQueryData(["comments", postId]);
-            const tempComment = {
-                id: `temp-${Date.now()}`,
-                authorId: profileId,
-                content: newComment.content,
-                replyCount: 0,
-            };
 
             if (socket) {
                 socket.emit("sendNotification", {
@@ -69,28 +70,18 @@ export default function CommentSection({postId}: CommentSectionProps) {
                     createdAt: new Date().toISOString(),
                 });
             }
-            queryClient.setQueryData(["comments", postId], (old: any) => {
-                return old
-                    ? {...old, comments: [tempComment, ...old.comments]}
-                    : {comments: [tempComment]};
-            });
-
-            setCommentContent("");
 
             return {previousComments};
         },
-        onSuccess: () => {
+        onSuccess: (savedComment, newComment, context) => {
             ShowToast("default", "Commentaire ajouté !");
+
+            queryClient.setQueryData(["comments", postId], (old: any) => ({
+                comments: [savedComment, ...(old?.comments || [])],
+            }));
         },
         onError: (err, newComment, context) => {
             ShowToast("destructive", "Erreur lors de l'ajout du commentaire", "Erreur");
-
-            if (context?.previousComments) {
-                queryClient.setQueryData(["comments", postId], context.previousComments);
-            }
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries({queryKey: ["comments", postId]});
         },
     });
 
@@ -170,9 +161,9 @@ export default function CommentSection({postId}: CommentSectionProps) {
 
             {isLoading ? (
                 <p className="text-gray-400 text-sm">Chargement des commentaires...</p>
-            ) : comments.length > 0 ? (
+            ) : localComments.length > 0 ? (
                 <div className="space-y-3">
-                    {comments.map((comment: any) => (
+                    {localComments.map((comment: any) => (
                         <div key={comment.id} className="flex gap-3 items-start text-sm">
                             <Avatar className="w-8 h-8 mt-4">
                                 <AvatarImage/>
@@ -262,15 +253,19 @@ export default function CommentSection({postId}: CommentSectionProps) {
                                     >
                                         <CornerDownRight className="w-4 h-4"/> Répondre
                                     </button>
+                                    <PostDate date={comment.createdAt}/>
                                     {comment.replyCount > 0 && (
-                                        <button
-                                            className="flex items-center gap-1 text-blue-400 hover:text-blue-600"
-                                            onClick={() =>
-                                                setOpenReplies(prev => ({...prev, [comment.id]: !prev[comment.id]}))
-                                            }
-                                        >
-                                            Voir les réponses ({comment.replyCount})
-                                        </button>
+                                        <>
+                                            <button
+                                                className="flex items-center gap-1 text-blue-400 hover:text-blue-600"
+                                                onClick={() => setOpenReplies(prev => ({
+                                                    ...prev,
+                                                    [comment.id]: !prev[comment.id]
+                                                }))}
+                                            >
+                                                Voir les réponses ({comment.replyCount})
+                                            </button>
+                                        </>
                                     )}
                                 </div>
 
