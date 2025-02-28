@@ -11,10 +11,12 @@ export default function InfiniteFeed() {
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id as string;
 
-    const {data, fetchNextPage, hasNextPage, isFetchingNextPage} = useInfiniteQuery({
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
         queryKey: ["olderPosts"],
-        queryFn: ({pageParam = 1}) => fetchOlderPosts(pageParam, 20, profileId),
-        getNextPageParam: (lastPage) => lastPage?.nextPage ?? undefined,
+        queryFn: ({ pageParam = 1 }) => fetchOlderPosts(pageParam, 20, profileId),
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage?.nextPage ?? null;
+        },
         initialPageParam: 1,
         staleTime: 60 * 1000,
     });
@@ -32,7 +34,7 @@ export default function InfiniteFeed() {
             if (entry.isIntersecting) {
                 fetchNextPage();
             }
-        }, {rootMargin: "600px"});
+        }, { rootMargin: "600px" });
 
         if (lastPostRef.current) observer.observe(lastPostRef.current);
 
