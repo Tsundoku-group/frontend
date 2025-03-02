@@ -4,7 +4,7 @@ import { Slate, Editable, withReact, useSlate, ReactEditor, RenderElementProps, 
 import { MdFormatBold, MdFormatItalic, MdFormatUnderlined, MdFormatListBulleted, MdFormatAlignLeft, MdFormatAlignCenter, MdFormatAlignRight, MdFormatAlignJustify, MdFormatQuote } from 'react-icons/md';
 import { HistoryEditor, withHistory } from 'slate-history';
 
-type CustomElement = { type: 'paragraph'; children: CustomText[] }
+type CustomElement = { type: 'paragraph'; align?: string; children: CustomText[] }
 type CustomText = { text: string; bold?: true }
 
 declare module 'slate' {
@@ -103,7 +103,7 @@ const toggleMark = (editor: any, format: any) => {
     }
 }
 
-const isBlockActive = (editor: any, format: any, blockType: any) => {
+const isBlockActive = (editor: any, format: any, blockType: keyof CustomElement) => {
     const { selection } = editor
     if (!selection) return false
 
