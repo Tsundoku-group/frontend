@@ -15,6 +15,11 @@ declare module 'slate' {
     }
 }
 
+interface SlateEditorProps {
+    content: string;
+    onChange: (value: string) => void;
+}
+
 const LIST_TYPES = ['numbered-list', 'bulleted-list']
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']
 
@@ -25,13 +30,17 @@ const initialValue: Descendant[] = [
     },
 ];
 
-const SlateEditor = () => {
+const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
     const renderElement = useCallback((props: RenderElementProps) => <Element {...props} />, [])
     const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, [])
     const editor = useMemo(() => withHistory(withReact(createEditor())), [])
 
     return (
-        <Slate editor={editor} initialValue={initialValue}>
+        <Slate editor={editor} initialValue={[{ type: 'paragraph', children: [{ text: content }] }]}
+            onChange={(value) => {
+                const text = value.map(node => Editor.string(editor, [])).join('\n');
+                onChange(text);
+            }}>
             <div className="flex gap-2 my-2">
                 <BlockButton format="heading-one" icon="H1" />
                 <BlockButton format="heading-two" icon="H2" />

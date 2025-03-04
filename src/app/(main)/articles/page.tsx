@@ -5,24 +5,15 @@ import React, { useEffect, useState } from "react";
 import CustomSelect from "./components/CustomSelect";
 import "./styles/styles.css";
 import ArticleForm from "./components/ArticleForm";
-import { fetchProfileArticles } from "./actions";
+import { fetchProfileArticles, deleteArticle } from "./actions";
 import { useProfileContext } from "@/context/profileContext";
-
-interface Article {
-    id: string;
-    type: string;
-    author: string;
-    title: string;
-    content: string;
-    visibility: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-}
+import { formatDate } from "@/utils/dateUtils";
+import { Article } from "@/models/Article";
 
 export default function ArticlesPage() {
     const [showForm, setShowForm] = useState(false);
     const [articles, setArticles] = useState<Article[]>([]);
+    const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
     const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id;
 
@@ -40,23 +31,29 @@ export default function ArticlesPage() {
     }, [profileId]);
 
     const handleNewArticleButton = () => {
+        setSelectedArticle(null);
         setShowForm(true);
     };
 
-    const formatDate = (dateString: string) => {
-        return new Intl.DateTimeFormat("fr-FR", {
-            year: "numeric",
-            month: "long",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-        }).format(new Date(dateString));
-    }
+    const handleEditArticle = (article: Article) => {
+        setSelectedArticle(article);
+        setShowForm(true);
+    };
+
+    const handleDeleteArticle = async (articleId: string) => {
+        try {
+            if (!profileId) throw new Error("Profile id is missing");
+            await deleteArticle(articleId, profileId);
+            setArticles(articles.filter(article => article.id !== articleId));
+        } catch (error) {
+            throw new Error("Failed to delete article : " + error);
+        }
+    };
 
     return (
         <>
             {showForm ? (
-                <ArticleForm />
+                <ArticleForm article={selectedArticle} />
             ) : (
                 <>
                     <div className="flex justify-between my-5">
@@ -88,11 +85,11 @@ export default function ArticlesPage() {
                                         <td>{formatDate(article.createdAt)}</td>
                                         <td>{formatDate(article.updatedAt)}</td>
                                         <td className="flex gap-4">
-                                            <button className="flex gap-2 items-center">
+                                            <button className="flex gap-2 items-center" onClick={() => handleEditArticle(article)}>
                                                 <Pencil width={15} height={15} />
                                                 <span>Éditer</span>
                                             </button>
-                                            <button>
+                                            <button onClick={() => handleDeleteArticle(article.id)}>
                                                 <Trash2 width={15} height={15} className="text-red-highlight" />
                                             </button>
                                         </td>
@@ -110,5 +107,5 @@ export default function ArticlesPage() {
                 </>
             )}
         </>
-    )
+    );
 }

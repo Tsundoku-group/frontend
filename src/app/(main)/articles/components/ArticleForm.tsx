@@ -1,50 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import SlateEditor from './SlateEditor';
 import '../styles/styles.css';
 import DragAndDropImage from './DragAndDropImage';
-import { fetchWithAuth } from '@/services/fetchWithAuth';
+import { Article } from '@/models/Article';
 
-const ArticleForm = () => {
-    const [title, setTitle] = React.useState<string>('');
-    const [image, setImage] = React.useState<File | null>(null);
-    const [content, setContent] = React.useState<string>('');
+interface ArticleFormProps {
+    article?: Article | null;
+}
 
-    // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    //     e.preventDefault();
-    //     console.log({ title, image, content });
+const ArticleForm: React.FC<ArticleFormProps> = ({ article }) => {
+    const [title, setTitle] = useState(article?.title || "");
+    const [content, setContent] = useState(article?.content || "");
 
-    //     const formData = new FormData();
-    //     formData.append('title', title);
-    //     if (image) {
-    //         formData.append('image', image);
-    //     }
-    //     formData.append('content', content);
-
-    //     try {
-    //             const response = await fetchWithAuth(`${symfonyUrl}/api/users/verify-password`, {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify({currentPassword})
-    //             });
-        
-    //             if (!response.response) {
-    //                 throw new Error("Erreur lors de la vérification du mot de passe.");
-    //             }
-        
-    //             return response;
-    //         } catch (error) {
-    //             throw error;
-    //         }
-    // };
+    useEffect(() => {
+        if (article) {
+            setTitle(article.title);
+            setContent(article.content);
+        }
+    }, [article]);
 
     return (
         <div className="mt-10">
             <div className="grid grid-cols-2 gap-10 mb-10">
                 <div>
                     <label htmlFor="title">Titre article</label>
-                    <input type="text" id="title" name="title" placeholder="Titre de ton article" className="w-full px-4 py-2 bg-secondary-black border border-tertiary-black rounded-3xl mb-4" />
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        placeholder="Titre de ton article"
+                        className="w-full px-4 py-2 bg-secondary-black border border-tertiary-black rounded-3xl mb-4"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                    />
                     <DragAndDropImage />
                 </div>
                 <div className="block">
@@ -54,13 +42,13 @@ const ArticleForm = () => {
                         <button className="w-1/2 p-2 bg-green-highlight rounded ml-2">Publier</button>
                     </div>
                     <div className="text-gray-500">
-                        <p>Dernière modification : <span id="last-modified">01/01/2023</span></p>
-                        <p>Date de publication : <span id="publish-date">01/01/2023</span></p>
+                        <p>Dernière modification : <span id="last-modified">{article?.updatedAt || "N/A"}</span></p>
+                        <p>Date de publication : <span id="publish-date">{article?.createdAt || "N/A"}</span></p>
                     </div>
                 </div>
             </div>
             <div className='block'>
-                <SlateEditor />
+                <SlateEditor content={content} onChange={setContent} />
             </div>
         </div>
     );
