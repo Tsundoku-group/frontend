@@ -53,12 +53,16 @@ export default function ArticlesPage() {
     return (
         <>
             {showForm ? (
-                <ArticleForm article={selectedArticle} />
+                <ArticleForm
+                    article={selectedArticle}
+                    onClose={() => setShowForm(false)}
+                    onDelete={handleDeleteArticle}
+                />
             ) : (
                 <>
                     <div className="flex justify-between my-5">
                         <h2>Articles</h2>
-                        <button onClick={handleNewArticleButton} className="primary-btn flex items-center gap-3 py-3 px-5 rounded-full">
+                        <button onClick={handleNewArticleButton} className="primary-btn flex items-center gap-5 py-5 px-5 rounded-full">
                             <Plus width={20} height={20} />
                             <span>Écrire un article</span>
                         </button>
