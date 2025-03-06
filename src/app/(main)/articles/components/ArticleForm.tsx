@@ -5,6 +5,7 @@ import DragAndDropImage from './DragAndDropImage';
 import { Article } from '@/models/Article';
 import { formatDate } from '@/utils/dateUtils';
 import { ArrowLeft, TriangleAlert } from 'lucide-react';
+import CustomSelect from './CustomSelect';
 
 interface ArticleFormProps {
     article?: Article | null;
@@ -15,12 +16,28 @@ interface ArticleFormProps {
 const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete }) => {
     const [title, setTitle] = useState(article?.title || "");
     const [content, setContent] = useState(article?.content || "");
+    const [status, setStatus] = useState(article?.status || "brouillon");
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
+    const statusLabels: { [key: string]: string } = {
+        brouillon: "Brouillon",
+        "en-cours": "En cours",
+        publie: "Publié",
+    };
+
+    const statusColor = status === "brouillon"
+        ? "var(--highlight-red)"       // Brouillon en rouge
+        : status === "en-cours"
+            ? "var(--highlight-yellow)" // En cours en jaune/orange
+            : status === "publie"
+                ? "var(--highlight-green)" // Publié en vert
+                : "inherit";
 
     useEffect(() => {
         if (article) {
             setTitle(article.title);
             setContent(article.content);
+            setStatus(article.status);
         }
     }, [article]);
 
@@ -67,12 +84,19 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete })
                         <button className="w-1/2 p-2 bg-green-highlight rounded ml-2">Publier</button>
                     </div>
                     <div className="text-gray-500">
-                        <p>Dernière modification : <span id="last-modified">{article ? formatDate(article.updatedAt) : "N/A"}</span></p>
-                        <p>Date de publication : <span id="publish-date">{article ? formatDate(article.createdAt) : "N/A"}</span></p>
+                        <p>
+                            Dernière modification : <span id="last-modified">{article ? formatDate(article.updatedAt) : "N/A"}</span>
+                        </p>
+                        <p>
+                            Date de publication : <span id="publish-date">{article ? formatDate(article.createdAt) : "N/A"}</span>
+                        </p>
+                        <p>
+                            Statut : <span style={{ color: statusColor }}>{statusLabels[status] || status}</span>
+                        </p>
                     </div>
                 </div>
             </div>
-            <div className='block'>
+            <div className="block">
                 <SlateEditor content={content} onChange={setContent} />
             </div>
 

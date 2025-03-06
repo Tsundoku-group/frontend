@@ -21,17 +21,16 @@ export const fetchProfileArticles = async (profileId: string | undefined) => {
             throw new Error("Failed to fetch articles");
         }
 
-        console.log(response);
-
         return response.data.articles || [];
     } catch (error) {
-        throw new Error("Failed to fetch articles : " + error);
+        console.error("Failed to fetch articles: ", error);
+        return [];
     }
 }
 
 export const deleteArticle = async (articleId: string, editorId: string) => {
     if (!articleId) {
-        throw new Error("Article id is missing");
+        console.error("Article id is missing");
     }
 
     try {
@@ -44,11 +43,37 @@ export const deleteArticle = async (articleId: string, editorId: string) => {
         });
 
         if (response.status !== 200) {
-            throw new Error("Failed to delete article : " + response.error);
+            throw new Error("Failed to delete article: " + response.error);
         }
 
         return { success: true, message: "Article deleted successfully" };
     } catch (error) {
-        throw new Error("Failed to delete article : " + error);
+        console.error("Failed to delete article: ", error);
+    }
+};
+
+export const updateArticleStatus = async (articleId: string, newStatus: string, editorId: string) => {
+    if (articleId === "") {
+        console.error("Article id is missing");
+    }
+
+    const payload = { status: newStatus, editorId };
+    const JSONBody = JSON.stringify(payload);
+
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${articleId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSONBody
+        });
+
+        if (response.status !== 200) {
+            console.error("Failed to update article status: ", response.error);
+        }
+        return response.data;
+    } catch (error) {
+        console.error("Failed to update article status: ", error);
     }
 };

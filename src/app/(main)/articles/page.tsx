@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import CustomSelect from "./components/CustomSelect";
 import "./styles/styles.css";
 import ArticleForm from "./components/ArticleForm";
-import { fetchProfileArticles, deleteArticle } from "./actions";
+import { fetchProfileArticles, deleteArticle, updateArticleStatus } from "./actions";
 import { useProfileContext } from "@/context/profileContext";
 import { formatDate } from "@/utils/dateUtils";
 import { Article } from "@/models/Article";
@@ -23,10 +23,9 @@ export default function ArticlesPage() {
                 const data = await fetchProfileArticles(profileId);
                 setArticles(data);
             } catch (error) {
-                throw new Error("Failed to fetch articles : " + error);
+                console.error("Failed to fetch articles: ", error);
             }
         }
-
         loadArticles();
     }, [profileId]);
 
@@ -46,7 +45,21 @@ export default function ArticlesPage() {
             await deleteArticle(articleId, profileId);
             setArticles(articles.filter(article => article.id !== articleId));
         } catch (error) {
-            throw new Error("Failed to delete article : " + error);
+            console.error("Failed to delete article: ", error);
+        }
+    };
+
+    const handleStatusChange = async (articleId: string, newStatus: string) => {
+        try {
+            if (!profileId) throw new Error("Profile id is missing");
+            await updateArticleStatus(articleId, newStatus, profileId);
+            setArticles(prevArticles =>
+                prevArticles.map(article =>
+                    article.id === articleId ? { ...article, status: newStatus } : article
+                )
+            );
+        } catch (error) {
+            console.error("Failed to update article status: ", error);
         }
     };
 
@@ -83,7 +96,10 @@ export default function ArticlesPage() {
                                 articles.map((article) => (
                                     <tr key={article.id} className="border-y-4 border-red-500">
                                         <td>
-                                            <CustomSelect />
+                                            <CustomSelect
+                                                selectedStatus={article.status}
+                                                onChange={(newStatus) => handleStatusChange(article.id, newStatus)}
+                                            />
                                         </td>
                                         <td>{article.title}</td>
                                         <td>{formatDate(article.createdAt)}</td>
