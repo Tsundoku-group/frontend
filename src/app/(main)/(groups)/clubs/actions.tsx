@@ -33,3 +33,17 @@ export const fetchPrivateGroups = async (
         return { groups: [], nextPage: null };
     }
 };
+
+export const fetchAllTags = async ()=> {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/tags`);
+
+        if (!response || 200 !== response.status) {
+            throw new Error("Not Found");
+        }
+
+        return response.data.tags;
+    } catch (error) {
+        return [];
+    }
+}
