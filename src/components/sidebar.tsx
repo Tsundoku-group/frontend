@@ -104,7 +104,7 @@ export default function Sidebar() {
                         </a>
                     </li>
                     <li>
-                        <a href="#" className="flex items-center text-text-white hover:text-white">
+                        <a href="/clubs" className="flex items-center text-text-white hover:text-white">
                             <Users className="mr-3"/>
                             <span>Clubs</span>
                         </a>
