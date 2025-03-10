@@ -1,5 +1,8 @@
 import {Input} from "@/components/ui/input";
 import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from "@/components/ui/select";
+import {useQuery} from "@tanstack/react-query";
+import {Tag} from "@/models/Tag";
+import {fetchAllTags} from "@/app/(main)/(groups)/clubs/actions";
 
 interface SearchComponentProps {
     search: string;
@@ -18,6 +21,12 @@ export default function SearchComponent({
                                             sort,
                                             setSort
                                         }: SearchComponentProps) {
+    const { data: tagsData, isLoading: tagsLoading } = useQuery<Tag[]>({
+        queryKey: ['tags'],
+        queryFn: () => fetchAllTags(),
+        staleTime: 60000,
+    });
+
     return (
         <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
             <Input
@@ -33,9 +42,11 @@ export default function SearchComponent({
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">📂 Toutes les catégories</SelectItem>
-                    <SelectItem value="fantasy">🧙 Fantasy</SelectItem>
-                    <SelectItem value="Science-Fiction">🚀 Science-Fiction</SelectItem>
-                    <SelectItem value="poetry">📝 Poésie</SelectItem>
+                    {!tagsLoading && tagsData?.map((tag) => (
+                        <SelectItem key={tag.slug} value={tag.slug}>
+                            {tag.name}
+                        </SelectItem>
+                    ))}
                 </SelectContent>
             </Select>
 
