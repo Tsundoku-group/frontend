@@ -26,7 +26,7 @@ export default function SearchComponent({
         queryFn: () => fetchAllTags(),
         staleTime: 60000,
     });
-
+    
     return (
         <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
             <Input
@@ -52,11 +52,13 @@ export default function SearchComponent({
 
             <Select value={sort} onValueChange={setSort}>
                 <SelectTrigger className="w-full md:w-1/4">
-                    <SelectValue placeholder="📅 Trier par"/>
+                    <SelectValue placeholder="📅 Trier par" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="newest">📅 Plus récents</SelectItem>
+                    <SelectItem value="oldest">📅 Plus anciens</SelectItem>
                     <SelectItem value="members">👥 Nombre de membres</SelectItem>
+                    <SelectItem value="active">🔥 Actif</SelectItem>
                 </SelectContent>
             </Select>
         </div>
