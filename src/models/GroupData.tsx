@@ -5,6 +5,7 @@ export interface GroupData {
     category?: string;
     visibility: string;
     membersCount: number;
+    joinStatus: "none" | "pending" | "member";
     createdAt: string;
     imageUrl?: string;
 }
