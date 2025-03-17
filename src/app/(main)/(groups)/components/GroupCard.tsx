@@ -1,23 +1,43 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import {joinPrivateGroup} from "@/app/(main)/(groups)/clubs/actions";
+import {useProfileContext} from "@/context/profileContext";
+import {ShowToast} from "@/components/ShowToast";
 
 interface GroupCardProps {
     group: {
         id: string;
         name: string;
         description: string;
-        members: number;
+        membersCount: number;
+        visibility: string;
         imageUrl: string;
-        status: "joinable" | "pending" | "member";
+        joinStatus: "none" | "pending" | "member";
     };
 }
 
 export default function GroupCard({ group }: GroupCardProps) {
-    const [status, setStatus] = useState(group.status);
+    const [status, setStatus] = useState(group.joinStatus);
 
-    const handleJoinRequest = () => {
-        setStatus("pending");
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id as string;
+
+    const handleJoinRequest = async () => {
+        if (!profileId) return;
+
+        try {
+            const result = await joinPrivateGroup(group.id, profileId, "member");
+
+            if (result.error) {
+                ShowToast("destructive", result.error, "Erreur");
+            } else if (result.data) {
+                setStatus("pending");
+                ShowToast("default", "Votre demande a bien été envoyée");
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -27,10 +47,11 @@ export default function GroupCard({ group }: GroupCardProps) {
                 <CardTitle className="text-text-white">{group.name}</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="text-gray-400 text-sm">{group.description}</p>
-                <p className="text-gray-500 text-xs">👥 {group.members} membres</p>
+                <div className="text-gray-400 text-sm">{group.description}</div>
+                <div className="text-gray-500 text-xs">👥 {group.membersCount} membres</div>
+                <div className="text-gray-500 text-sm">{group.visibility}</div>
 
-                {status === "joinable" && (
+                {status === "none" && (
                     <Button onClick={handleJoinRequest} className="w-full mt-3">
                         🔑 Demander à rejoindre
                     </Button>
