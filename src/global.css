@@ -40,6 +40,19 @@ body {
     background-color: var(--hover-highlight-purple);
 }
 
+.secondary-btn {
+    background-color: var(--highlight-green);
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 0.25rem;
+    transition: background-color 0.4s ease;
+    color: var(--bg-tertiary-dark);
+}
+
+.secondary-btn:hover {
+    background-color: var(--hover-highlight-green);
+}
+
 table {
     border-collapse: separate;
     background-color: var(--bg-secondary-dark);
@@ -74,13 +87,19 @@ table select {
 }
 
 input::file-selector-button {
-  font-weight: bold;
-  background-color: var(--highlight-green);
-  color: var(--text-primary-light);
-  padding: 0.5em 1em;
-  margin-right: 1em;
-  border-radius: 0.5em;
-  border: none;
+    font-weight: bold;
+    background-color: var(--highlight-green);
+    color: var(--bg-tertiary-dark);
+    padding: 0.5em 1em;
+    margin-right: 1em;
+    border-radius: 0.5em;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.4s ease;
+}
+
+input::file-selector-button:hover {
+    background-color: var(--hover-highlight-green);
 }
 
 hr {

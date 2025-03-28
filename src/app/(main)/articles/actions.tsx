@@ -12,21 +12,20 @@ export const fetchProfileArticles = async (profileId: string | undefined) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${profileId}/articles`, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            }
+            headers: { "Content-Type": "application/json" }
         });
 
         if (response.status !== 200 || !response.data) {
             throw new Error("Failed to fetch articles");
         }
 
+        console.log("slt" + response.data);
         return response.data.articles || [];
     } catch (error) {
         console.error("Failed to fetch articles: ", error);
         return [];
     }
-}
+};
 
 export const deleteArticle = async (articleId: string, editorId: string) => {
     if (!articleId) {
@@ -36,19 +35,52 @@ export const deleteArticle = async (articleId: string, editorId: string) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${articleId}`, {
             method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ editorId })
         });
 
         if (response.status !== 200) {
-            throw new Error("Failed to delete article: " + response.error);
+            throw new Error("Failed to delete article: " + (response.data?.error || response.status));
         }
 
         return { success: true, message: "Article deleted successfully" };
     } catch (error) {
         console.error("Failed to delete article: ", error);
+    }
+};
+
+export const submitArticle = async (
+    articleId: string | null,
+    payload: { title: string; content: string; status: string; authorId: number },
+    profileId: number | undefined
+) => {
+    if (!profileId) {
+        throw new Error("Profile id is missing");
+    }
+
+    try {
+        const method = articleId ? "PUT" : "POST";
+        const url = articleId ? `${symfonyUrl}/api/v1/post/${articleId}` : `${symfonyUrl}/api/v1/post`;
+
+        const modifiedPayload = { ...payload, type: "article" };
+
+        const JSONBody = JSON.stringify(modifiedPayload);
+        console.log("Envoi de la requête à", url, "avec le payload :", JSONBody);
+
+        const response = await fetchWithAuth(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSONBody
+        });
+        console.log("response", response);
+
+        if (response.status !== 200 && response.status !== 201) {
+            const errorMsg = response.data && response.data.error ? response.data.error : "Failed to submit article";
+            throw new Error("Failed to submit article: " + errorMsg);
+        }
+        return response.data;
+    } catch (error) {
+        throw new Error("Failed to submit article: " + error);
     }
 };
 
@@ -63,14 +95,12 @@ export const updateArticleStatus = async (articleId: string, newStatus: string, 
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${articleId}`, {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSONBody
         });
 
         if (response.status !== 200) {
-            console.error("Failed to update article status: ", response.error);
+            console.error("Failed to update article status: ", response.data?.error || response.status);
         }
         return response.data;
     } catch (error) {

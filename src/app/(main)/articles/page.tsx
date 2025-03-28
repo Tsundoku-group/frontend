@@ -1,7 +1,7 @@
 'use client';
 
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import CustomSelect from "./components/CustomSelect";
 import "./styles/styles.css";
 import ArticleForm from "./components/ArticleForm";
@@ -9,25 +9,32 @@ import { fetchProfileArticles, deleteArticle, updateArticleStatus } from "./acti
 import { useProfileContext } from "@/context/profileContext";
 import { formatDate } from "@/utils/dateUtils";
 import { Article } from "@/models/Article";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function ArticlesPage() {
     const [showForm, setShowForm] = useState(false);
     const [articles, setArticles] = useState<Article[]>([]);
     const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+    const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
     const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id;
 
-    useEffect(() => {
-        async function loadArticles() {
-            try {
-                const data = await fetchProfileArticles(profileId);
-                setArticles(data);
-            } catch (error) {
-                console.error("Failed to fetch articles: ", error);
-            }
+    const loadArticles = useCallback(async () => {
+        try {
+            const data = await fetchProfileArticles(profileId);
+            console.log(data);
+            setArticles(data);
+        } catch (error) {
+            console.error("Failed to fetch articles: ", error);
         }
-        loadArticles();
     }, [profileId]);
+
+    useEffect(() => {
+        if (profileId) {
+            loadArticles();
+        }
+    }, [profileId, loadArticles]);
 
     const handleNewArticleButton = () => {
         setSelectedArticle(null);
@@ -43,7 +50,7 @@ export default function ArticlesPage() {
         try {
             if (!profileId) throw new Error("Profile id is missing");
             await deleteArticle(articleId, profileId);
-            setArticles(articles.filter(article => article.id !== articleId));
+            await loadArticles();
         } catch (error) {
             console.error("Failed to delete article: ", error);
         }
@@ -63,19 +70,35 @@ export default function ArticlesPage() {
         }
     };
 
+    const handleFormClose = async () => {
+        setShowForm(false);
+        await loadArticles();
+    };
+
+    const confirmDelete = async () => {
+        if (articleToDelete) {
+            await handleDeleteArticle(articleToDelete.id);
+            setShowConfirmDelete(false);
+            setArticleToDelete(null);
+        }
+    };
+
     return (
         <>
             {showForm ? (
                 <ArticleForm
                     article={selectedArticle}
-                    onClose={() => setShowForm(false)}
+                    onClose={handleFormClose}
                     onDelete={handleDeleteArticle}
                 />
             ) : (
                 <>
                     <div className="flex justify-between my-5">
                         <h2>Articles</h2>
-                        <button onClick={handleNewArticleButton} className="primary-btn flex items-center gap-5 py-5 px-5 rounded-full">
+                        <button
+                            onClick={handleNewArticleButton}
+                            className="primary-btn flex items-center gap-5 py-5 px-5 rounded-full"
+                        >
                             <Plus width={20} height={20} />
                             <span>Écrire un article</span>
                         </button>
@@ -102,14 +125,19 @@ export default function ArticlesPage() {
                                             />
                                         </td>
                                         <td>{article.title}</td>
-                                        <td>{formatDate(article.createdAt)}</td>
-                                        <td>{formatDate(article.updatedAt)}</td>
+                                        <td>{formatDate(article.createdAt.date)}</td>
+                                        <td>{formatDate(article.updatedAt.date)}</td>
                                         <td className="flex gap-4">
                                             <button className="flex gap-2 items-center" onClick={() => handleEditArticle(article)}>
                                                 <Pencil width={15} height={15} />
                                                 <span>Éditer</span>
                                             </button>
-                                            <button onClick={() => handleDeleteArticle(article.id)}>
+                                            <button
+                                                onClick={() => {
+                                                    setArticleToDelete(article);
+                                                    setShowConfirmDelete(true);
+                                                }}
+                                            >
                                                 <Trash2 width={15} height={15} className="text-red-highlight" />
                                             </button>
                                         </td>
@@ -124,6 +152,16 @@ export default function ArticlesPage() {
                             )}
                         </tbody>
                     </table>
+                    {showConfirmDelete && (
+                        <ConfirmDialog
+                            onCancel={() => {
+                                setShowConfirmDelete(false);
+                                setArticleToDelete(null);
+                            }}
+                            onConfirm={confirmDelete}
+                            message="Supprimer cet article ? Cette action est irréversible."
+                        />
+                    )}
                 </>
             )}
         </>

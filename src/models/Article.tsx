@@ -6,6 +6,14 @@ export interface Article {
     content: string;
     visibility: string;
     status: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: {
+        date: string;
+        timezone_type: number;
+        timezone: string;
+    };
+    updatedAt: {
+        date: string;
+        timezone_type: number;
+        timezone: string;
+    };
 }

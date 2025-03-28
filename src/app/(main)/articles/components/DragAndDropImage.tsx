@@ -75,7 +75,7 @@ const DragAndDropImage = () => {
 
     return (
         <>
-            <label htmlFor="image">Image de l'article</label>
+            <label htmlFor="image">Image de l&apos;article</label>
             <input
                 type="file"
                 id="image"
@@ -85,7 +85,7 @@ const DragAndDropImage = () => {
                 onChange={handleFileChange}
             />
             <div
-                className="flex flex-col items-center border-dashed border-2 rounded-3xl border-text-white p-8 text-center"
+                className="flex flex-col items-center cursor-pointer border-dashed border-2 rounded-3xl border-text-white p-8 text-center"
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
