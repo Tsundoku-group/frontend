@@ -4,6 +4,8 @@ import { formatDate } from '@/utils/dateUtils';
 import { fetchArticle } from './actions';
 import { useEffect, useState } from 'react';
 import { Article } from '@/models/Article';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ArticlePage({ params }: { params: { articleId: number } }) {
     const [article, setArticle] = useState<Article | null>(null);
@@ -26,16 +28,23 @@ export default function ArticlePage({ params }: { params: { articleId: number } 
     return (
         <div className="max-w-3xl mx-auto p-4">
             {article ? (
-                <>
+                <div className="mt-10">
+                    <Link
+                        href="/articles"
+                        className="primary-btn flex items-center gap-3 mb-5 py-3 px-5 rounded-full w-fit"
+                    >
+                        <ArrowLeft size={16} />
+                        <span>Retour aux articles</span>
+                    </Link>
                     <h1 className="text-3xl font-bold mb-2">{article.title}</h1>
                     <p className="text-sm text-gray-600">
                         Créé le : {formatDate(article.createdAt.date)} – Dernière modification : {formatDate(article.updatedAt.date)}
                     </p>
                     <hr className="my-4" />
                     <div className="prose" dangerouslySetInnerHTML={{ __html: article.content }} />
-                </>
+                </div>
             ) : (
-                <p>Loading article...</p>
+                <p>Chargement...</p>
             )}
         </div>
     );

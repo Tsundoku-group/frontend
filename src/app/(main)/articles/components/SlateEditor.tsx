@@ -1,11 +1,11 @@
 import React, { useMemo, useCallback } from 'react';
-import { createEditor, Editor, Transforms, Element as SlateElement, Descendant, BaseEditor } from 'slate';
+import { createEditor, Editor, Transforms, Element as SlateElement, Descendant, BaseEditor, Text } from 'slate';
 import { Slate, Editable, withReact, useSlate, ReactEditor, RenderElementProps, RenderLeafProps } from 'slate-react';
 import { MdFormatBold, MdFormatItalic, MdFormatUnderlined, MdFormatListBulleted, MdFormatAlignLeft, MdFormatAlignCenter, MdFormatAlignRight, MdFormatAlignJustify, MdFormatQuote } from 'react-icons/md';
 import { HistoryEditor, withHistory } from 'slate-history';
 
-type CustomElement = { type: 'paragraph'; align?: string; children: CustomText[] }
-type CustomText = { text: string; bold?: true }
+type CustomElement = { type: 'paragraph' | 'heading-one' | 'heading-two' | 'block-quote' | 'list-item' | 'bulleted-list' | 'numbered-list'; align?: string; children: CustomText[] }
+type CustomText = { text: string; bold?: true; italic?: true; underline?: true }
 
 declare module 'slate' {
     interface CustomTypes {
@@ -30,17 +30,59 @@ const initialValue: Descendant[] = [
     },
 ];
 
+/**
+ * Fonction de sérialisation des nodes Slate en HTML.
+ */
+const serialize = (node: Descendant): string => {
+    if (Text.isText(node)) {
+        let string = node.text;
+        if (node.bold) {
+            string = `<strong>${string}</strong>`;
+        }
+        if (node.italic) {
+            string = `<em>${string}</em>`;
+        }
+        if (node.underline) {
+            string = `<u>${string}</u>`;
+        }
+        return string;
+    }
+
+    const children = node.children.map(n => serialize(n)).join('');
+    switch (node.type) {
+        case 'heading-one':
+            return `<h1>${children}</h1>`;
+        case 'heading-two':
+            return `<h2>${children}</h2>`;
+        case 'block-quote':
+            return `<blockquote>${children}</blockquote>`;
+        case 'list-item':
+            return `<li>${children}</li>`;
+        case 'bulleted-list':
+            return `<ul>${children}</ul>`;
+        case 'numbered-list':
+            return `<ol>${children}</ol>`;
+        default:
+            // Par défaut, on considère que c'est un paragraphe
+            return `<p>${children}</p>`;
+    }
+};
+
 const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
-    const renderElement = useCallback((props: RenderElementProps) => <Element {...props} />, [])
-    const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, [])
-    const editor = useMemo(() => withHistory(withReact(createEditor())), [])
+    const renderElement = useCallback((props: RenderElementProps) => <Element {...props} />, []);
+    const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, []);
+    const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
     return (
-        <Slate editor={editor} initialValue={[{ type: 'paragraph', children: [{ text: content }] }]}
+        <Slate
+            editor={editor}
+            initialValue={[{ type: 'paragraph', children: [{ text: content }] }]}
             onChange={(value) => {
-                const text = value.map(node => Editor.string(editor, [])).join('\n');
-                onChange(text);
-            }}>
+                // Utilise serialize pour obtenir le HTML complet
+                const html = value.map(node => serialize(node)).join('');
+                onChange(html);
+            }}
+        >
             <div className="flex gap-2 my-2">
                 <BlockButton format="heading-one" icon="H1" />
                 <BlockButton format="heading-two" icon="H2" />
@@ -55,26 +97,28 @@ const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
                 <BlockButton format="justify" icon={<MdFormatAlignJustify />} />
             </div>
             <hr className="mb-6" />
-            <Editable className="bg-tertiary-black p-4 rounded"
+            <Editable
+                className="bg-tertiary-black p-4 rounded"
                 renderElement={renderElement}
                 renderLeaf={renderLeaf}
                 placeholder="Enter some rich text…"
                 spellCheck
                 autoFocus
                 onKeyDown={event => {
+                    // Vous pouvez ajouter ici des raccourcis clavier
                 }}
             />
         </Slate>
-    )
-}
+    );
+};
 
 const toggleBlock = (editor: any, format: any) => {
     const isActive = isBlockActive(
         editor,
         format,
         TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type'
-    )
-    const isList = LIST_TYPES.includes(format)
+    );
+    const isList = LIST_TYPES.includes(format);
 
     Transforms.unwrapNodes(editor, {
         match: n =>
@@ -83,38 +127,38 @@ const toggleBlock = (editor: any, format: any) => {
             LIST_TYPES.includes(n.type) &&
             !TEXT_ALIGN_TYPES.includes(format),
         split: true,
-    })
-    let newProperties
+    });
+    let newProperties;
     if (TEXT_ALIGN_TYPES.includes(format)) {
         newProperties = {
             align: isActive ? undefined : format,
-        }
+        };
     } else {
         newProperties = {
             type: isActive ? 'paragraph' : isList ? 'list-item' : format,
-        }
+        };
     }
     Transforms.setNodes(editor, newProperties);
 
     if (!isActive && isList) {
-        const block = { type: format, children: [] }
-        Transforms.wrapNodes(editor, block)
+        const block = { type: format, children: [] };
+        Transforms.wrapNodes(editor, block);
     }
-}
+};
 
 const toggleMark = (editor: any, format: any) => {
-    const isActive = isMarkActive(editor, format)
+    const isActive = isMarkActive(editor, format);
 
     if (isActive) {
-        Editor.removeMark(editor, format)
+        Editor.removeMark(editor, format);
     } else {
-        Editor.addMark(editor, format, true)
+        Editor.addMark(editor, format, true);
     }
-}
+};
 
 const isBlockActive = (editor: any, format: any, blockType: keyof CustomElement) => {
-    const { selection } = editor
-    if (!selection) return false
+    const { selection } = editor;
+    if (!selection) return false;
 
     const [match]: any = Array.from(
         Editor.nodes(editor, {
@@ -124,83 +168,79 @@ const isBlockActive = (editor: any, format: any, blockType: keyof CustomElement)
                 SlateElement.isElement(n) &&
                 n[blockType] === format,
         })
-    )
+    );
 
-    return !!match
-}
+    return !!match;
+};
 
 const isMarkActive = (editor: any, format: any) => {
-    const marks: any = Editor.marks(editor)
-    return marks ? marks[format] === true : false
-}
+    const marks: any = Editor.marks(editor);
+    return marks ? marks[format] === true : false;
+};
 
 const Element = ({ attributes, children, element }: any) => {
-    const style = { textAlign: element.align }
+    const style = { textAlign: element.align };
     switch (element.type) {
         case 'block-quote':
             return (
-                <blockquote style={style} {...attributes} className='before:content-["❝"] before:pr-1 before:text-2xl before:font-semibold after:content-["❞"] after:pl-1 after:text-2xl after:font-semibold' >
+                <blockquote style={style} {...attributes} className='before:content-["❝"] before:pr-1 before:text-2xl before:font-semibold after:content-["❞"] after:pl-1 after:text-2xl after:font-semibold'>
                     <span className='bg-gray-100 p-2 rounded'>{children}</span>
                 </blockquote>
-            )
+            );
         case 'bulleted-list':
             return (
                 <ul style={style} {...attributes} className='list-disc'>
                     {children}
                 </ul>
-            )
+            );
         case 'heading-one':
             return (
                 <h1 style={style} {...attributes} className='font-extrabold text-3xl'>
                     {children}
                 </h1>
-            )
+            );
         case 'heading-two':
             return (
                 <h2 style={style} {...attributes} className='font-semibold text-xl'>
                     {children}
                 </h2>
-            )
+            );
         case 'list-item':
             return (
                 <li style={style} {...attributes}>
                     {children}
                 </li>
-            )
+            );
         case 'numbered-list':
             return (
                 <ol style={style} {...attributes}>
                     {children}
                 </ol>
-            )
+            );
         default:
             return (
                 <p style={style} {...attributes}>
                     {children}
                 </p>
-            )
+            );
     }
-}
+};
 
 const Leaf = ({ attributes, children, leaf }: any) => {
     if (leaf.bold) {
-        children = <strong>{children}</strong>
-    }
-
-    if (leaf.code) {
-        children = <code>{children}</code>
+        children = <strong>{children}</strong>;
     }
 
     if (leaf.italic) {
-        children = <em>{children}</em>
+        children = <em>{children}</em>;
     }
 
     if (leaf.underline) {
-        children = <u>{children}</u>
+        children = <u>{children}</u>;
     }
 
-    return <span {...attributes}>{children}</span>
-}
+    return <span {...attributes}>{children}</span>;
+};
 
 const BlockButton = ({ format, icon }: any) => {
     const editor = useSlate();
@@ -209,30 +249,29 @@ const BlockButton = ({ format, icon }: any) => {
         <button
             className={`p-2 text-xl rounded mx-1 ${isActive ? 'bg-tertiary-black' : ''}`}
             onMouseDown={event => {
-                event.preventDefault()
-                toggleBlock(editor, format)
+                event.preventDefault();
+                toggleBlock(editor, format);
             }}
         >
             {icon}
         </button>
-    )
-}
-
+    );
+};
 
 const MarkButton = ({ format, icon }: any) => {
-    const editor = useSlate()
-    const isActive = isMarkActive(editor, format)
+    const editor = useSlate();
+    const isActive = isMarkActive(editor, format);
     return (
         <button
             className={`p-2 text-xl rounded mx-1 ${isActive ? 'bg-tertiary-black' : ''}`}
             onMouseDown={event => {
-                event.preventDefault()
-                toggleMark(editor, format)
+                event.preventDefault();
+                toggleMark(editor, format);
             }}
         >
             {icon}
         </button>
-    )
-}
+    );
+};
 
 export default SlateEditor;
