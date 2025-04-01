@@ -1,6 +1,6 @@
 'use client';
 
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import CustomSelect from "./components/CustomSelect";
 import "./styles/styles.css";
@@ -128,9 +128,13 @@ export default function ArticlesPage() {
                                         <td>{formatDate(article.createdAt.date)}</td>
                                         <td>{formatDate(article.updatedAt.date)}</td>
                                         <td className="flex gap-4">
-                                            <button className="flex gap-2 items-center" onClick={() => handleEditArticle(article)}>
+                                            <button onClick={() => handleEditArticle(article)}>
                                                 <Pencil width={15} height={15} />
-                                                <span>Éditer</span>
+                                            </button>
+                                            <button>
+                                                <a href={`/articles/${article.id}`} target="_blank" rel="noopener noreferrer">
+                                                    <Eye width={15} height={15} />
+                                                </a>
                                             </button>
                                             <button
                                                 onClick={() => {
