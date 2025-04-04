@@ -22,6 +22,7 @@ import {
     MdFormatItalic,
     MdFormatUnderlined,
     MdFormatListBulleted,
+    MdFormatListNumbered,
     MdFormatAlignLeft,
     MdFormatAlignCenter,
     MdFormatAlignRight,
@@ -42,6 +43,7 @@ type CustomElement = {
     align?: string;
     children: CustomText[];
 };
+
 type CustomText = { text: string; bold?: true; italic?: true; underline?: true };
 
 declare module 'slate' {
@@ -56,6 +58,9 @@ interface SlateEditorProps {
     content: string;
     onChange: (value: string) => void;
 }
+
+// Définition d'un type complet pour l'éditeur
+type SlateEditorType = BaseEditor & ReactEditor & HistoryEditor;
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
@@ -82,9 +87,10 @@ const serialize = (node: Descendant): string => {
         return string;
     }
 
-    const alignStyle = (node as SlateElement & { align?: string }).align
-        ? ` style="text-align: ${(node as SlateElement & { align?: string }).align};"`
-        : '';
+    const alignStyle =
+        (node as SlateElement & { align?: string }).align
+            ? ` style="text-align: ${(node as SlateElement & { align?: string }).align};"`
+            : '';
 
     const children = node.children.map(n => serialize(n)).join('');
 
@@ -94,13 +100,13 @@ const serialize = (node: Descendant): string => {
         case 'heading-two':
             return `<h2${alignStyle}>${children}</h2>`;
         case 'block-quote':
-            return `<blockquote${alignStyle}>${children}</blockquote>`;
+            return `<blockquote${alignStyle} class='before:content-["❝"] before:pr-1 before:text-2xl before:font-semibold after:content-["❞"] after:pl-1 after:text-2xl after:font-semibold'>${children}</blockquote>`;
         case 'list-item':
             return `<li${alignStyle}>${children}</li>`;
         case 'bulleted-list':
-            return `<ul class="list-disc ml-5" ${alignStyle}>${children}</ul>`;
+            return `<ul class="list-disc ml-5"${alignStyle}>${children}</ul>`;
         case 'numbered-list':
-            return `<ol${alignStyle}>${children}</ol>`;
+            return `<ol class="list-decimal ml-5"${alignStyle}>${children}</ol>`;
         default:
             return `<p${alignStyle}>${children}</p>`;
     }
@@ -115,7 +121,7 @@ const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
         (props: RenderLeafProps) => <Leaf {...props} />,
         []
     );
-    const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+    const editor = useMemo(() => withHistory(withReact(createEditor())), []) as SlateEditorType;
 
     return (
         <Slate
@@ -139,6 +145,7 @@ const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
                 <MarkButton format="underline" icon={<MdFormatUnderlined />} />
                 <BlockButton format="block-quote" icon={<MdFormatQuote />} />
                 <BlockButton format="bulleted-list" icon={<MdFormatListBulleted />} />
+                <BlockButton format="numbered-list" icon={<MdFormatListNumbered />} />
                 <BlockButton format="left" icon={<MdFormatAlignLeft />} />
                 <BlockButton format="center" icon={<MdFormatAlignCenter />} />
                 <BlockButton format="right" icon={<MdFormatAlignRight />} />
@@ -149,7 +156,7 @@ const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
                 className="bg-tertiary-black p-4 rounded"
                 renderElement={renderElement}
                 renderLeaf={renderLeaf}
-                placeholder="Enter some rich text…"
+                placeholder="Zone de saisie pour votre futur article !"
                 spellCheck
                 autoFocus
             />
@@ -157,7 +164,28 @@ const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
     );
 };
 
-const toggleBlock = (editor: any, format: any) => {
+// Typage restreint pour "format" afin qu'il corresponde aux clés de CustomText (sans "text")
+const toggleMark = (
+    editor: SlateEditorType,
+    format: keyof Omit<CustomText, "text">
+) => {
+    const isActive = isMarkActive(editor, format);
+    if (isActive) {
+        Editor.removeMark(editor, format);
+    } else {
+        Editor.addMark(editor, format, true);
+    }
+};
+
+const isMarkActive = (
+    editor: SlateEditorType,
+    format: keyof Omit<CustomText, "text">
+): boolean => {
+    const marks = Editor.marks(editor) as Partial<Omit<CustomText, "text">> | null;
+    return marks ? marks[format] === true : false;
+};
+
+const toggleBlock = (editor: SlateEditorType, format: any) => {
     const isActive = isBlockActive(
         editor,
         format,
@@ -173,16 +201,11 @@ const toggleBlock = (editor: any, format: any) => {
             !TEXT_ALIGN_TYPES.includes(format),
         split: true,
     });
-    let newProperties;
-    if (TEXT_ALIGN_TYPES.includes(format)) {
-        newProperties = {
-            align: isActive ? undefined : format,
-        };
-    } else {
-        newProperties = {
-            type: isActive ? 'paragraph' : isList ? 'list-item' : format,
-        };
-    }
+
+    const newProperties = TEXT_ALIGN_TYPES.includes(format)
+        ? { align: isActive ? undefined : format }
+        : { type: isActive ? 'paragraph' : isList ? 'list-item' : format };
+
     Transforms.setNodes(editor, newProperties);
 
     if (!isActive && isList) {
@@ -191,24 +214,14 @@ const toggleBlock = (editor: any, format: any) => {
     }
 };
 
-const toggleMark = (editor: any, format: any) => {
-    const isActive = isMarkActive(editor, format);
-
-    if (isActive) {
-        Editor.removeMark(editor, format);
-    } else {
-        Editor.addMark(editor, format, true);
-    }
-};
-
-const isBlockActive = (editor: any, format: any, blockType: keyof CustomElement) => {
+const isBlockActive = (editor: SlateEditorType, format: any, blockType: keyof CustomElement) => {
     const { selection } = editor;
     if (!selection) return false;
 
-    const [match]: any = Array.from(
+    const [match] = Array.from(
         Editor.nodes(editor, {
             at: Editor.unhangRange(editor, selection),
-            match: (n) =>
+            match: n =>
                 !Editor.isEditor(n) &&
                 SlateElement.isElement(n) &&
                 n[blockType] === format,
@@ -216,11 +229,6 @@ const isBlockActive = (editor: any, format: any, blockType: keyof CustomElement)
     );
 
     return !!match;
-};
-
-const isMarkActive = (editor: any, format: any) => {
-    const marks: any = Editor.marks(editor);
-    return marks ? marks[format] === true : false;
 };
 
 const Element = ({ attributes, children, element }: any) => {
@@ -235,12 +243,6 @@ const Element = ({ attributes, children, element }: any) => {
                 >
                     <span className='bg-gray-100 p-2 rounded'>{children}</span>
                 </blockquote>
-            );
-        case 'bulleted-list':
-            return (
-                <ul style={style} {...attributes} className='list-disc'>
-                    {children}
-                </ul>
             );
         case 'heading-one':
             return (
@@ -260,9 +262,15 @@ const Element = ({ attributes, children, element }: any) => {
                     {children}
                 </li>
             );
+        case 'bulleted-list':
+            return (
+                <ul style={style} {...attributes} className='list-disc ml-5'>
+                    {children}
+                </ul>
+            );
         case 'numbered-list':
             return (
-                <ol style={style} {...attributes}>
+                <ol style={style} {...attributes} className='list-decimal ml-5'>
                     {children}
                 </ol>
             );
@@ -279,20 +287,17 @@ const Leaf = ({ attributes, children, leaf }: any) => {
     if (leaf.bold) {
         children = <strong>{children}</strong>;
     }
-
     if (leaf.italic) {
         children = <em>{children}</em>;
     }
-
     if (leaf.underline) {
         children = <u>{children}</u>;
     }
-
     return <span {...attributes}>{children}</span>;
 };
 
-const BlockButton = ({ format, icon }: any) => {
-    const editor = useSlate();
+const BlockButton = ({ format, icon }: { format: any; icon: any }) => {
+    const editor = useSlate() as SlateEditorType;
     const isActive = isBlockActive(
         editor,
         format,
@@ -311,8 +316,8 @@ const BlockButton = ({ format, icon }: any) => {
     );
 };
 
-const MarkButton = ({ format, icon }: any) => {
-    const editor = useSlate();
+const MarkButton = ({ format, icon }: { format: keyof Omit<CustomText, "text">; icon: any }) => {
+    const editor = useSlate() as SlateEditorType;
     const isActive = isMarkActive(editor, format);
     return (
         <button
