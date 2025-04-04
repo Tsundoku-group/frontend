@@ -1,17 +1,54 @@
 import React, { useMemo, useCallback } from 'react';
-import { createEditor, Editor, Transforms, Element as SlateElement, Descendant, BaseEditor, Text } from 'slate';
-import { Slate, Editable, withReact, useSlate, ReactEditor, RenderElementProps, RenderLeafProps } from 'slate-react';
-import { MdFormatBold, MdFormatItalic, MdFormatUnderlined, MdFormatListBulleted, MdFormatAlignLeft, MdFormatAlignCenter, MdFormatAlignRight, MdFormatAlignJustify, MdFormatQuote } from 'react-icons/md';
+import {
+    createEditor,
+    Editor,
+    Transforms,
+    Element as SlateElement,
+    Descendant,
+    BaseEditor,
+    Text
+} from 'slate';
+import {
+    Slate,
+    Editable,
+    withReact,
+    useSlate,
+    ReactEditor,
+    RenderElementProps,
+    RenderLeafProps
+} from 'slate-react';
+import {
+    MdFormatBold,
+    MdFormatItalic,
+    MdFormatUnderlined,
+    MdFormatListBulleted,
+    MdFormatAlignLeft,
+    MdFormatAlignCenter,
+    MdFormatAlignRight,
+    MdFormatAlignJustify,
+    MdFormatQuote
+} from 'react-icons/md';
 import { HistoryEditor, withHistory } from 'slate-history';
 
-type CustomElement = { type: 'paragraph' | 'heading-one' | 'heading-two' | 'block-quote' | 'list-item' | 'bulleted-list' | 'numbered-list'; align?: string; children: CustomText[] }
-type CustomText = { text: string; bold?: true; italic?: true; underline?: true }
+type CustomElement = {
+    type:
+    | 'paragraph'
+    | 'heading-one'
+    | 'heading-two'
+    | 'block-quote'
+    | 'list-item'
+    | 'bulleted-list'
+    | 'numbered-list';
+    align?: string;
+    children: CustomText[];
+};
+type CustomText = { text: string; bold?: true; italic?: true; underline?: true };
 
 declare module 'slate' {
     interface CustomTypes {
-        Editor: BaseEditor & ReactEditor & HistoryEditor
-        Element: CustomElement
-        Text: CustomText
+        Editor: BaseEditor & ReactEditor & HistoryEditor;
+        Element: CustomElement;
+        Text: CustomText;
     }
 }
 
@@ -20,8 +57,8 @@ interface SlateEditorProps {
     onChange: (value: string) => void;
 }
 
-const LIST_TYPES = ['numbered-list', 'bulleted-list']
-const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']
+const LIST_TYPES = ['numbered-list', 'bulleted-list'];
+const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
 const initialValue: Descendant[] = [
     {
@@ -30,9 +67,6 @@ const initialValue: Descendant[] = [
     },
 ];
 
-/**
- * Fonction de sérialisation des nodes Slate en HTML.
- */
 const serialize = (node: Descendant): string => {
     if (Text.isText(node)) {
         let string = node.text;
@@ -48,37 +82,51 @@ const serialize = (node: Descendant): string => {
         return string;
     }
 
+    const alignStyle = (node as SlateElement & { align?: string }).align
+        ? ` style="text-align: ${(node as SlateElement & { align?: string }).align};"`
+        : '';
+
     const children = node.children.map(n => serialize(n)).join('');
+
     switch (node.type) {
         case 'heading-one':
-            return `<h1>${children}</h1>`;
+            return `<h1${alignStyle}>${children}</h1>`;
         case 'heading-two':
-            return `<h2>${children}</h2>`;
+            return `<h2${alignStyle}>${children}</h2>`;
         case 'block-quote':
-            return `<blockquote>${children}</blockquote>`;
+            return `<blockquote${alignStyle}>${children}</blockquote>`;
         case 'list-item':
-            return `<li>${children}</li>`;
+            return `<li${alignStyle}>${children}</li>`;
         case 'bulleted-list':
-            return `<ul>${children}</ul>`;
+            return `<ul class="list-disc ml-5" ${alignStyle}>${children}</ul>`;
         case 'numbered-list':
-            return `<ol>${children}</ol>`;
+            return `<ol${alignStyle}>${children}</ol>`;
         default:
-            // Par défaut, on considère que c'est un paragraphe
-            return `<p>${children}</p>`;
+            return `<p${alignStyle}>${children}</p>`;
     }
 };
 
 const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
-    const renderElement = useCallback((props: RenderElementProps) => <Element {...props} />, []);
-    const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, []);
+    const renderElement = useCallback(
+        (props: RenderElementProps) => <Element {...props} />,
+        []
+    );
+    const renderLeaf = useCallback(
+        (props: RenderLeafProps) => <Leaf {...props} />,
+        []
+    );
     const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
     return (
         <Slate
             editor={editor}
-            initialValue={[{ type: 'paragraph', children: [{ text: content }] }]}
+            initialValue={[
+                {
+                    type: 'paragraph',
+                    children: [{ text: content }],
+                },
+            ]}
             onChange={(value) => {
-                // Utilise serialize pour obtenir le HTML complet
                 const html = value.map(node => serialize(node)).join('');
                 onChange(html);
             }}
@@ -104,9 +152,6 @@ const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
                 placeholder="Enter some rich text…"
                 spellCheck
                 autoFocus
-                onKeyDown={event => {
-                    // Vous pouvez ajouter ici des raccourcis clavier
-                }}
             />
         </Slate>
     );
@@ -183,7 +228,11 @@ const Element = ({ attributes, children, element }: any) => {
     switch (element.type) {
         case 'block-quote':
             return (
-                <blockquote style={style} {...attributes} className='before:content-["❝"] before:pr-1 before:text-2xl before:font-semibold after:content-["❞"] after:pl-1 after:text-2xl after:font-semibold'>
+                <blockquote
+                    style={style}
+                    {...attributes}
+                    className='before:content-["❝"] before:pr-1 before:text-2xl before:font-semibold after:content-["❞"] after:pl-1 after:text-2xl after:font-semibold'
+                >
                     <span className='bg-gray-100 p-2 rounded'>{children}</span>
                 </blockquote>
             );
@@ -244,7 +293,11 @@ const Leaf = ({ attributes, children, leaf }: any) => {
 
 const BlockButton = ({ format, icon }: any) => {
     const editor = useSlate();
-    const isActive = isBlockActive(editor, format, TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type');
+    const isActive = isBlockActive(
+        editor,
+        format,
+        TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type'
+    );
     return (
         <button
             className={`p-2 text-xl rounded mx-1 ${isActive ? 'bg-tertiary-black' : ''}`}

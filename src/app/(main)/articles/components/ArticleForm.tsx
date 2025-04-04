@@ -20,22 +20,20 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete })
     const [content, setContent] = useState(article?.content || "");
     const [status, setStatus] = useState(article?.status || "brouillon");
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
     const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id ? parseInt(activeProfileInStorage?.id) : undefined;
 
     const statusLabels: { [key: string]: string } = {
         brouillon: "Brouillon",
-        "en-cours": "En cours",
         publie: "Publié",
     };
 
     const statusColor = status === "brouillon"
         ? "var(--highlight-red)"
-        : status === "en-cours"
-            ? "var(--highlight-yellow)"
-            : status === "publie"
-                ? "var(--highlight-green)"
-                : "inherit";
+        : status === "publie"
+            ? "var(--highlight-green)"
+            : "inherit";
 
     useEffect(() => {
         if (article) {
@@ -66,10 +64,8 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete })
             title,
             content,
             status: newStatus,
-            authorId: profileId
+            authorId: profileId,
         };
-
-        console.log("Payload envoyé :", payload);
 
         try {
             await submitArticle(article ? article.id : null, payload, profileId);
@@ -124,7 +120,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete })
                         {article &&
                             formatDate(article.updatedAt.date) !== formatDate(article.createdAt.date) && (
                                 <p>
-                                Dernière modification : <span id="last-modified">{article ? formatDate(article.updatedAt.date) : "N/A"}</span>
+                                    Dernière modification : <span id="last-modified">{article ? formatDate(article.updatedAt.date) : "N/A"}</span>
                                 </p>
                             )
                         }

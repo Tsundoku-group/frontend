@@ -17,3 +17,11 @@ export interface Article {
         timezone: string;
     };
 }
+
+export interface ArticlePayload {
+    title: string;
+    content: string;
+    status: string;
+    authorId: number;
+    image?: File;
+}

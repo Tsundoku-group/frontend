@@ -9,7 +9,6 @@ interface CustomSelectProps {
 export default function CustomSelect({ selectedStatus, onChange }: CustomSelectProps) {
     const options = useMemo(() => [
         { value: 'brouillon', label: 'Brouillon', color: "var(--highlight-red)" },
-        { value: 'en-cours', label: 'En cours', color: "var(--highlight-yellow)" },
         { value: 'publie', label: 'Publié', color: "var(--highlight-green)" },
     ], []);
 
