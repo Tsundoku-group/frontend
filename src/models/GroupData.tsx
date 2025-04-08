@@ -1,3 +1,5 @@
+import {Tag} from "@/models/Tag";
+
 export interface GroupData {
     id: string;
     name: string;
@@ -10,4 +12,6 @@ export interface GroupData {
     imageUrl?: string;
     isFavorite: boolean;
     isPinned: boolean;
+    tags: Tag[];
 }
+

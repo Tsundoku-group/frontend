@@ -72,22 +72,23 @@ export default function MarkActions({
                 {showFavorite && (
                     <button onClick={handleToggleFavorite} className="text-2xl focus:outline-none">
                         {favorite ? (
-                            <Bookmark className="text-gray-400 fill-current" />
+                            <Bookmark className="text-gray-400 fill-current w-5 h-5" />
                         ) : (
-                            <Bookmark className="text-gray-400" />
+                            <Bookmark className="text-gray-400 w-5 h-5" />
                         )}
                     </button>
                 )}
                 {showPinned && (
                     <button onClick={handleTogglePinned} className="focus:outline-none">
                         {pinned ? (
-                            <Pin className="text-gray-400 fill-current" />
+                            <Pin className="text-gray-400 fill-current w-5 h-5" />
                         ) : (
-                            <Pin className="text-gray-400" />
+                            <Pin className="text-gray-400 w-5 h-5" />
                         )}
                     </button>
                 )}
             </div>
+
             {showRating && (
                 <div className="flex gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (

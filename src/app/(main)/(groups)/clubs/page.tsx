@@ -89,7 +89,8 @@ export default function ClubsPage() {
                                                    joinStatus: group.joinStatus,
                                                    createdAt: group.createdAt || "",
                                                    isFavorite: group.isFavorite,
-                                                   isPinned: group.isPinned
+                                                   isPinned: group.isPinned,
+                                                   tags: group.tags
                                                }}/>
                                 ))
                             ) : (

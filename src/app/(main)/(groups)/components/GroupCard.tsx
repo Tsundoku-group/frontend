@@ -1,17 +1,21 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import React, {useState} from "react";
 import {joinPrivateGroup, toggleFavoriteGroup, togglePinnedGroup} from "@/app/(main)/(groups)/clubs/actions";
 import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";
 import MarkActions from "@/components/MarkActions";
 import {GroupData} from "@/models/GroupData";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {UsersRound, Lock, LockOpen, ContactRound} from "lucide-react";
+import {Badge} from "@/components/ui/badge";
+import {Tag} from "@/models/Tag";
 
 interface GroupCardProps {
     group: GroupData;
 }
 
-export default function GroupCard({ group }: GroupCardProps) {
+export default function GroupCard({group}: GroupCardProps) {
     const [status, setStatus] = useState(group.joinStatus);
     const [favorite, setFavorite] = useState(group.isFavorite);
     const [pinned, setPinned] = useState(group.isPinned);
@@ -32,7 +36,7 @@ export default function GroupCard({ group }: GroupCardProps) {
                 ShowToast("default", "Votre demande a bien été envoyée");
             }
         } catch (error) {
-            console.log(error);
+            ShowToast("destructive", "Une erreur est survenue. Veuillez réessayer ultérieurement.", "Erreur")
         }
     };
 
@@ -67,27 +71,58 @@ export default function GroupCard({ group }: GroupCardProps) {
     };
 
     return (
-        <Card className="rounded-lg overflow-hidden bg-secondary-black">
-            <img src={group.imageUrl} alt={group.name} className="w-full h-32 object-cover" />
-            <CardHeader>
-                <CardTitle className="text-text-white">{group.name}</CardTitle>
-                {status === "member" && (
-                    <MarkActions
-                        showFavorite={true}
-                        showPinned={true}
-                        showRating={false}
-                        initialFavorite={favorite}
-                        initialPinned={pinned}
-                        onToggleFavorite={handleToggleFavorite}
-                        onTogglePinned={handleTogglePinned}
-                    />
-                )}
-            </CardHeader>
+        <Card className="rounded-lg overflow-hidden bg-secondary-black pt-2">
+            <div className="flex items-start gap-4 p-4">
+                <Avatar className="w-12 h-12 shrink-0">
+                    <AvatarImage src={group?.imageUrl}/>
+                    <AvatarFallback>
+                        <UsersRound/>
+                    </AvatarFallback>
+                </Avatar>
+                <CardHeader className="p-0">
+                    <CardTitle className="text-text-white text-sm">{group.name}</CardTitle>
+                    {status === "member" && (
+                        <MarkActions
+                            showFavorite={true}
+                            showPinned={true}
+                            showRating={false}
+                            initialFavorite={favorite}
+                            initialPinned={pinned}
+                            onToggleFavorite={handleToggleFavorite}
+                            onTogglePinned={handleTogglePinned}
+                        />
+                    )}
+                </CardHeader>
+            </div>
             <CardContent>
                 <div className="text-gray-400 text-sm">{group.description}</div>
-                <div className="text-gray-500 text-xs">👥 {group.membersCount} membres</div>
-                <div className="text-gray-500 text-sm">{group.visibility}</div>
 
+                <div className="text-gray-500 text-xs flex items-center gap-1 mt-1">
+                    <ContactRound className="w-4 h-4"/>
+                    {group.membersCount} membres
+                </div>
+
+                <div className="text-gray-500 text-sm flex items-center gap-1 mt-1">
+                    {group.visibility === "private" ? (
+                        <Lock className="w-4 h-4"/>
+                    ) : (
+                        <LockOpen className="w-4 h-4"/>
+                    )}
+                    <span className="capitalize">{group.visibility}</span>
+                </div>
+
+                {group.tags?.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                        {group.tags.map((tag: Tag) => (
+                            <Badge
+                                key={tag.slug}
+                                className="text-xs font-medium px-3 py-1"
+                            >
+                              {tag.parent ? `${tag.name}` : tag.name}
+                            </Badge>
+                        ))}
+                    </div>
+                )}
                 {status === "none" && (
                     <Button onClick={handleJoinRequest} className="w-full mt-3">
                         🔑 Demander à rejoindre
@@ -101,7 +136,7 @@ export default function GroupCard({ group }: GroupCardProps) {
                 )}
 
                 {status === "member" && (
-                    <Button className="w-full mt-3 bg-green-500">
+                    <Button className="w-full mt-3 bg-green-highlight">
                         ✅ Voir le groupe
                     </Button>
                 )}
