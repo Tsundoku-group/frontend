@@ -29,15 +29,21 @@ export default function SearchComponent({
     
     return (
         <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
-            <Input
-                placeholder="🔍 Rechercher un groupe..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full md:w-1/3"
-            />
+            <div className="relative w-full md:w-1/3">
+                <Input
+                    placeholder="Rechercher un groupe..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-10 py-2 bg-[#1E1E1E] text-white placeholder-gray-400 border border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-600"
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  🔍
+                </span>
+            </div>
 
             <Select value={tagName || "all"} onValueChange={setTagName}>
-                <SelectTrigger className="w-full md:w-1/4">
+                <SelectTrigger
+                    className="w-full md:w-1/4 bg-[#1E1E1E] text-white border border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-600">
                     <SelectValue placeholder="📂 Toutes les catégories"/>
                 </SelectTrigger>
                 <SelectContent>
@@ -51,8 +57,9 @@ export default function SearchComponent({
             </Select>
 
             <Select value={sort} onValueChange={setSort}>
-                <SelectTrigger className="w-full md:w-1/4">
-                    <SelectValue placeholder="📅 Trier par" />
+                <SelectTrigger
+                    className="w-full md:w-1/4 bg-[#1E1E1E] text-white border border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-600">
+                    <SelectValue placeholder="📅 Trier par"/>
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="newest">📅 Plus récents</SelectItem>
