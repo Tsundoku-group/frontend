@@ -10,6 +10,7 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {UsersRound, Lock, LockOpen, ContactRound} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
 import {Tag} from "@/models/Tag";
+import {useRouter} from "next/navigation";
 
 interface GroupCardProps {
     group: GroupData;
@@ -19,6 +20,7 @@ export default function GroupCard({group}: GroupCardProps) {
     const [status, setStatus] = useState(group.joinStatus);
     const [favorite, setFavorite] = useState(group.isFavorite);
     const [pinned, setPinned] = useState(group.isPinned);
+    const router = useRouter();
 
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id as string;
@@ -136,7 +138,10 @@ export default function GroupCard({group}: GroupCardProps) {
                 )}
 
                 {status === "member" && (
-                    <Button className="w-full mt-3 bg-green-highlight">
+                    <Button
+                        className="w-full mt-3 bg-green-highlight"
+                        onClick={() => router.push(`/clubs/${group.slug}`)}
+                    >
                         ✅ Voir le groupe
                     </Button>
                 )}

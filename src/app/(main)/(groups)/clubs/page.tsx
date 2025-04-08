@@ -75,7 +75,7 @@ export default function ClubsPage() {
                             ))}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-5">
                             {allGroups.length > 0 ? (
                                 allGroups.map((group) => (
                                     <GroupCard key={group.id}
@@ -89,6 +89,7 @@ export default function ClubsPage() {
                                                    joinStatus: group.joinStatus,
                                                    createdAt: group.createdAt || "",
                                                    isFavorite: group.isFavorite,
+                                                   slug: group.slug,
                                                    isPinned: group.isPinned,
                                                    tags: group.tags
                                                }}/>

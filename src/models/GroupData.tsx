@@ -9,6 +9,7 @@ export interface GroupData {
     membersCount: number;
     joinStatus: "none" | "pending" | "member";
     createdAt: string;
+    slug: string;
     imageUrl?: string;
     isFavorite: boolean;
     isPinned: boolean;
