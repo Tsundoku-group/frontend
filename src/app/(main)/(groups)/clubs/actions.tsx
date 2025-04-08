@@ -93,3 +93,60 @@ export const joinPrivateGroup = async (
         return { error: error.message || "Erreur inconnue" };
     }
 };
+
+export const toggleFavoriteGroup = async (
+    groupId: string,
+    profileId: string,
+    isFavorite: boolean
+) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/marks`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                profileId: profileId,
+                targetId: groupId,
+                targetType: "group",
+                isFavorite: isFavorite,
+            }),
+        });
+
+        if (!response.response || response.status !== 201) {
+            throw new Error("Not Found");
+        }
+        return response;
+    } catch (error: any) {
+        return { error: error.message };
+    }
+};
+
+export const togglePinnedGroup = async (
+    groupId: string,
+    profileId: string,
+    isPinned: boolean
+) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/marks`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                profileId: profileId,
+                targetId: groupId,
+                targetType: "group",
+                isPinned: isPinned,
+            }),
+        });
+
+        if (!response.response || response.status !== 201) {
+            throw new Error("Not Found");
+        }
+
+        return response;
+    } catch (error: any) {
+        return { error: error.message };
+    }
+};
