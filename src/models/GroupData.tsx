@@ -8,4 +8,6 @@ export interface GroupData {
     joinStatus: "none" | "pending" | "member";
     createdAt: string;
     imageUrl?: string;
+    isFavorite: boolean;
+    isPinned: boolean;
 }
