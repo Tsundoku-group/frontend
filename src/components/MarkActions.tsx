@@ -2,10 +2,6 @@ import { useState } from "react";
 import { ShowToast } from "@/components/ShowToast";
 import {Bookmark, Pin} from "lucide-react";
 
-interface PinIconProps extends React.SVGProps<SVGSVGElement> {
-    filled?: boolean;
-}
-
 interface MarkActionsProps {
     initialFavorite?: boolean;
     initialPinned?: boolean;
