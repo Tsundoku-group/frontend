@@ -13,6 +13,7 @@ export interface GroupData {
     imageUrl?: string;
     isFavorite: boolean;
     isPinned: boolean;
+    membersPreview: [];
     tags: Tag[];
 }
 
