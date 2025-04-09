@@ -42,9 +42,14 @@ export const fetchPrivateGroups = async (
     }
 };
 
-export const fetchGroupBySlug = async (slug: string) => {
+export const fetchGroupBySlug = async (slug: string): Promise<GroupData | null> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/group/private/${slug}`);
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/group/private/${slug}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
 
         if (!response.response || response.status !== 200) {
             throw new Error("Not Found");
@@ -52,13 +57,18 @@ export const fetchGroupBySlug = async (slug: string) => {
 
         return response.data;
     } catch (error) {
-        return [];
+        return null;
     }
 }
 
 export const fetchAllTags = async ()=> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/tags`);
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/tags`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
 
         if (!response || 200 !== response.status) {
             throw new Error("Not Found");
