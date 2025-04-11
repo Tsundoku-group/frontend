@@ -10,6 +10,7 @@ import { useProfileContext } from "@/context/profileContext";
 import { formatDate } from "@/utils/dateUtils";
 import { Article } from "@/models/Article";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import Pagination from "@/components/Pagination";
 
 export default function ArticlesPage() {
     const [showForm, setShowForm] = useState(false);
@@ -17,18 +18,26 @@ export default function ArticlesPage() {
     const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [sortField, setSortField] = useState("createdAt");
+    const [sortOrder, setSortOrder] = useState("desc");
+    const [totalPages, setTotalPages] = useState(1);
+
     const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id;
 
     const loadArticles = useCallback(async () => {
         try {
-            const data = await fetchProfileArticles(profileId);
+            const data = await fetchProfileArticles(profileId, currentPage, sortField, sortOrder);
             console.log(data);
-            setArticles(data);
+            setArticles(data.articles || []);
+            setTotalPages(data.pagination?.totalPages || 1);
         } catch (error) {
             console.error("Failed to fetch articles: ", error);
+            setArticles([]);
+            setTotalPages(1);
         }
-    }, [profileId]);
+    }, [profileId, currentPage, sortField, sortOrder]);
 
     useEffect(() => {
         if (profileId) {
@@ -83,6 +92,16 @@ export default function ArticlesPage() {
         }
     };
 
+    const handleSort = (field: string) => {
+        if (sortField === field) {
+            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+        } else {
+            setSortField(field);
+            setSortOrder("asc");
+        }
+        setCurrentPage(1);
+    };
+
     return (
         <>
             {showForm ? (
@@ -107,10 +126,18 @@ export default function ArticlesPage() {
                     <table className="p-5 w-full">
                         <thead>
                             <tr>
-                                <th></th>
-                                <th>Titre</th>
-                                <th>Date de création</th>
-                                <th>Dernière édition</th>
+                                <th onClick={() => handleSort('status')}>
+                                    Statut {sortField === 'status' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+                                </th>
+                                <th onClick={() => handleSort('title')}>
+                                    Titre {sortField === 'title' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+                                </th>
+                                <th onClick={() => handleSort('createdAt')}>
+                                    Date de création {sortField === 'createdAt' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+                                </th>
+                                <th onClick={() => handleSort('updatedAt')}>
+                                    Dernière édition {sortField === 'updatedAt' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+                                </th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -125,8 +152,8 @@ export default function ArticlesPage() {
                                             />
                                         </td>
                                         <td>{article.title}</td>
-                                        <td>{formatDate(article.createdAt.date)}</td>
-                                        <td>{formatDate(article.updatedAt.date)}</td>
+                                        <td>{formatDate(article.createdAt)}</td>
+                                        <td>{formatDate(article.updatedAt)}</td>
                                         <td className="flex gap-4">
                                             <button onClick={() => handleEditArticle(article)}>
                                                 <Pencil width={15} height={15} />
@@ -156,6 +183,13 @@ export default function ArticlesPage() {
                             )}
                         </tbody>
                     </table>
+
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={(page) => setCurrentPage(page)}
+                    />
+
                     {showConfirmDelete && (
                         <ConfirmDialog
                             onCancel={() => {

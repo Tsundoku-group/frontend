@@ -1,7 +1,9 @@
-export const formatDate = (dateString: string): string => {
+export const formatDate = (
+    input: string | { date: string; timezone_type: number; timezone: string }
+): string => {
+    const dateString = typeof input === "string" ? input : input.date;
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-        // Retourne une valeur de secours si la date n'est pas valide
         return "Date invalide";
     }
     const now = new Date();
@@ -17,9 +19,9 @@ export const formatDate = (dateString: string): string => {
         return `il y a ${diffHours} heure${diffHours > 1 ? "s" : ""}`;
     } else {
         return new Intl.DateTimeFormat("fr-FR", {
-            year: "numeric",
+            day: "numeric",
             month: "long",
-            day: "2-digit",
+            year: "numeric",
             hour: "2-digit",
             minute: "2-digit",
         }).format(date);

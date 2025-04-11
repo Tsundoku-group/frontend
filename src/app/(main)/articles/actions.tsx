@@ -4,13 +4,24 @@ import { fetchWithAuth } from "@/services/fetchWithAuth";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
-export const fetchProfileArticles = async (profileId: string | undefined) => {
+export const fetchProfileArticles = async (
+    profileId: string | undefined,
+    page: number = 1,
+    sortField: string = "createdAt",
+    sortOrder: string = "desc",
+) => {
     if (!profileId) {
         throw new Error("Profile id is missing");
     }
 
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${profileId}/articles`, {
+        const queryParams = new URLSearchParams({
+            page: page.toString(),
+            sortField,
+            sortOrder
+        });
+
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${profileId}/articles?${queryParams.toString()}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         });
@@ -18,12 +29,18 @@ export const fetchProfileArticles = async (profileId: string | undefined) => {
         if (response.status !== 200 || !response.data) {
             throw new Error("Failed to fetch articles");
         }
-
-        console.log("slt" + response.data);
-        return response.data.articles || [];
+        return response.data;
     } catch (error) {
         console.error("Failed to fetch articles: ", error);
-        return [];
+        return {
+            articles: [],
+            pagination: {
+                currentPage: page,
+                limit: 15,
+                totalArticles: 0,
+                totalPages: 1
+            }
+        };
     }
 };
 
@@ -65,14 +82,12 @@ export const submitArticle = async (
         const modifiedPayload = { ...payload, type: "article" };
 
         const JSONBody = JSON.stringify(modifiedPayload);
-        console.log("Envoi de la requête à", url, "avec le payload :", JSONBody);
 
         const response = await fetchWithAuth(url, {
             method,
             headers: { "Content-Type": "application/json" },
             body: JSONBody
         });
-        console.log("response", response);
 
         if (response.status !== 200 && response.status !== 201) {
             const errorMsg = response.data && response.data.error ? response.data.error : "Failed to submit article";
