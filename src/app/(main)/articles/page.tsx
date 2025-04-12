@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowDownUp, Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import CustomSelect from "./components/CustomSelect";
 import "./styles/styles.css";
@@ -11,6 +11,7 @@ import { formatDate } from "@/utils/dateUtils";
 import { Article } from "@/models/Article";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Pagination from "@/components/Pagination";
+import { set } from "date-fns";
 
 export default function ArticlesPage() {
     const [showForm, setShowForm] = useState(false);
@@ -92,15 +93,22 @@ export default function ArticlesPage() {
         }
     };
 
-    const handleSort = (field: string) => {
+    const handleSortToggle = (field: string) => {
         if (sortField === field) {
             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
         } else {
             setSortField(field);
-            setSortOrder("asc");
+            setSortOrder("desc");
         }
         setCurrentPage(1);
     };
+
+    const headers = [
+        { label: "Statut", field: "status" },
+        { label: "Titre", field: "title" },
+        { label: "Date de création", field: "createdAt" },
+        { label: "Dernière édition", field: "updatedAt" },
+    ];
 
     return (
         <>
@@ -126,18 +134,17 @@ export default function ArticlesPage() {
                     <table className="p-5 w-full">
                         <thead>
                             <tr>
-                                <th onClick={() => handleSort('status')}>
-                                    Statut {sortField === 'status' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
-                                </th>
-                                <th onClick={() => handleSort('title')}>
-                                    Titre {sortField === 'title' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
-                                </th>
-                                <th onClick={() => handleSort('createdAt')}>
-                                    Date de création {sortField === 'createdAt' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
-                                </th>
-                                <th onClick={() => handleSort('updatedAt')}>
-                                    Dernière édition {sortField === 'updatedAt' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
-                                </th>
+                                {headers.map((header, index) => (
+                                    <th key={index}>
+                                        <span
+                                            onClick={() => handleSortToggle(header.field)}
+                                            className="cursor-pointer inline-flex items-center whitespace-nowrap ml-2"
+                                        >
+                                            {header.label}
+                                            <ArrowDownUp width={20} height={20} className="ml-2" />
+                                        </span>
+                                    </th>
+                                ))}
                                 <th></th>
                             </tr>
                         </thead>
