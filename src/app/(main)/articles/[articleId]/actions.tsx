@@ -14,10 +14,7 @@ export const fetchArticle = async (id: number) => {
             },
         });
 
-        console.log("response cc", response);
-
         const data = response.data;
-        console.log("data", data);
 
         if (response.status !== 200 || !data) {
             throw new Error("Failed to fetch article");

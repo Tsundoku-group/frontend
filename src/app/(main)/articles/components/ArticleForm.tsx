@@ -19,6 +19,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete })
     const [title, setTitle] = useState(article?.title || "");
     const [content, setContent] = useState(article?.content || "");
     const [status, setStatus] = useState(article?.status || "brouillon");
+    const [error, setError] = useState<string | null>(null);
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
     const { activeProfileInStorage } = useProfileContext();
@@ -59,6 +60,19 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete })
             console.error("Profile id is missing");
             return;
         }
+
+        if (!title) {
+            setError("Le titre de l'article est requis.");
+            return;
+        }
+
+        if (!content) {
+            setError("Le contenu de l'article est requis.");
+            return;
+        }
+
+        setError(null);
+
         setStatus(newStatus);
         const payload = {
             title,
@@ -81,6 +95,13 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete })
                 <ArrowLeft size={16} />
                 <span>Retour aux articles</span>
             </button>
+
+            {error && (
+                <div className="bg-red-highlight text-white p-2 rounded mb-4">
+                    {error}
+                </div>
+            )}
+
             <div className="grid grid-cols-2 gap-10 mb-10">
                 <div>
                     <label htmlFor="title">Titre article</label>
