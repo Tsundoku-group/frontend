@@ -41,7 +41,7 @@ type CustomElement = {
     | 'bulleted-list'
     | 'numbered-list';
     align?: string;
-    children: CustomText[];
+    children: Descendant[];
 };
 
 type CustomText = { text: string; bold?: true; italic?: true; underline?: true };
@@ -55,23 +55,24 @@ declare module 'slate' {
 }
 
 interface SlateEditorProps {
-    content: string;
-    onChange: (value: string) => void;
+    content: string; // contenu HTML initial
+    onChange: (value: string) => void; // onChange renvoie le HTML
 }
 
-// Définition d'un type complet pour l'éditeur
 type SlateEditorType = BaseEditor & ReactEditor & HistoryEditor;
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
-const initialValue: Descendant[] = [
+// Valeur par défaut pour l'éditeur
+const defaultValue: Descendant[] = [
     {
         type: 'paragraph',
         children: [{ text: 'Zone de saisie pour votre futur article !' }],
     },
 ];
 
+// Fonction de sérialisation pour convertir la valeur Slate en HTML
 const serialize = (node: Descendant): string => {
     if (Text.isText(node)) {
         let string = node.text;
@@ -112,6 +113,68 @@ const serialize = (node: Descendant): string => {
     }
 };
 
+// Fonction de désérialisation simple : elle convertit du HTML en nœuds Slate
+const deserialize = (html: string): Descendant[] => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const body = doc.body;
+
+    const traverse = (node: ChildNode): Descendant[] => {
+        let results: Descendant[] = [];
+        node.childNodes.forEach(child => {
+            if (child.nodeType === Node.TEXT_NODE) {
+                results.push({ text: child.textContent || '' });
+            } else if (child.nodeType === Node.ELEMENT_NODE) {
+                const element = child as HTMLElement;
+                let children = traverse(element);
+                if (children.length === 0) {
+                    children = [{ text: '' }];
+                }
+
+                switch (element.tagName.toLowerCase()) {
+                    case 'strong':
+                        children = children.map(child => ({ ...child, bold: true }));
+                        results = results.concat(children);
+                        break;
+                    case 'em':
+                        children = children.map(child => ({ ...child, italic: true }));
+                        results = results.concat(children);
+                        break;
+                    case 'u':
+                        children = children.map(child => ({ ...child, underline: true }));
+                        results = results.concat(children);
+                        break;
+                    case 'h1':
+                        results.push({ type: 'heading-one', children: children } as CustomElement);
+                        break;
+                    case 'h2':
+                        results.push({ type: 'heading-two', children: children } as CustomElement);
+                        break;
+                    case 'blockquote':
+                        results.push({ type: 'block-quote', children: children } as CustomElement);
+                        break;
+                    case 'li':
+                        results.push({ type: 'list-item', children: children } as CustomElement);
+                        break;
+                    case 'ul':
+                        results.push({ type: 'bulleted-list', children: children } as CustomElement);
+                        break;
+                    case 'ol':
+                        results.push({ type: 'numbered-list', children: children } as CustomElement);
+                        break;
+                    case 'p':
+                    default:
+                        results.push({ type: 'paragraph', children: children } as CustomElement);
+                        break;
+                }
+            }
+        });
+        return results;
+    };
+
+    return traverse(body);
+};
+
 const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
     const renderElement = useCallback(
         (props: RenderElementProps) => <Element {...props} />,
@@ -123,15 +186,20 @@ const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
     );
     const editor = useMemo(() => withHistory(withReact(createEditor())), []) as SlateEditorType;
 
+    // Si le contenu initial est au format HTML, on le désérialise en nœuds Slate.
+    const initialValue = useMemo(() => {
+        try {
+            const parsed = deserialize(content);
+            return parsed.length > 0 ? parsed : defaultValue;
+        } catch (error) {
+            return [{ type: 'paragraph', children: [{ text: content }] } as CustomElement];
+        }
+    }, [content]);
+
     return (
         <Slate
             editor={editor}
-            initialValue={[
-                {
-                    type: 'paragraph',
-                    children: [{ text: content }],
-                },
-            ]}
+            initialValue={initialValue}
             onChange={(value) => {
                 const html = value.map(node => serialize(node)).join('');
                 onChange(html);
@@ -164,7 +232,7 @@ const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
     );
 };
 
-// Typage restreint pour "format" afin qu'il corresponde aux clés de CustomText (sans "text")
+// Fonctions de bascule pour les marques (gras, italique, souligné)
 const toggleMark = (
     editor: SlateEditorType,
     format: keyof Omit<CustomText, "text">
@@ -186,15 +254,17 @@ const isMarkActive = (
 };
 
 const toggleBlock = (editor: SlateEditorType, format: any) => {
+    // Vérifie si un alignement ou un type de bloc est déjà actif dans la sélection
     const isActive = isBlockActive(
         editor,
         format,
-        TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type'
+        TEXT_ALIGN_TYPES.includes(format) ? "align" : "type"
     );
     const isList = LIST_TYPES.includes(format);
 
+    // Si la sélection se trouve dans une liste, on la déballe pour éviter des effets inattendus
     Transforms.unwrapNodes(editor, {
-        match: n =>
+        match: (n) =>
             !Editor.isEditor(n) &&
             SlateElement.isElement(n) &&
             LIST_TYPES.includes(n.type) &&
@@ -202,35 +272,46 @@ const toggleBlock = (editor: SlateEditorType, format: any) => {
         split: true,
     });
 
+    // Définit les nouvelles propriétés à appliquer :
+    // Pour l'alignement, on met { align: format } (ou on le retire si déjà actif)
+    // Sinon, on choisit un nouveau type de bloc
     const newProperties = TEXT_ALIGN_TYPES.includes(format)
         ? { align: isActive ? undefined : format }
-        : { type: isActive ? 'paragraph' : isList ? 'list-item' : format };
+        : { type: isActive ? "paragraph" : isList ? "list-item" : format };
 
-    Transforms.setNodes(editor, newProperties);
+    // Appliquer les propriétés à tous les nœuds bloc dans la sélection
+    Transforms.setNodes(editor, newProperties, {
+        at: editor.selection!,
+        match: (n) => SlateElement.isElement(n) && Editor.isBlock(editor, n),
+        split: true, // On force le fractionnement pour que chaque bloc soit isolé
+    });
 
+    // Si le format correspond à un type de liste et que ce n'est pas actif, on enveloppe les nœuds
     if (!isActive && isList) {
         const block = { type: format, children: [] };
         Transforms.wrapNodes(editor, block);
     }
 };
 
-const isBlockActive = (editor: SlateEditorType, format: any, blockType: keyof CustomElement) => {
+const isBlockActive = (
+    editor: SlateEditorType,
+    format: any,
+    blockType: keyof CustomElement
+) => {
     const { selection } = editor;
     if (!selection) return false;
 
     const [match] = Array.from(
         Editor.nodes(editor, {
             at: Editor.unhangRange(editor, selection),
-            match: n =>
-                !Editor.isEditor(n) &&
-                SlateElement.isElement(n) &&
-                n[blockType] === format,
+            match: (n) =>
+                SlateElement.isElement(n) && (n as CustomElement)[blockType] === format,
         })
     );
-
     return !!match;
 };
 
+// Composant de rendu des éléments
 const Element = ({ attributes, children, element }: any) => {
     const style = { textAlign: element.align };
     switch (element.type) {
@@ -283,6 +364,7 @@ const Element = ({ attributes, children, element }: any) => {
     }
 };
 
+// Composant de rendu des feuilles (gestion des marques)
 const Leaf = ({ attributes, children, leaf }: any) => {
     if (leaf.bold) {
         children = <strong>{children}</strong>;
@@ -296,6 +378,7 @@ const Leaf = ({ attributes, children, leaf }: any) => {
     return <span {...attributes}>{children}</span>;
 };
 
+// Bouton de bloc dans la barre d'outils
 const BlockButton = ({ format, icon }: { format: any; icon: any }) => {
     const editor = useSlate() as SlateEditorType;
     const isActive = isBlockActive(
@@ -316,6 +399,7 @@ const BlockButton = ({ format, icon }: { format: any; icon: any }) => {
     );
 };
 
+// Bouton de marque dans la barre d'outils
 const MarkButton = ({ format, icon }: { format: keyof Omit<CustomText, "text">; icon: any }) => {
     const editor = useSlate() as SlateEditorType;
     const isActive = isMarkActive(editor, format);

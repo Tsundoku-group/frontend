@@ -139,14 +139,14 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete })
                     </div>
                     <div className="text-gray-500">
                         {article &&
-                            formatDate(article.updatedAt.date) !== formatDate(article.createdAt.date) && (
+                            formatDate(article.updatedAt) !== formatDate(article.createdAt) && (
                                 <p>
-                                    Dernière modification : <span id="last-modified">{article ? formatDate(article.updatedAt.date) : "N/A"}</span>
+                                    Dernière modification : <span id="last-modified">{article ? formatDate(article.updatedAt) : "N/A"}</span>
                                 </p>
                             )
                         }
                         <p>
-                            Date de publication : <span id="publish-date">{article ? formatDate(article.createdAt.date) : "N/A"}</span>
+                            Date de publication : <span id="publish-date">{article ? formatDate(article.createdAt) : "N/A"}</span>
                         </p>
                         <p>
                             Statut : <span style={{ color: statusColor }}>{statusLabels[status] || status}</span>
