@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/tabs"
 import {List, Users, Activity} from "lucide-react";
 import React from "react";
-import GroupPostsContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupPostsContent";
+import GroupAboutContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupAboutContent";
 import GroupMembersContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupMembersContent";
 import GroupActivityContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupActivityContent";
 
@@ -31,19 +31,21 @@ export default function GroupTabs({ groupId }: Props) {
                     className="text-gray-600 px-4 py-2 rounded-md focus:bg-tertiary-black data-[state=active]:bg-tertiary-black focus:text-white data-[state=active]:text-white"
                 >
                     <Activity className="w-4 h-4 mr-2"/>
-                    Activités
+                    Discussion
                 </TabsTrigger>
                 <TabsTrigger
                     value="members"
                     className="text-gray-600 px-4 py-2 rounded-md focus:bg-tertiary-black data-[state=active]:bg-tertiary-black focus:text-white data-[state=active]:text-white"
                 >
-                    <Users className="w-4 h-4 mr-2"/> Membres
+                    <Users className="w-4 h-4 mr-2"/>
+                    Membres
                 </TabsTrigger>
                 <TabsTrigger
-                    value="posts"
+                    value="about"
                     className="text-gray-600 px-4 py-2 rounded-md focus:bg-tertiary-black data-[state=active]:bg-tertiary-black focus:text-white data-[state=active]:text-white"
                 >
-                    <List className="w-4 h-4 mr-2"/> Posts
+                    <List className="w-4 h-4 mr-2"/>
+                    A propos
                 </TabsTrigger>
             </TabsList>
 
@@ -53,8 +55,8 @@ export default function GroupTabs({ groupId }: Props) {
             <TabsContent value="members" className="mt-4">
                 <GroupMembersContent groupId={groupId} />
             </TabsContent>
-            <TabsContent value="posts" className="mt-4">
-                <GroupPostsContent/>
+            <TabsContent value="about" className="mt-4">
+                <GroupAboutContent/>
             </TabsContent>
         </Tabs>
     )
