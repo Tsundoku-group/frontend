@@ -38,7 +38,7 @@ export default function ArticlePage({ params }: { params: { articleId: number } 
                     </Link>
                     <h1 className="text-3xl font-bold mb-2">{article.title}</h1>
                     <p className="text-sm text-gray-600">
-                        Créé le : {formatDate(article.createdAt.date)} – Dernière modification : {formatDate(article.updatedAt.date)}
+                        Créé le : {formatDate(article.createdAt)} – Dernière modification : {formatDate(article.updatedAt)}
                     </p>
                     <hr className="my-4" />
                     <div className="prose" dangerouslySetInnerHTML={{ __html: article.content }} />

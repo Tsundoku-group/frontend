@@ -5,9 +5,9 @@ import DragAndDropImage from './DragAndDropImage';
 import { Article } from '@/models/Article';
 import { formatDate } from '@/utils/dateUtils';
 import { ArrowLeft } from 'lucide-react';
-import ConfirmDeleteDialog from '@/components/ConfirmDialog';
 import { useProfileContext } from '@/context/profileContext';
 import { submitArticle } from '../actions';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 interface ArticleFormProps {
     article?: Article | null;
@@ -159,7 +159,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete })
             </div>
 
             {showConfirmDelete && (
-                <ConfirmDeleteDialog
+                <ConfirmDialog
                     onCancel={() => setShowConfirmDelete(false)}
                     onConfirm={confirmDelete}
                     message="Supprimer l'article ? Cette action est irréversible."

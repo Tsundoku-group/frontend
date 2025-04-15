@@ -16,7 +16,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ message, onCancel, onConf
                     {message}
                 </p>
                 <div className="flex justify-end gap-4 mt-5">
-                    <button onClick={onCancel} className="secondary-btn">
+                    <button onClick={onCancel} className="tertiary-btn rounded-full">
                         Annuler
                     </button>
                     <button onClick={onConfirm} className="primary-btn rounded-full">

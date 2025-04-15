@@ -49,6 +49,13 @@ body {
     color: var(--bg-tertiary-dark);
 }
 
+.tertiary-btn {
+    background-color: var(--bg-tertiary-dark);
+    border: none;
+    padding: 0.5em 1em;
+    transition: background-color 0.4s ease;
+}
+
 .secondary-btn:hover {
     background-color: var(--hover-highlight-green);
 }
