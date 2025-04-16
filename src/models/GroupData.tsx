@@ -8,12 +8,23 @@ export interface GroupData {
     visibility: string;
     membersCount: number;
     joinStatus: "none" | "pending" | "member";
-    createdAt: string;
+    createdAt: {
+        date: string;
+        timezone_type: number;
+        timezone: string;
+    };
     slug: string;
     imageUrl?: string;
     isFavorite: boolean;
     isPinned: boolean;
     membersPreview?: [];
     tags: Tag[];
+    rules?: string[];
+    activities?: string[];
+    whoCanJoin?: string;
+    externalLinks?: string[];
+    createdBy: {
+        id: number;
+        username: string;
+    };
 }
-

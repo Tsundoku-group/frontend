@@ -11,12 +11,15 @@ import React from "react";
 import GroupAboutContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupAboutContent";
 import GroupMembersContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupMembersContent";
 import GroupActivityContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupActivityContent";
+import {GroupData} from "@/models/GroupData";
 
-interface Props {
-    groupId: number;
+interface GroupAboutSectionProps {
+    group: GroupData;
+    isLoading: boolean;
+    isError: boolean;
 }
 
-export default function GroupTabs({ groupId }: Props) {
+export default function GroupTabs({group}: GroupAboutSectionProps) {
     return (
         <Tabs defaultValue="activity" className="w-full mt-4">
             <TabsList className="bg-transparent w-full justify-start gap-6 px-0">
@@ -44,13 +47,13 @@ export default function GroupTabs({ groupId }: Props) {
             </TabsList>
 
             <TabsContent value="activity" className="mt-4">
-                <GroupActivityContent groupId={groupId}/>
+                <GroupActivityContent groupId={group.id}/>
             </TabsContent>
             <TabsContent value="members" className="mt-4">
-                <GroupMembersContent groupId={groupId} />
+                <GroupMembersContent groupId={group.id}/>
             </TabsContent>
             <TabsContent value="about" className="mt-4">
-                <GroupAboutContent/>
+                <GroupAboutContent group={group} isLoading={false} isError={false} />
             </TabsContent>
         </Tabs>
     )

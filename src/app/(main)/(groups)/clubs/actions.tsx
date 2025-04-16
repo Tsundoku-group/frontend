@@ -50,7 +50,7 @@ export const fetchGroupBySlug = async (slug: string): Promise<GroupData | null> 
                 "Content-Type": "application/json",
             }
         });
-
+        console.log(response)
         if (!response.response || response.status !== 200) {
             throw new Error("Not Found");
         }

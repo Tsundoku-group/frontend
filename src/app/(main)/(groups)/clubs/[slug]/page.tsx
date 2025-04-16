@@ -51,7 +51,7 @@ export default function GroupPage({ params: {slug} }: Props) {
                     membersPreview={group.membersPreview}
                     tags={group.tags}
                 />
-                <GroupTabs groupId={group.id} />
+                <GroupTabs group={group} isLoading={loading} isError={!!error} />
             </div>
 
             <div className="lg:col-span-2"></div>
