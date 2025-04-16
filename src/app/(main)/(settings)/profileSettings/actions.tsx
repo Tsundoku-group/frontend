@@ -98,7 +98,7 @@ export async function deleteUserProfilePictureUrl(id: number, profileId: number,
             },
             body: JSON.stringify({id, profileId, url, type})
         });
-        console.log(response);
+
         if (!response.response || 200 !== response.status) {
             throw new Error('Invalid response from the server');
         }

@@ -7,7 +7,6 @@ const symfonyUrl = process.env.SYMFONY_URL;
 
 export const createNewPost = async (postData: PostData) => {
     try {
-        console.log('postData :', postData);
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post`, {
             method: "POST",
             body: JSON.stringify(postData)
@@ -15,7 +14,7 @@ export const createNewPost = async (postData: PostData) => {
         if (!response) {
             throw new Error('Failed to create post');
         }
-        console.log(response);
+
         return response;
     } catch (error) {
         throw new Error("Erreur du serveur");
@@ -230,7 +229,7 @@ export const fetchRepliesForComment = async (commentId: number, profileId: numbe
                 "Content-Type": "application/json",
             }
         });
-        console.log(response)
+
         if (!response || !response.data) {
             return {comments: []}
         }

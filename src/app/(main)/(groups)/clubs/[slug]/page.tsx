@@ -16,7 +16,7 @@ export default function GroupPage({ params: {slug} }: Props) {
     const [group, setGroup] = useState<GroupData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    console.log(group?.id)
+
     useEffect(() => {
         const loadGroup = async () => {
             try {
