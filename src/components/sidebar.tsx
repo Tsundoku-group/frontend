@@ -7,7 +7,7 @@ import {useRouter} from "next/navigation";
 export default function Sidebar() {
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [isClient, setIsClient] = useState(false);
-    const socket = useSocket();
+    const {socket} = useSocket();
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
     const router = useRouter();

@@ -24,6 +24,7 @@ import {ShowToast} from "@/components/ShowToast";
 import {useProfileContext} from "@/context/profileContext";
 import {getProfileImageUrl} from "@/utils/profileImageUtils";
 import {useRouter} from "next/navigation";
+import {useSocket} from "@/context/socketContext";
 
 interface ProfileRelationCardProps {
     friendshipId: string | null;
@@ -49,6 +50,7 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
     });
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
+    const { socket } = useSocket();
     const router = useRouter();
 
     const handleViewProfile = () => {
@@ -78,6 +80,17 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
             } else if (actionType === "follow") {
                 await fetchFollowProfile(profileId, friend.friendId);
                 setRelationState((prev) => ({...prev, isFollow: true}));
+                if (socket) {
+                    socket.emit("sendNotification", {
+                        receiverId: friend.friendId,
+                        actorId: profileId,
+                        actorFirstName: activeProfileInStorage?.firstName,
+                        notificationType: "follow",
+                        resourceType: "FOLLOW",
+                        resourceId: friend.friendId,
+                        createdAt: new Date().toISOString(),
+                    });
+                }
                 ShowToast("default", "Utilisateur suivi avec succès");
             } else if (actionType === "unfollow") {
                 await fetchUnfollowProfile(friendshipId, profileId, friend.friendId);

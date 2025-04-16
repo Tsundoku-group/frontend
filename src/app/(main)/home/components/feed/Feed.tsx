@@ -1,48 +1,43 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchRecentPosts } from "@/app/(main)/home/actions";
-import PostCard from "@/app/(main)/home/components/Post/PostCard";
 import InfiniteFeed from "./InfiniteFeed";
-import {Skeleton} from "@/components/ui/skeleton";
+import FeedSkeleton from "@/app/(main)/home/components/feed/FeedSkeleton";
+import { useProfileContext } from "@/context/profileContext";
+import PostCard from "../post/PostCard";
 
 export default function Feed() {
+    const queryClient = useQueryClient();
+    const { activeProfileInStorage } = useProfileContext();
+    const profileId = activeProfileInStorage?.id as string;
+
     const { data: posts, isLoading, error } = useQuery({
         queryKey: ["recentPosts"],
-        queryFn: async () => {
-            console.log("useQuery is calling fetchRecentPosts...");
-            return await fetchRecentPosts();
-        },
+        queryFn: async () => await fetchRecentPosts(profileId),
         staleTime: 60000,
+        enabled: !!profileId,
     });
 
-    if (isLoading) {
-        return (
-            <div className="w-full max-w-2xl mx-auto space-y-6">
-                {[...Array(10)].map((_, i) => (
-                    <div key={i} className=" p-4 rounded-lg shadow-md w-full">
-                        <div className="flex items-center space-x-4 mb-3">
-                            <Skeleton className="h-12 w-12 rounded-full bg-gray-500"/>
-                            <div className="space-y-2">
-                                <Skeleton className="h-4 w-[250px] bg-gray-500"/>
-                                <Skeleton className="h-4 w-[200px] bg-gray-500"/>
-                            </div>
-                        </div>
-                        <div className="h-32 w-full rounded-lg"/>
-
-                        <div className="h-6 w-full mt-4  rounded-lg"/>
-                    </div>
-                ))}
-            </div>
+    const handleDeletePost = (postId: string) => {
+        queryClient.setQueryData(["recentPosts"], (oldData: any) =>
+            oldData ? oldData.filter((post: any) => post.id !== postId) : []
         );
+    };
+    
+    if (isLoading) {
+        return <FeedSkeleton />;
     }
-    if (error) return <p className="text-center text-red-400">Erreur lors du chargement.</p>;
+
+    if (error) {
+        return <p className="text-center text-red-400">Erreur lors du chargement.</p>;
+    }
 
     return (
-        <div className="w-full  mx-auto">
+        <div className="w-full mx-auto">
             {posts && posts.length > 0 ? (
                 posts.map((post: any) => (
-                    <PostCard key={post.id} post={post} />
+                    <PostCard key={post.id} post={post} onDelete={handleDeletePost} />
                 ))
             ) : (
                 <p className="text-center text-gray-500">Aucun post à afficher.</p>
@@ -50,4 +45,4 @@ export default function Feed() {
             <InfiniteFeed />
         </div>
     );
-}
+};
