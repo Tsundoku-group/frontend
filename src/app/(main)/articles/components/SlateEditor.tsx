@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, CSSProperties } from 'react';
 import {
     createEditor,
     Editor,
@@ -55,8 +55,8 @@ declare module 'slate' {
 }
 
 interface SlateEditorProps {
-    content: string; // contenu HTML initial
-    onChange: (value: string) => void; // onChange renvoie le HTML
+    content: string;
+    onChange: (value: string) => void;
 }
 
 type SlateEditorType = BaseEditor & ReactEditor & HistoryEditor;
@@ -64,7 +64,6 @@ type SlateEditorType = BaseEditor & ReactEditor & HistoryEditor;
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
-// Valeur par défaut pour l'éditeur
 const defaultValue: Descendant[] = [
     {
         type: 'paragraph',
@@ -72,7 +71,6 @@ const defaultValue: Descendant[] = [
     },
 ];
 
-// Fonction de sérialisation pour convertir la valeur Slate en HTML
 const serialize = (node: Descendant): string => {
     if (Text.isText(node)) {
         let string = node.text;
@@ -113,7 +111,6 @@ const serialize = (node: Descendant): string => {
     }
 };
 
-// Fonction de désérialisation simple : elle convertit du HTML en nœuds Slate
 const deserialize = (html: string): Descendant[] => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
@@ -131,6 +128,12 @@ const deserialize = (html: string): Descendant[] => {
                     children = [{ text: '' }];
                 }
 
+                let align: string | undefined;
+                const textAlign = element.style.textAlign;
+                if (TEXT_ALIGN_TYPES.includes(textAlign)) {
+                    align = textAlign;
+                }
+
                 switch (element.tagName.toLowerCase()) {
                     case 'strong':
                         children = children.map(child => ({ ...child, bold: true }));
@@ -145,26 +148,54 @@ const deserialize = (html: string): Descendant[] => {
                         results = results.concat(children);
                         break;
                     case 'h1':
-                        results.push({ type: 'heading-one', children: children } as CustomElement);
+                        results.push({
+                            type: 'heading-one',
+                            align,
+                            children: children
+                        } as CustomElement);
                         break;
                     case 'h2':
-                        results.push({ type: 'heading-two', children: children } as CustomElement);
+                        results.push({
+                            type: 'heading-two',
+                            align,
+                            children: children
+                        } as CustomElement);
                         break;
                     case 'blockquote':
-                        results.push({ type: 'block-quote', children: children } as CustomElement);
+                        results.push({
+                            type: 'block-quote',
+                            align,
+                            children: children
+                        } as CustomElement);
                         break;
                     case 'li':
-                        results.push({ type: 'list-item', children: children } as CustomElement);
+                        results.push({
+                            type: 'list-item',
+                            align,
+                            children: children
+                        } as CustomElement);
                         break;
                     case 'ul':
-                        results.push({ type: 'bulleted-list', children: children } as CustomElement);
+                        results.push({
+                            type: 'bulleted-list',
+                            align,
+                            children: children
+                        } as CustomElement);
                         break;
                     case 'ol':
-                        results.push({ type: 'numbered-list', children: children } as CustomElement);
+                        results.push({
+                            type: 'numbered-list',
+                            align,
+                            children: children
+                        } as CustomElement);
                         break;
                     case 'p':
                     default:
-                        results.push({ type: 'paragraph', children: children } as CustomElement);
+                        results.push({
+                            type: 'paragraph',
+                            align,
+                            children: children
+                        } as CustomElement);
                         break;
                 }
             }
@@ -186,7 +217,6 @@ const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
     );
     const editor = useMemo(() => withHistory(withReact(createEditor())), []) as SlateEditorType;
 
-    // Si le contenu initial est au format HTML, on le désérialise en nœuds Slate.
     const initialValue = useMemo(() => {
         try {
             const parsed = deserialize(content);
@@ -232,7 +262,6 @@ const SlateEditor: React.FC<SlateEditorProps> = ({ content, onChange }) => {
     );
 };
 
-// Fonctions de bascule pour les marques (gras, italique, souligné)
 const toggleMark = (
     editor: SlateEditorType,
     format: keyof Omit<CustomText, "text">
@@ -254,7 +283,7 @@ const isMarkActive = (
 };
 
 const toggleBlock = (editor: SlateEditorType, format: any) => {
-    // Vérifie si un alignement ou un type de bloc est déjà actif dans la sélection
+
     const isActive = isBlockActive(
         editor,
         format,
@@ -262,7 +291,6 @@ const toggleBlock = (editor: SlateEditorType, format: any) => {
     );
     const isList = LIST_TYPES.includes(format);
 
-    // Si la sélection se trouve dans une liste, on la déballe pour éviter des effets inattendus
     Transforms.unwrapNodes(editor, {
         match: (n) =>
             !Editor.isEditor(n) &&
@@ -272,21 +300,15 @@ const toggleBlock = (editor: SlateEditorType, format: any) => {
         split: true,
     });
 
-    // Définit les nouvelles propriétés à appliquer :
-    // Pour l'alignement, on met { align: format } (ou on le retire si déjà actif)
-    // Sinon, on choisit un nouveau type de bloc
     const newProperties = TEXT_ALIGN_TYPES.includes(format)
         ? { align: isActive ? undefined : format }
         : { type: isActive ? "paragraph" : isList ? "list-item" : format };
 
-    // Appliquer les propriétés à tous les nœuds bloc dans la sélection
     Transforms.setNodes(editor, newProperties, {
-        at: editor.selection!,
         match: (n) => SlateElement.isElement(n) && Editor.isBlock(editor, n),
         split: true, // On force le fractionnement pour que chaque bloc soit isolé
     });
 
-    // Si le format correspond à un type de liste et que ce n'est pas actif, on enveloppe les nœuds
     if (!isActive && isList) {
         const block = { type: format, children: [] };
         Transforms.wrapNodes(editor, block);
@@ -311,18 +333,18 @@ const isBlockActive = (
     return !!match;
 };
 
-// Composant de rendu des éléments
-const Element = ({ attributes, children, element }: any) => {
-    const style = { textAlign: element.align };
+const Element = ({ attributes, children, element }: RenderElementProps) => {
+    const style: CSSProperties = { textAlign: (element.align as 'left' | 'center' | 'right' | 'justify' | undefined) };
+
     switch (element.type) {
         case 'block-quote':
             return (
                 <blockquote
                     style={style}
                     {...attributes}
-                    className='before:content-["❝"] before:pr-1 before:text-2xl before:font-semibold after:content-["❞"] after:pl-1 after:text-2xl after:font-semibold'
+                    className='before:content-["❝"] before:pr-1 before:text-2xl before:font-semibold after:content-["❞"] after:pl-1 after:text-2xl after:font-semibold bg-gray-100 p-2 rounded'
                 >
-                    <span className='bg-gray-100 p-2 rounded'>{children}</span>
+                    {children}
                 </blockquote>
             );
         case 'heading-one':
@@ -364,8 +386,7 @@ const Element = ({ attributes, children, element }: any) => {
     }
 };
 
-// Composant de rendu des feuilles (gestion des marques)
-const Leaf = ({ attributes, children, leaf }: any) => {
+const Leaf = ({ attributes, children, leaf }: RenderLeafProps) => {
     if (leaf.bold) {
         children = <strong>{children}</strong>;
     }
@@ -378,7 +399,6 @@ const Leaf = ({ attributes, children, leaf }: any) => {
     return <span {...attributes}>{children}</span>;
 };
 
-// Bouton de bloc dans la barre d'outils
 const BlockButton = ({ format, icon }: { format: any; icon: any }) => {
     const editor = useSlate() as SlateEditorType;
     const isActive = isBlockActive(
@@ -399,7 +419,6 @@ const BlockButton = ({ format, icon }: { format: any; icon: any }) => {
     );
 };
 
-// Bouton de marque dans la barre d'outils
 const MarkButton = ({ format, icon }: { format: keyof Omit<CustomText, "text">; icon: any }) => {
     const editor = useSlate() as SlateEditorType;
     const isActive = isMarkActive(editor, format);
