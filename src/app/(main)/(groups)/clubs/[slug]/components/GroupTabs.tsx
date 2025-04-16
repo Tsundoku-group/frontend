@@ -19,7 +19,7 @@ interface Props {
 export default function GroupTabs({ groupId }: Props) {
     return (
         <Tabs defaultValue="activity" className="w-full mt-4">
-            <TabsList className="bg-transparent border-b border-gray-700 w-full justify-start gap-6 px-0">
+            <TabsList className="bg-transparent w-full justify-start gap-6 px-0">
                 <TabsTrigger
                     value="activity"
                     className="text-gray-600 px-4 py-2 rounded-md focus:bg-tertiary-black data-[state=active]:bg-tertiary-black focus:text-white data-[state=active]:text-white"

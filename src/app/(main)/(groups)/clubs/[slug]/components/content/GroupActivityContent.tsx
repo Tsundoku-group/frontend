@@ -11,8 +11,8 @@ interface Props {
 export default function GroupActivityContent({groupId}: Props) {
 
     return (
-        <div className="py-8 grid grid-cols-12 gap-[50px] mt-6">
-            <div className="col-span-8 pl-8">
+        <div className="py-2 grid grid-cols-12 gap-[50px] mt-6">
+            <div className="col-span-8">
                 <CreatePost groupId={groupId}/>
                 <Feed groupId={groupId}/>
             </div>

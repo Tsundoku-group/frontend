@@ -27,7 +27,7 @@ export default function GroupHeader({name, visibility, membersCount, imageUrl, m
     const isPrivate = visibility === "private";
 
     return (
-        <Card className="w-full bg-secondary-black p-6 mb-6 shadow border border-gray-700">
+        <Card className="w-full bg-secondary-black p-6 mb-6 shadow border-none">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                     <Avatar className="w-16 h-16">
