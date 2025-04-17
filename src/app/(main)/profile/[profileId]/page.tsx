@@ -1,9 +1,9 @@
 'use client';
 
 import React, {Suspense, useEffect, useState} from 'react';
-import ProfileHeader from "@/app/(main)/profile/[profileId]/components/header/ProfileHeader";
-import Body from "@/app/(main)/profile/[profileId]/components/body/Body";
-import RightbarWrapper from "@/app/(main)/profile/[profileId]/components/rightbar/RightbarWrapper";
+import ProfileHeader from "@/app/(main)/profile/[profileId]/_components/header/ProfileHeader";
+import Body from "@/app/(main)/profile/[profileId]/_components/body/Body";
+import RightbarWrapper from "@/app/(main)/profile/[profileId]/_components/rightbar/RightbarWrapper";
 import {ProfileResult} from "@/models/Profile";
 import {fetchUserProfile} from "@/server-actions/main/profile/actions";
 import {getProfileImageUrl} from "@/utils/profileImageUtils";

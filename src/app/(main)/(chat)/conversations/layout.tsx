@@ -2,13 +2,13 @@
 
 import {ChatConversation, LastMessage} from "@/models/ChatConversation";
 import React, {useCallback, useEffect, useMemo, useState} from "react";
-import ItemList from "@/app/(main)/(chat)/components/item/ItemList";
+import ItemList from "@/app/(main)/(chat)/_components/item/ItemList";
 import {Loader2} from "lucide-react";
 import DMConversationItem from "@/app/(main)/(chat)/conversations/components/DMConversationItem";
 import {useAuthContext} from "@/context/authContext";
 import {fetchUserConversations} from "@/server-actions/main/chat/conversations/actions";
 import StartNewConversation from "@/app/(main)/(chat)/conversations/components/StartNewConversation";
-import SearchBar from '@/app/(main)/(chat)/components/item/ItemSearchBar';
+import SearchBar from '@/app/(main)/(chat)/_components/item/ItemSearchBar';
 import {useSocket} from "@/context/socketContext";
 
 const ConversationLayout = ({children}: { children: React.ReactNode }) => {

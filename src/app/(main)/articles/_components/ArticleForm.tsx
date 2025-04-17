@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SlateEditor from './SlateEditor';
-import '../styles/styles.css';
+import '@/app/(main)/articles/_styles/styles.css';
 import DragAndDropImage from './DragAndDropImage';
 import { Article } from '@/models/Article';
 import { formatDate } from '@/utils/dateUtils';

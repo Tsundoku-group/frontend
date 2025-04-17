@@ -2,9 +2,9 @@
 
 import { ArrowDownUp, Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
-import CustomSelect from "./components/CustomSelect";
-import "./styles/styles.css";
-import ArticleForm from "./components/ArticleForm";
+import CustomSelect from "@/app/(main)/articles/_components/CustomSelect";
+import "@/app/(main)/articles/_styles/styles.css";
+import ArticleForm from "@/app/(main)/articles/_components/ArticleForm";
 import { fetchProfileArticles, deleteArticle, updateArticleStatus } from "@/server-actions/main/articles/actions";
 import { useProfileContext } from "@/context/profileContext";
 import { formatDate } from "@/utils/dateUtils";

@@ -1,5 +1,5 @@
 import React from "react";
-import DesktopNav from "@/app/(main)/(chat)/components/sidebar/nav/DesktopNav";
+import DesktopNav from "@/app/(main)/(chat)/_components/sidebar/nav/DesktopNav";
 
 type Props = React.PropsWithChildren<{}>;
 

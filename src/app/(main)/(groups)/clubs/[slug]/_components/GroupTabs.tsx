@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/tabs"
 import {List, Users, Activity} from "lucide-react";
 import React from "react";
-import GroupAboutContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupAboutContent";
-import GroupMembersContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupMembersContent";
-import GroupActivityContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupActivityContent";
+import GroupAboutContent from "@/app/(main)/(groups)/clubs/[slug]/_components/content/GroupAboutContent";
+import GroupMembersContent from "@/app/(main)/(groups)/clubs/[slug]/_components/content/GroupMembersContent";
+import GroupActivityContent from "@/app/(main)/(groups)/clubs/[slug]/_components/content/GroupActivityContent";
 import {GroupData} from "@/models/GroupData";
 
 interface GroupAboutSectionProps {

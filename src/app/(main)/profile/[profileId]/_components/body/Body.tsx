@@ -1,8 +1,8 @@
 import React from "react";
 import {Tabs, TabsList, TabsTrigger, TabsContent} from "@/components/ui/tabs";
 import {Activity, LibraryBig, Users} from "lucide-react";
-import Shelves from "@/app/(main)/profile/[profileId]/components/body/shelves/Shelves";
-import ItemProfileRelation from "@/app/(main)/profile/[profileId]/relations/components/item/ItemProfileRelation";
+import Shelves from "@/app/(main)/profile/[profileId]/_components/body/shelves/Shelves";
+import ItemProfileRelation from "@/app/(main)/profile/[profileId]/_components/relations/_components/item/ItemProfileRelation";
 
 interface BodyProps {
     profileId?: number;

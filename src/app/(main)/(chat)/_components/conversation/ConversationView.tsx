@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useEffect, useState, useRef, useMemo, useCallback} from "react";
-import ConversationContainer from "@/app/(main)/(chat)/components/conversation/ConversationContainer";
+import ConversationContainer from "@/app/(main)/(chat)/_components/conversation/ConversationContainer";
 import {Loader2} from "lucide-react";
 import Header from "@/app/(main)/(chat)/conversations/[conversationId]/components/header/Header";
 import ChatInput from "@/app/(main)/(chat)/conversations/[conversationId]/components/Input/Input";

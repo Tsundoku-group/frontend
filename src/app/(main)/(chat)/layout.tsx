@@ -1,5 +1,5 @@
 import React from "react";
-import SidebarWrapper from "@/app/(main)/(chat)/components/sidebar/SidebarWrapper";
+import SidebarWrapper from "@/app/(main)/(chat)/_components/sidebar/SidebarWrapper";
 
 type Props = React.PropsWithChildren<{}>;
 

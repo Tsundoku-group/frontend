@@ -1,10 +1,10 @@
 'use client'
 
 import React from "react";
-import PreferredGenresCard from "@/app/(main)/profile/[profileId]/components/rightbar/components/PreferredGenresCard";
-import ReviewsCard from "@/app/(main)/profile/[profileId]/components/rightbar/components/ReviewsCard";
-import ArticlesCard from "@/app/(main)/profile/[profileId]/components/rightbar/components/ArticlesCard";
-import ClubsCard from "@/app/(main)/profile/[profileId]/components/rightbar/components/ClubsCard";
+import PreferredGenresCard from "@/app/(main)/profile/[profileId]/_components/rightbar/components/PreferredGenresCard";
+import ReviewsCard from "@/app/(main)/profile/[profileId]/_components/rightbar/components/ReviewsCard";
+import ArticlesCard from "@/app/(main)/profile/[profileId]/_components/rightbar/components/ArticlesCard";
+import ClubsCard from "@/app/(main)/profile/[profileId]/_components/rightbar/components/ClubsCard";
 
 type Props = React.PropsWithChildren<{}>;
 

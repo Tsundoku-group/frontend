@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import GroupHeader from "@/app/(main)/(groups)/clubs/[slug]/components/GroupHeader";
+import GroupHeader from "@/app/(main)/(groups)/clubs/[slug]/_components/GroupHeader";
 import { fetchGroupBySlug } from "@/server-actions/main/groups/clubs/actions";
 import {GroupData} from "@/models/GroupData";
-import GroupTabs from "@/app/(main)/(groups)/clubs/[slug]/components/GroupTabs";
+import GroupTabs from "@/app/(main)/(groups)/clubs/[slug]/_components/GroupTabs";
 
 type Props = {
     params: {

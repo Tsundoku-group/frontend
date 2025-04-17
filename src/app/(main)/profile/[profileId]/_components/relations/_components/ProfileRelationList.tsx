@@ -1,6 +1,6 @@
 import React from "react";
 import {Card} from "@/components/ui/card";
-import ProfileRelationCard from "@/app/(main)/profile/[profileId]/relations/components/ProfileRelationCard";
+import ProfileRelationCard from "@/app/(main)/profile/[profileId]/_components/relations/_components/ProfileRelationCard";
 
 interface Friend {
     friendId: number;

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Card} from "@/components/ui/card";
-import ProfileRelationList from "@/app/(main)/profile/[profileId]/relations/components/ProfileRelationList";
-import ItemSearchProfileBar from "@/app/(main)/profile/[profileId]/relations/components/item/ItemSearchProfileBar";
+import ProfileRelationList from "@/app/(main)/profile/[profileId]/_components/relations/_components/ProfileRelationList";
+import ItemSearchProfileBar from "@/app/(main)/profile/[profileId]/_components/relations/_components/item/ItemSearchProfileBar";
 import {
     fetchFollowedListFromProfile,
     fetchFollowersListFromProfile,

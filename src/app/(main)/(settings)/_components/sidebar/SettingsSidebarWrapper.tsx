@@ -1,5 +1,5 @@
 import React from "react";
-import SettingsNav from "@/app/(main)/(settings)/components/sidebar/nav/SettingsNav";
+import SettingsNav from "@/app/(main)/(settings)/_components/sidebar/nav/SettingsNav";
 
 type Props = React.PropsWithChildren<{}>;
 
