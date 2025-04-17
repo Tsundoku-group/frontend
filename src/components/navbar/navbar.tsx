@@ -16,6 +16,7 @@ import { ShowToast } from '@/components/ShowToast';
 import AddProfileButton from '@/components/AddProfileButton';
 import { useProfileContext } from '@/context/profileContext';
 import NotificationDropdown from '@/components/navbar/component/NotificationDropdown';
+import Image from "next/image";
 
 type UserProfile = {
     id: number;
@@ -52,8 +53,8 @@ function CustomDropDown(props: {
                         </Avatar>
                         <div className="absolute bottom-0 left-6 w-5 h-5 rounded-full border-2 border-tertiary-black flex items-center justify-center">
                             {status === 'online' && <div className="w-full h-full rounded-full bg-green-500" />}
-                            {status === 'do_not_disturb' && <img src="/icons/status/minus-red-circle.svg" alt="Do not disturb" className="w-full h-full" />}
-                            {status === 'away' && <img src="/icons/status/yellow-moon.svg" alt="Away" className="w-full h-full" />}
+                            {status === 'do_not_disturb' && <Image src="/icons/status/minus-red-circle.svg" alt="Do not disturb" className="w-full h-full" />}
+                            {status === 'away' && <Image src="/icons/status/yellow-moon.svg" alt="Away" className="w-full h-full" />}
                             {status === 'offline' && (
                                 <div className="w-full h-full flex items-center justify-center bg-gray-500 rounded-full">
                                     <div className="w-2/4 h-2/4 bg-gray-900 rounded-full" />
@@ -154,8 +155,8 @@ export default function Navbar() {
                 <label htmlFor={`status-${status}`} className="flex items-center w-full cursor-pointer">
                     <div className="w-4 h-4 rounded-full flex items-center justify-center">
                         {status === 'online' && <div className="w-full h-full bg-green-500 rounded-full" />}
-                        {status === 'do_not_disturb' && <img src="/icons/status/minus-red-circle.svg" alt="Do not disturb" className="w-full h-full" />}
-                        {status === 'away' && <img src="/icons/status/yellow-moon.svg" alt="Away" className="w-full h-full" />}
+                        {status === 'do_not_disturb' && <Image src="/icons/status/minus-red-circle.svg" alt="Do not disturb" className="w-full h-full" />}
+                        {status === 'away' && <Image src="/icons/status/yellow-moon.svg" alt="Away" className="w-full h-full" />}
                         {status === 'offline' && <div className="w-full h-full bg-gray-400 rounded-full flex items-center justify-center"><div className="w-2/4 h-2/4 bg-gray-900 rounded-full" /></div>}
                     </div>
                     <span className="ml-4">{labels[status]}</span>

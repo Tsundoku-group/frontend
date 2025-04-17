@@ -23,6 +23,7 @@ import {Profile} from "@/models/Profile";
 import {CloudUpload} from "lucide-react";
 import {useProfileContext} from "@/context/profileContext";
 import {useAuthContext} from "@/context/authContext";
+import Image from "next/image";
 
 const userProfileSchema = z.object({
     lastName: z
@@ -272,8 +273,8 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
                             <div className="flex flex-col items-center">
                                 <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-700">
                                     {watch('profilePhoto') ? (
-                                        <img
-                                            src={watch('profilePhoto')}
+                                        <Image
+                                            src={watch('profilePhoto') || ""}
                                             alt="Photo de profil"
                                             className="object-cover w-full h-full"
                                         />
@@ -379,8 +380,8 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
                             <div className="flex flex-col items-center">
                                 <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-700">
                                     {watch("profilePhoto") ? (
-                                        <img
-                                            src={watch("profilePhoto")}
+                                        <Image
+                                            src={watch("profilePhoto") || ""}
                                             alt="Photo de profil"
                                             className="object-cover w-full h-full"
                                         />
@@ -396,8 +397,8 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
                             <div className="flex flex-col items-center">
                                 <div className="w-24 h-24 rounded-md overflow-hidden bg-gray-700">
                                     {watch("coverPhoto") ? (
-                                        <img
-                                            src={watch("coverPhoto")}
+                                        <Image
+                                            src={watch("coverPhoto") || ""}
                                             alt="Photo de couverture"
                                             className="object-cover w-full h-full"
                                         />

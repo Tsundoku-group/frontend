@@ -2,6 +2,7 @@ import React from "react";
 import ViewMoreButton from "./ViewMoreButton";
 import { Card } from "@/components/ui/card";
 import { ChevronRight, Pen } from "lucide-react";
+import Image from 'next/image';
 
 const articles = [
     {
@@ -28,7 +29,7 @@ const ArticlesCard = () => {
             <div className="mt-3 space-y-4">
                 {articles.map((article, index) => (
                     <div key={index} className="flex flex-col items-start space-y-2">
-                        <img
+                        <Image
                             src={article.imageUrl}
                             alt={article.title}
                             className="w-full h-24 object-cover rounded-lg"

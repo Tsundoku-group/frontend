@@ -38,7 +38,7 @@ export const fetchPrivateGroups = async (
         );
 
         if (!response.response || response.status !== 200) {
-            throw new Error("Not Found");
+            return { groups: [], nextPage: null };
         }
 
         return response.data;
@@ -55,9 +55,9 @@ export const fetchGroupBySlug = async (slug: string): Promise<GroupData | null> 
                 "Content-Type": "application/json",
             }
         });
-        console.log(response)
+
         if (!response.response || response.status !== 200) {
-            throw new Error("Not Found");
+            return null;
         }
 
         return response.data;
@@ -76,7 +76,7 @@ export const fetchAllTags = async ()=> {
         });
 
         if (!response || 200 !== response.status) {
-            throw new Error("Not Found");
+            return [];
         }
 
         return response.data.tags;
@@ -129,7 +129,7 @@ export const toggleFavoriteGroup = async (
         });
 
         if (!response.response || response.status !== 201) {
-            throw new Error("Not Found");
+            return {error: "not found"};
         }
         return response;
     } catch (error: any) {
@@ -157,7 +157,7 @@ export const togglePinnedGroup = async (
         });
 
         if (!response.response || response.status !== 201) {
-            throw new Error("Not Found");
+            return {error: "not found"};
         }
 
         return response;
@@ -176,7 +176,7 @@ export const fetchMembersFromGroup = async (groupId: number) => {
         });
 
         if (!response || response.status !== 200) {
-            throw new Error("Not Found");
+            return [];
         }
 
         const members = response.data;

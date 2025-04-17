@@ -4,6 +4,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {CircleCheckBig, CircleX, Command, Lock, User} from "lucide-react";
 import {useRouter} from "next/navigation";
 import {HandleRegister} from "@/server-actions/auth/register/actions";
+import Image from "next/image";
 
 const EMAIL_REGEX: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const PWD_REGEX: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -96,7 +97,7 @@ export default function RegisterPage() {
                             <h4 className="text-lg font-bold text-pink-100">Tsundoku</h4>
                         </div>
                         <div className="absolute inset-0 opacity-30">
-                            <img
+                            <Image
                                 src=""
                                 alt=""
                                 className="object-cover w-full h-full"

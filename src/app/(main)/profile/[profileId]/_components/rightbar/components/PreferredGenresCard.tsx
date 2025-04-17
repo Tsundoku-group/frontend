@@ -31,7 +31,7 @@ const PreferredGenresCard = () => {
         });
 
         return () => timers.forEach((timer) => clearInterval(timer));
-    }, []);
+    }, [genres]);
 
     return (
         <Card className="bg-secondary-black p-4 border-spacing-1 border-gray-600">

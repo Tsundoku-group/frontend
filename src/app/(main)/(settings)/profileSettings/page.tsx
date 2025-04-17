@@ -28,7 +28,7 @@ import {
 import {Facebook, Instagram, Loader2, Twitter} from "lucide-react";
 import {useAuthContext} from "@/context/authContext";
 import {ShowToast} from "@/components/ShowToast";
-import {storage} from "@/firebaseConfig";
+import {storage} from "@/config/firebaseConfig";
 import {deleteObject, getDownloadURL, listAll, ref} from "@firebase/storage";
 import {
     Dialog,
@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/dialog";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "@/utils/croppedImg";
+import Image from "next/image";
 
 interface ImageProps {
     profileImage: string | null;
@@ -415,7 +416,7 @@ const ProfilePictureSection = React.memo(({imageUrl, coverUrl}: ProfilePictureSe
             return;
         }
 
-        const image = new Image();
+        const image = new window.Image();
         image.src = URL.createObjectURL(file);
         image.onload = () => {
             const isValidWidth = image.width >= dimensions.minWidth && image.width <= dimensions.maxWidth;
@@ -528,7 +529,7 @@ const ProfilePictureSection = React.memo(({imageUrl, coverUrl}: ProfilePictureSe
                 <div className="grid grid-cols-4 gap-2 mt-4">
                     {displayedImages.map(({url, type}, index) => (
                         <div key={index} className="relative flex items-center justify-center">
-                            <img
+                            <Image
                                 src={url}
                                 alt={`Image ${index + 1}`}
                                 className="w-24 h-24 rounded-md object-cover border border-gray-300"
@@ -567,7 +568,7 @@ const ProfilePictureSection = React.memo(({imageUrl, coverUrl}: ProfilePictureSe
                             <div className="grid grid-cols-4 gap-2 mt-4">
                                 {images.map(({url, type}, index) => (
                                     <div key={index} className="relative flex items-center justify-center">
-                                        <img
+                                        <Image
                                             src={url}
                                             alt={`Image ${index + 1}`}
                                             className="w-24 h-24 rounded-md object-cover border border-gray-300"

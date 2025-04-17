@@ -2,6 +2,7 @@ import React from "react";
 import ViewMoreButton from "./ViewMoreButton";
 import { Card } from "@/components/ui/card";
 import { Users } from "lucide-react";
+import Image from 'next/image';
 
 const clubs = [
     {
@@ -38,7 +39,7 @@ const ClubsCard = () => {
             <div className="space-y-4">
                 {clubs.map((club, index) => (
                     <div key={index} className="flex items-start space-x-3">
-                        <img
+                        <Image
                             src={club.avatar}
                             alt={club.name}
                             className="w-10 h-10 rounded-full object-cover"
@@ -50,7 +51,7 @@ const ClubsCard = () => {
                             </p>
                             <div className="flex items-center space-x-1 mt-2">
                                 {club.contactImages.map((img, i) => (
-                                    <img
+                                    <Image
                                         key={i}
                                         src={img}
                                         alt={`Contact ${i + 1}`}

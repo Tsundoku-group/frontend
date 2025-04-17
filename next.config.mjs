@@ -13,7 +13,12 @@ const nextConfig = {
         ];
     },
     images: {
-        domains: ['ui-avatars.com'],
+        remotePatterns: [
+            {
+                protocol: 'http',
+                hostname: 'localhost',
+            },
+        ],
     },
 };
 

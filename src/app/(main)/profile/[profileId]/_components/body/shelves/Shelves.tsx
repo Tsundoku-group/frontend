@@ -2,6 +2,7 @@ import React, {ReactNode} from "react";
 import {Button} from "@/components/ui/button";
 import {CircleCheck, Clock3, EllipsisVertical, Heart, NotebookPen, Star, Trash2} from "lucide-react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import Image from 'next/image';
 
 type ShelvesSectionProps = {
     title: string;
@@ -41,8 +42,8 @@ const ShelvesSection = ({title, books, icon}: ShelvesSectionProps) => {
             <div className="grid grid-cols-7">
                 {books.map((book, index) => (
                     <div key={index} className="relative group">
-                        <img
-                            src={book.coverUrl}
+                        <Image
+                            src={book.coverUrl || ""}
                             alt={`Couverture de ${book.title ?? "livre inconnu"}`}
                             className="w-28 h-28 object-cover rounded-lg shadow-lg"
                         />

@@ -1,6 +1,6 @@
 import {fetchActiveProfilePictures,} from "@/server-actions/main/settings/actions";
 import {getDownloadURL, ref} from "@firebase/storage";
-import {storage} from "../../firebaseConfig";
+import {storage} from "@/config/firebaseConfig";
 
 type ImageUrls = {
     profile?: string;

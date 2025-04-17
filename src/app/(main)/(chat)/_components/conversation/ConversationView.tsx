@@ -9,7 +9,7 @@ import {
     fetchMarkMessagesAsRead,
     fetchMessagesFromConversationId,
     fetchOneConversationById
-} from "@/app/(main)/(chat)/conversations/actions";
+} from "@/server-actions/main/chat/conversations/actions";
 import Body from "@/app/(main)/(chat)/conversations/[conversationId]/components/body/Body";
 import {useAuthContext} from "@/context/authContext";
 import {useSocket} from "@/context/socketContext";
@@ -31,7 +31,7 @@ type Message = {
     isCurrentUser: boolean;
 };
 
-const ConversationView = React.memo(({conversationId, context = "active"}: Props) => {
+const ConversationView = React.memo(({conversationId}: Props) => {
     const [state, setState] = useState({
         messages: [] as Message[],
         participants: [] as ChatParticipant[],

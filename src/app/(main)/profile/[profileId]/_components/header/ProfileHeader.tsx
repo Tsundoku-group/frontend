@@ -10,6 +10,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import Image from 'next/image';
 
 type ProfileHeaderProps = {
     id?: number;
@@ -49,7 +50,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             <div className="bg-gray-900 rounded-t-2xl text-white shadow-lg overflow-hidden">
                 <div className="w-full h-24 bg-gray-700 rounded-t-2xl overflow-hidden">
                     {coverImageUrl ? (
-                        <img src={coverImageUrl} alt="Cover" className="w-full h-full object-cover"/>
+                        <Image src={coverImageUrl} alt="Cover" className="w-full h-full object-cover"/>
                     ) : (
                         <div className="w-full h-full bg-gradient-to-r from-indigo-600 to-purple-600"></div>
                     )}
@@ -115,8 +116,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                         <DialogTitle>Photo de profil</DialogTitle>
                                     </DialogHeader>
                                     <div className="flex justify-center">
-                                        <img
-                                            src={profileImageUrl}
+                                        <Image
+                                            src={profileImageUrl || ""}
                                             alt="Profile Image"
                                             className="w-auto max-w-full max-h-[80vh] object-contain rounded-lg shadow-lg"
                                         />

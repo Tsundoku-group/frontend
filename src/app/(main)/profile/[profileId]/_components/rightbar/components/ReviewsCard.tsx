@@ -2,6 +2,7 @@ import React from "react";
 import ViewMoreButton from "./ViewMoreButton";
 import { Card } from "@/components/ui/card";
 import { ChevronRight, ThumbsUp } from "lucide-react";
+import Image from "next/image";
 
 const ReviewsCard = () => {
     return (
@@ -13,7 +14,7 @@ const ReviewsCard = () => {
                 <ChevronRight className="ml-auto" />
             </h2>
             <div className="mt-3 flex items-start">
-                <img
+                <Image
                     src="https://covers.openlibrary.org/b/id/8231991-L.jpg"
                     alt="image"
                     className="w-16 h-16 object-cover rounded-lg mr-4"

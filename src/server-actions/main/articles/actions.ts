@@ -22,25 +22,28 @@ export const fetchProfileArticles = async (
             sortOrder
         });
 
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${profileId}/articles?${queryParams.toString()}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-        });
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/v1/post/${profileId}/articles?${queryParams.toString()}`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            }
+        );
 
         if (response.status !== 200 || !response.data) {
             throw new Error("Failed to fetch articles");
         }
+
         return response.data;
     } catch (error) {
-        console.error("Failed to fetch articles: ", error);
         return {
             articles: [],
             pagination: {
                 currentPage: page,
                 limit: 15,
                 totalArticles: 0,
-                totalPages: 1
-            }
+                totalPages: 1,
+            },
         };
     }
 };
