@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "postinstall": "scripts/install-swc-binary.js"
   },
   "dependencies": {
     "@emotion/css": "^11.13.5",
