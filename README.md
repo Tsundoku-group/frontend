@@ -1,37 +1,80 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🚀 MonProjet - Application Web Next.js
 
-## Getting Started
+MonProjet est une application web moderne développée avec **Next.js 14**, **TypeScript**, **App Router**, et des intégrations côté serveur avec **Symfony**, **Firebase** et d'autres services.
 
-First, run the development server:
+---
+
+## 🧱 Stack technique
+
+- ✅ **Next.js 14 (App Router)**
+- ✅ **TypeScript**
+- ✅ **Tailwind CSS**
+- ✅ **Radix UI / ShadCN UI**
+- ✅ **Server Actions (use server)**
+- ✅ **API Routes**
+- ✅ **Middleware / Auth**
+- ✅ **Firebase Storage**
+- ✅ **Symfony API Backend**
+- ✅ **Socket.IO**
+
+---
+
+## 📁 Arborescence principale
+
+<pre>
+<code>
+src/
+├── app/                     # Dossier routable (routes/pages/layouts)
+│   ├── (main)/              # Layout segmenté (groupes de routes)
+│   ├── api/                 # Routes API Next.js (app/api/[route]/route.ts)
+│   └── ...                  # Autres routes publiques (ex: login, register, home, etc.)
+├── components/              # Composants UI globaux (Navbar, Modals, Buttons, etc.)
+├── _components/             # Composants privés, liés à une route spécifique (non exportés globalement)
+├── context/                 # Contexts React (auth, profil, socket, etc.)
+├── server-actions/          # Fonctions côté serveur ('use server') appelées par les Server Components
+├── lib/                     # Bibliothèque d’utilitaires partagés (ex: session, config, constants)
+├── hooks/                   # Hooks personnalisés (useDebounce, useSocket, etc.)
+├── services/                # Services pour appels externes (ex: Firebase, API tierces, etc.)
+├── utils/                   # Fonctions utilitaires (formatage, parseurs, helpers globaux)
+├── models/                  # Types, interfaces et modèles métier
+├── middleware.ts            # Middleware global (auth, redirections, etc.)
+└── firebaseConfig.ts        # Fichier de configuration Firebase
+</code>
+</pre>
+
+---
+
+## 🔐 Authentification
+
+- Auth personnalisée via **JWT encrypté en cookie** (`lib/session.ts`)
+- Middleware pour protéger les routes privées (`middleware.ts`)
+- Gestion de session dans les Server Actions (`getSession`, `verifySession`, etc.)
+
+---
+
+## 🧠 Server Actions
+
+- Les actions côté serveur sont déclarées dans `src/server-actions/`
+- Toutes utilisent `'use server'` et suivent la convention Next.js
+
+---
+
+## 📦 API Next.js
+
+Les routes API sont dans `src/app/api/` avec la structure recommandée :
+
+`src/app/api/image-upload/route.ts`
+
+- Accès contrôlé
+- Upload vers Firebase avec quota de fichiers
+- `NextRequest` / `NextResponse` bien utilisés
+
+---
+
+## ⚙️ Scripts utiles
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/Body.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-# frontend
+npm run dev         # Démarrer le serveur de dev
+npm run build       # Compiler le projet
+npm run lint        # Vérifier le linting
+npm run format      # Formater automatiquement
