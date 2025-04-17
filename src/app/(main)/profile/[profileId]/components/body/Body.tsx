@@ -5,7 +5,7 @@ import Shelves from "@/app/(main)/profile/[profileId]/components/body/shelves/Sh
 import ItemProfileRelation from "@/app/(main)/profile/[profileId]/relations/components/item/ItemProfileRelation";
 
 interface BodyProps {
-    profileId?: string;
+    profileId?: number;
     activeTab: string;
     setActiveTab: (tab: string) => void;
     isOwnProfile: boolean;

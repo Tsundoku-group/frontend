@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 
 type ProfileHeaderProps = {
-    id?: string;
+    id?: number;
     firstName?: string;
     lastName?: string;
     username?: string;

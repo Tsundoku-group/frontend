@@ -11,7 +11,7 @@ export const fetchPrivateGroups = async (
     sort: string,
     page: number,
     limit: number = 20,
-    profileId: string,
+    profileId: number,
     myGroups: boolean = false
 ): Promise<{ groups: GroupData[], nextPage: number | null }> => {
     try {
@@ -81,8 +81,8 @@ export const fetchAllTags = async ()=> {
 }
 
 export const joinPrivateGroup = async (
-    groupId: string,
-    profileId: string,
+    groupId: number,
+    profileId: number,
     role: string
 ) => {
     try {
@@ -105,8 +105,8 @@ export const joinPrivateGroup = async (
 };
 
 export const toggleFavoriteGroup = async (
-    groupId: string,
-    profileId: string,
+    groupId: number,
+    profileId: number,
     isFavorite: boolean
 ) => {
     try {
@@ -133,8 +133,8 @@ export const toggleFavoriteGroup = async (
 };
 
 export const togglePinnedGroup = async (
-    groupId: string,
-    profileId: string,
+    groupId: number,
+    profileId: number,
     isPinned: boolean
 ) => {
     try {

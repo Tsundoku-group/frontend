@@ -5,7 +5,7 @@ import { fetchWithAuth } from "@/services/fetchWithAuth";
 const symfonyUrl = process.env.SYMFONY_URL;
 
 export const fetchProfileArticles = async (
-    profileId: string | undefined,
+    profileId: number | undefined,
     page: number = 1,
     sortField: string = "createdAt",
     sortOrder: string = "desc",
@@ -44,7 +44,7 @@ export const fetchProfileArticles = async (
     }
 };
 
-export const deleteArticle = async (articleId: string, editorId: string) => {
+export const deleteArticle = async (articleId: string, editorId: number) => {
     if (!articleId) {
         console.error("Article id is missing");
     }
@@ -99,7 +99,7 @@ export const submitArticle = async (
     }
 };
 
-export const updateArticleStatus = async (articleId: string, newStatus: string, editorId: string) => {
+export const updateArticleStatus = async (articleId: string, newStatus: string, editorId: number) => {
     if (articleId === "") {
         console.error("Article id is missing");
     }

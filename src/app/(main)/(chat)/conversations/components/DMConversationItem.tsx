@@ -50,7 +50,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
     const [openMuteDialog, setOpenMuteDialog] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
     const router = useRouter();
-    const socket = useSocket();
+    const {socket} = useSocket();
 
     const parsedDate = useMemo(() => sentAt ? parseISO(sentAt) : null, [sentAt]);
     const timeAgo = useMemo(() => parsedDate ? formatDistanceToNow(parsedDate, {

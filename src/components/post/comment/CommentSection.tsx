@@ -5,7 +5,7 @@ import {fetchLastCommentsFromPost} from "@/app/(main)/home/actions";
 import {CornerDownRight, Heart, Send, User} from "lucide-react";
 import {useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import RepliesSection from "@/app/(main)/home/components/RepliesSection";
+import RepliesSection from "@/components/post/RepliesSection";
 import {useProfileContext} from "@/context/profileContext";
 
 interface CommentSectionProps {

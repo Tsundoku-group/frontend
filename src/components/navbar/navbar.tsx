@@ -50,29 +50,12 @@ function CustomDropDown(props: {
                                 <User className="w-6 h-6 text-gray-500"/>
                             </AvatarFallback>
                         </Avatar>
-                        <div
-                            className="absolute bottom-0 left-6 w-5 h-5 rounded-full border-2 border-tertiary-black flex items-center justify-center">
-                            {status === "online" && (
-                                <div className="w-full h-full rounded-full bg-green-500"/>
-                            )}
-                            {status === "do_not_disturb" && (
-                                <img
-                                    src="/icons/status/minus-red-circle.svg"
-                                    alt="Do not disturb"
-                                    className="w-full h-full"
-                                />
-                            )}
-                            {status === "away" && (
-                                <img
-                                    src="/icons/status/yellow-moon.svg"
-                                    alt="Away"
-                                    className="w-full h-full"
-                                />
-                            )}
+                        <div className="absolute bottom-0 left-6 w-5 h-5 rounded-full border-2 border-tertiary-black flex items-center justify-center">
+                            {status === "online" && <div className="w-full h-full rounded-full bg-green-500"/>}
+                            {status === "do_not_disturb" && <img src="/icons/status/minus-red-circle.svg" alt="Do not disturb" className="w-full h-full" />}
+                            {status === "away" && <img src="/icons/status/yellow-moon.svg" alt="Away" className="w-full h-full" />}
                             {status === "offline" && (
-                                <div
-                                    className="w-full h-full flex items-center justify-center bg-gray-500 rounded-full"
-                                >
+                                <div className="w-full h-full flex items-center justify-center bg-gray-500 rounded-full">
                                     <div className="w-2/4 h-2/4 bg-gray-900 rounded-full"/>
                                 </div>
                             )}
@@ -92,44 +75,44 @@ export default function Navbar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [userProfiles, setUserProfiles] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [activeProfile, setActiveProfile] = useState<string | null>(
-        userProfiles.find((profile) => profile.activeProfile)?.id.toString() || null
-    );
+    const [activeProfile, setActiveProfile] = useState<number | null>(null);
     const [activeStatus, setActiveStatus] = useState('offline');
     const [visibleItems, setVisibleItems] = useState<"profiles" | "status">("profiles");
 
     const {user} = useAuthContext();
     const userId = user?.userId as number;
-    const {activeProfileInStorage, setActiveProfileInStorage, profileImageUrls} = useProfileContext()
+    const {activeProfileInStorage, setActiveProfileInStorage, profileImageUrls} = useProfileContext();
 
-    const fetchProfiles = async () => {
-        if (!userId || userProfiles.length > 0) return;
+    useEffect(() => {
+        const active = userProfiles.find((profile) => profile.activeProfile);
+        if (active) setActiveProfile(active.id);
+    }, [userProfiles]);
 
-        setLoading(true);
-        try {
-            const data = await fetchUserProfiles(userId);
-            setUserProfiles(data);
-        } catch (error) {
-            ShowToast('destructive', 'Erreur lors de la récupération des profils', 'Erreur');
-        } finally {
-            setLoading(false);
-        }
-    };
+    useEffect(() => {
+        const fetchProfiles = async () => {
+            if (!userId || userProfiles.length > 0) return;
+            setLoading(true);
+            try {
+                const data = await fetchUserProfiles(userId);
+                setUserProfiles(data);
+            } catch (error) {
+                ShowToast('destructive', 'Erreur lors de la récupération des profils', 'Erreur');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProfiles();
+    }, [userId, userProfiles.length]);
 
-    const handleProfileChange = async (profileId: string) => {
+    const handleProfileChange = async (profileId: number) => {
         try {
             if (!userId || !profileId) return;
-
             const profileData = await setActiveUserProfile(userId, profileId);
             setActiveProfileInStorage(profileData);
-            setActiveProfile(profileData);
-            setUserProfiles((prevProfiles) =>
-                prevProfiles.map((profile) => ({
-                    ...profile,
-                    activeProfile: profile.id.toString() === profileId,
-                }))
+            setActiveProfile(profileData.id);
+            setUserProfiles((prev) =>
+                prev.map((p) => ({ ...p, activeProfile: p.id === profileId }))
             );
-
             setIsDropdownOpen(false);
             ShowToast('default', 'Vous allez être redirigé vers votre autre profil');
         } catch (error) {
@@ -137,70 +120,74 @@ export default function Navbar() {
         }
     };
 
-    useEffect(() => {
-        fetchProfiles();
-    }, []);
-
-    const handleStatusProfileChange = async (profileId: string, status: string) => {
+    const handleStatusProfileChange = async (profileId: number, status: string) => {
         try {
             if (!userId || !status) return;
-
-            const {success} = await setUserProfileStatus(profileId, status);
-
+            const { success } = await setUserProfileStatus(profileId, status);
             if (success) {
                 setActiveStatus(status);
                 setActiveProfileInStorage({
                     ...activeProfileInStorage,
-                    status: status,
+                    status
                 }, false);
             }
         } catch (error) {
             ShowToast('destructive', 'Erreur lors du changement de statut', 'Erreur');
         }
-    }
+    };
 
     const handleSwitch = async (value: string, type: "profiles" | "status") => {
-        if (isSwitching === type) {
-            return;
-        }
-
+        if (isSwitching === type) return;
         setIsSwitching(type);
-        setTimeout(() => {
-            setVisibleItems(type);
-        }, 20);
+        setTimeout(() => setVisibleItems(type), 20);
         setLoading(true);
-
         if (type === "profiles" && userProfiles.length === 0) {
-            await fetchProfiles()
+            const data = await fetchUserProfiles(userId);
+            setUserProfiles(data);
         }
-
         setLoading(false);
     };
 
+    const handleProfileAdded = () => {
+        fetchUserProfiles(userId).then((data) => setUserProfiles(data));
+    };
+
+    useEffect(() => {
+        if (activeProfileInStorage) {
+            const updateStatus = async () => {
+                const currentStatus = activeProfileInStorage.status || 'offline';
+                if (currentStatus === 'offline') {
+                    const success = await setUserProfileStatus(activeProfileInStorage.id, 'online');
+                    if (success) {
+                        setActiveStatus('online');
+                        setActiveProfileInStorage({
+                            ...activeProfileInStorage,
+                            status: 'online'
+                        }, false);
+                    }
+                } else {
+                    setActiveStatus(currentStatus);
+                }
+            };
+            updateStatus();
+        }
+    }, [activeProfileInStorage, setActiveProfileInStorage]);
+
     const profileItems = useMemo(() => {
         return userProfiles.map((profile) => (
-            <div
-                key={profile.id}
-                className={`flex items-center space-x-1 text-white w-full hover:bg-gray-700 p-1 rounded-lg transition ease-in delay-100 ${
-                    profile.activeProfile ? "bg-gray-800 border border-green-500" : ""
-                }`}
-            >
-                <label htmlFor={`profile-${profile.id}`} className="flex items-center w-full cursor-pointer relative">
+            <div key={profile.id} className={`flex items-center space-x-1 text-white w-full hover:bg-gray-700 p-1 rounded-lg transition ${profile.activeProfile ? "bg-gray-800 border border-green-500" : ""}`}>
+                <label htmlFor={`profile-${profile.id}`} className="flex items-center w-full cursor-pointer">
                     <div className="relative">
                         <Avatar className="w-12 h-12">
                             <AvatarImage
                                 src={profileImageUrls[`${profile.id}-profile`] || ''}
                                 alt={activeProfileInStorage?.username || "Profile Image"}
-                                className="object-cover object-center"
                             />
                             <AvatarFallback>
                                 <User className="w-6 h-6 text-gray-500"/>
                             </AvatarFallback>
                         </Avatar>
-                        {profile.activeProfile && (
-                            <div
-                                className="absolute top-9 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-gray-800"></div>
-                        )}
+                        {profile.activeProfile && <div className="absolute top-9 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-gray-800"></div>}
                     </div>
                     <span className="text-sm ml-4">{truncateString(profile.username, 10)}</span>
                 </label>
@@ -211,51 +198,31 @@ export default function Navbar() {
                 />
             </div>
         ));
-    }, [userProfiles]);
+    }, [userProfiles, profileImageUrls, activeProfileInStorage]);
 
     const statusItems = useMemo(() => {
         const statuses = ["online", "do_not_disturb", "away", "offline"];
-        const statusTranslations: Record<string, string> = {
+        const labels: Record<string, string> = {
             online: "Actif",
             do_not_disturb: "Ne pas déranger",
             away: "Absent",
-            offline: "Hors ligne",
+            offline: "Hors ligne"
         };
 
         return statuses.map((status) => (
-            <div
-                key={status}
-                className={`flex items-center p-2 text-white w-full hover:bg-gray-700 rounded-lg transition ease-in delay-100 ${
-                    activeStatus === status ? "bg-gray-800 border border-green-500" : ""
-                }`}
-                onClick={() => handleStatusProfileChange(activeProfileInStorage?.id as string, status)}
-            >
-                <label htmlFor="status" className="flex items-center w-full cursor-pointer relative">
+            <div key={status} className={`flex items-center p-2 text-white w-full hover:bg-gray-700 rounded-lg transition ${activeStatus === status ? "bg-gray-800 border border-green-500" : ""}`}>
+                <label htmlFor={`status-${status}`} className="flex items-center w-full cursor-pointer">
                     <div className="w-4 h-4 rounded-full flex items-center justify-center">
-                        {status === "online" && <div className="w-full h-full bg-green-500 rounded-full"/>}
-                        {status === "do_not_disturb" && (
-                            <img
-                                src="/icons/status/minus-red-circle.svg"
-                                alt="Do not disturb"
-                                className="w-full h-full"
-                            />
-                        )}
-                        {status === "away" && (
-                            <img
-                                src="/icons/status/yellow-moon.svg"
-                                alt="Away"
-                                className="w-full h-full"
-                            />
-                        )}
+                        {status === "online" && <div className="w-full h-full bg-green-500 rounded-full" />}
+                        {status === "do_not_disturb" && <img src="/icons/status/minus-red-circle.svg" alt="Do not disturb" className="w-full h-full" />}
+                        {status === "away" && <img src="/icons/status/yellow-moon.svg" alt="Away" className="w-full h-full" />}
                         {status === "offline" && (
                             <div className="w-full h-full bg-gray-400 rounded-full flex items-center justify-center">
-                                <div className="w-2/4 h-2/4 bg-gray-900 rounded-full"/>
+                                <div className="w-2/4 h-2/4 bg-gray-900 rounded-full" />
                             </div>
                         )}
                     </div>
-                    <span className="ml-4">
-                        {statusTranslations[status] || "Statut inconnu"}
-                    </span>
+                    <span className="ml-4">{labels[status]}</span>
                 </label>
                 <RadioGroupItem
                     value={status}
@@ -264,135 +231,52 @@ export default function Navbar() {
                 />
             </div>
         ));
-    }, [activeStatus, activeProfile, handleStatusProfileChange]);
+    }, [activeStatus]);
 
-    const handleProfileAdded = () => {
-        fetchProfiles();
-    }
+    const currentValue = visibleItems === "profiles" ? (activeProfile?.toString() ?? "") : activeStatus;
+    const items = visibleItems === "profiles" ? profileItems : statusItems;
 
-    const dropdownContent = useMemo(() => {
-        const items = visibleItems === "profiles" ? profileItems : statusItems;
-        const currentValue = visibleItems === "profiles" ? activeProfile || "" : activeStatus || "";
-        const profileId = activeProfileInStorage?.id || "";
-
-        return (
-            <DropdownMenuContent
-                className="overflow-hidden w-64 relative mt-2 bg-tertiary-black border-tertiary-black flex flex-col items-center justify-center space-y-4"
-            >
-                <div
-                    className={`flex transition-transform duration-300 ease-in-out ${
-                        isSwitching ? "translate-x-[-100%]" : "translate-x-0"
-                    }`}
-                    style={{width: "100%"}}
-                >
-                    <div className="w-full p-2 flex flex-col justify-center space-y-2 flex-shrink-0">
-                        <ProfileButton profileId={profileId} email={user?.email}
-                                       onClose={() => setIsDropdownOpen(false)}/>
-                        <Button
-                            className="flex justify-between w-full text-white bg-transparent outline-none focus:outline-none hover:bg-hover-bg-color hover:bg-gray-700 hover:text-gray-200 transition-colors duration-200 rounded-lg"
-                            onClick={() => handleSwitch("", "profiles")}
-                        >
-                            <div className="flex items-center">
-                                <UserPen className="mr-2 w-4"/>
-                                Changer de profil
-                            </div>
-                            <ChevronRight className="w-4"/>
-                        </Button>
-                        <Button
-                            className="flex justify-between w-full text-white bg-transparent outline-none focus:outline-none hover:bg-hover-bg-color hover:bg-gray-700 hover:text-gray-200 transition-colors duration-200 rounded-lg"
-                            onClick={() => handleSwitch("", "status")}
-                        >
-                            <div className="flex items-center space-x-2">
-                                <div className="w-4 h-4 rounded-full flex items-center justify-center">
-                                    {activeStatus === "online" &&
-                                        <div className="w-full h-full bg-green-500 rounded-full"></div>}
-                                    {activeStatus === "do_not_disturb" &&
-                                        <img src="/icons/status/minus-red-circle.svg" alt="Do not disturb"
-                                             className="w-full h-full"/>}
-                                    {activeStatus === "away" &&
-                                        <img src="/icons/status/yellow-moon.svg" alt="Away" className="w-full h-full"/>}
-                                    {activeStatus === "offline" && (
-                                        <div
-                                            className="w-full h-full bg-gray-400 rounded-full flex items-center justify-center">
-                                            <div className="w-2/3 h-2/3 bg-black rounded-full"></div>
-                                        </div>
-                                    )}
-                                </div>
-                                <span className="capitalize">
-                                    {activeStatus === "online" && "Actif"}
-                                    {activeStatus === "do_not_disturb" && "Ne pas déranger"}
-                                    {activeStatus === "away" && "Absent"}
-                                    {activeStatus === "offline" && "Hors ligne"}
-                                </span>
-                            </div>
-                            <ChevronRight className="w-4"/>
-                        </Button>
-                        <SettingsButton onClose={() => setIsDropdownOpen(false)}/>
-                        <LogoutButton onClose={() => setIsDropdownOpen(false)}/>
-                    </div>
-                    <div className="w-full p-1 flex-shrink-0">
-                        {loading ? (
-                            <div className="text-center text-white">Chargement...</div>
-                        ) : (
-                            <>
-                                <div className="text-xs text-gray-400 leading-tight tracking-tight mb-1 pb-1">
-                                    {visibleItems === "profiles" ? "Changer de profil" : "Changer de statut"}
-                                </div>
-                                <RadioGroup
-                                    value={currentValue}
-                                    onValueChange={(value) => {
-                                        if (visibleItems === "profiles") {
-                                            handleProfileChange(value);
-                                        } else if (visibleItems === "status") {
-                                            if (activeProfile) {
-                                                handleStatusProfileChange(activeProfile, value);
-                                            }
-                                        }
-                                    }}
-                                    className="space-y-2"
-                                >
-                                    {items}
-                                </RadioGroup>
-                                {visibleItems === "profiles" && userProfiles.length < 5 &&
-                                    <AddProfileButton onProfileAdded={handleProfileAdded}
-                                                      onClose={() => setIsDropdownOpen(false)}/>}
-                            </>
-                        )}
-                        <Button
-                            className="flex space-x-2 text-left text-white w-full mt-2 bg-transparent outline-none focus:outline-none hover:bg-hover-bg-color"
-                            onClick={() => setIsSwitching(null)}
-                        >
-                            <ChevronLeft className="w-4 h-4"/>
-                            <span>Retour</span>
-                        </Button>
-                    </div>
+    const dropdownContent = (
+        <DropdownMenuContent className="overflow-hidden w-64 mt-2 bg-tertiary-black border-tertiary-black">
+            <div className={`flex transition-transform duration-300 ease-in-out ${isSwitching ? "translate-x-[-100%]" : "translate-x-0"}`} style={{width: "100%"}}>
+                <div className="w-full p-2 flex flex-col space-y-2">
+                    <ProfileButton profileId={activeProfileInStorage?.id!} email={user?.email} onClose={() => setIsDropdownOpen(false)} />
+                    <Button onClick={() => handleSwitch("", "profiles")} className="flex justify-between w-full text-white hover:bg-gray-700">
+                        <div className="flex items-center">
+                            <UserPen className="mr-2 w-4" /> Changer de profil
+                        </div>
+                        <ChevronRight className="w-4" />
+                    </Button>
+                    <Button onClick={() => handleSwitch("", "status")} className="flex justify-between w-full text-white hover:bg-gray-700">
+                        <div className="flex items-center space-x-2">
+                            <span className="capitalize">{activeStatus}</span>
+                        </div>
+                        <ChevronRight className="w-4" />
+                    </Button>
+                    <SettingsButton onClose={() => setIsDropdownOpen(false)} />
+                    <LogoutButton onClose={() => setIsDropdownOpen(false)} />
                 </div>
-            </DropdownMenuContent>
-        );
-    }, [activeProfileInStorage?.id, visibleItems, profileItems, statusItems, activeProfile, activeStatus, isSwitching, user?.email, loading, userProfiles.length, handleSwitch, handleProfileChange, handleStatusProfileChange]);
-
-    useEffect(() => {
-        if (activeProfileInStorage) {
-            const updateStatusOnLogin = async () => {
-                const currentStatus = activeProfileInStorage.status || 'offline';
-
-                if (currentStatus === 'offline') {
-                    const success = await setUserProfileStatus(activeProfileInStorage.id, 'online');
-                    if (success) {
-                        setActiveStatus('online');
-                        setActiveProfileInStorage({
-                            ...activeProfileInStorage,
-                            status: 'online',
-                        }, false);
-                    }
-                } else {
-                    setActiveStatus(currentStatus);
-                }
-            };
-
-            updateStatusOnLogin();
-        }
-    }, [activeProfileInStorage, setActiveProfileInStorage]);
+                <div className="w-full p-1">
+                    <div className="text-xs text-gray-400 mb-1">
+                        {visibleItems === "profiles" ? "Changer de profil" : "Changer de statut"}
+                    </div>
+                    <RadioGroup value={currentValue} onValueChange={(val) => {
+                        if (visibleItems === "profiles") {
+                            handleProfileChange(parseInt(val));
+                        } else {
+                            activeProfile && handleStatusProfileChange(activeProfile, val);
+                        }
+                    }} className="space-y-2">
+                        {items}
+                    </RadioGroup>
+                    {visibleItems === "profiles" && userProfiles.length < 5 && <AddProfileButton onProfileAdded={handleProfileAdded} onClose={() => setIsDropdownOpen(false)} />}
+                    <Button onClick={() => setIsSwitching(null)} className="flex text-white mt-2">
+                        <ChevronLeft className="w-4 h-4" /> <span>Retour</span>
+                    </Button>
+                </div>
+            </div>
+        </DropdownMenuContent>
+    );
 
     return (
         <div className="h-16 flex justify-between items-center">

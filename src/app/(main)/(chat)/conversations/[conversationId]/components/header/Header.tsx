@@ -11,7 +11,7 @@ type Props = {
 };
 
 const Header = ({ imageUrl, name, otherParticipantId }: Props) => {
-    const socket = useSocket();
+    const {socket} = useSocket();
     const [isOnline, setIsOnline] = useState(false);
 
     useEffect(() => {

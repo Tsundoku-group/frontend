@@ -28,7 +28,7 @@ const Body = ({messages, conversationId, userEmail}: Props) => {
     const [isAtBottom, setIsAtBottom] = useState<boolean>(true);
     const [isOtherUserTyping, setIsOtherUserTyping] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1);
-    const socket = useSocket();
+    const {socket} = useSocket();
     const messageContainerRef = useRef<HTMLDivElement | null>(null);
     const {user} = useAuthContext();
     const userId = user?.userId;

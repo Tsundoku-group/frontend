@@ -5,16 +5,20 @@ import {fetchLastCommentsFromPost} from "@/app/(main)/home/actions";
 import {CornerDownRight, Heart, Send, User} from "lucide-react";
 import {useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import RepliesSection from "@/app/(main)/home/components/RepliesSection";
+import RepliesSection from "@/components/post/RepliesSection";
+import {useProfileContext} from "@/context/profileContext";
 
 interface CommentSectionProps {
-    postId: string;
+    postId: number;
 }
 
 export default function CommentSection({postId}: CommentSectionProps) {
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id;
+
     const {data, isLoading} = useQuery({
         queryKey: ["comments", postId],
-        queryFn: () => fetchLastCommentsFromPost(postId),
+        queryFn: () => fetchLastCommentsFromPost(postId, profileId as number),
         staleTime: 1000 * 60 * 5,
     });
 
@@ -29,7 +33,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
         setReplyContent("");
         setReplyingTo(null);
     };
-    console.log(comments);
+
     return (
         <div className="mt-3 border-t border-gray-700 pt-3">
             {isLoading ? (
@@ -91,7 +95,14 @@ export default function CommentSection({postId}: CommentSectionProps) {
                                 )}
 
                                 {openReplies[comment.id] && (
-                                    <RepliesSection commentId={comment.id}/>
+                                    <RepliesSection
+                                        postId={postId}
+                                        commentId={comment.id}
+                                        comment={{
+                                            author: { id: comment.author.id },
+                                            hasLiked: comment.hasLiked
+                                        }}
+                                    />
                                 )}
                             </div>
                         </div>

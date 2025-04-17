@@ -23,7 +23,7 @@ export default function GroupCard({group}: GroupCardProps) {
     const router = useRouter();
 
     const {activeProfileInStorage} = useProfileContext();
-    const profileId = activeProfileInStorage?.id as string;
+    const profileId = activeProfileInStorage?.id;
 
     const handleJoinRequest = async () => {
         if (!profileId) return;

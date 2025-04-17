@@ -1,5 +1,4 @@
 import React, {ReactNode} from "react";
-import {Book} from "@/models/Book";
 import {Button} from "@/components/ui/button";
 import {CircleCheck, Clock3, EllipsisVertical, Heart, NotebookPen, Star, Trash2} from "lucide-react";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
@@ -9,6 +8,12 @@ type ShelvesSectionProps = {
     books: Partial<Book>[];
     icon: ReactNode;
 };
+
+interface Book {
+    id: number;
+    title: string;
+    coverUrl: string;
+}
 
 const ShelvesSection = ({title, books, icon}: ShelvesSectionProps) => {
     return (

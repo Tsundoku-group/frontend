@@ -13,14 +13,14 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Button} from "@/components/ui/button";
 
 interface Friend {
-    friendId: string;
+    friendId: number;
     firstname: string;
     lastname: string;
     username: string;
 }
 
 interface Suggestion {
-    friendId: string;
+    friendId: number;
     firstname: string;
     lastname: string;
     username: string;
@@ -28,12 +28,12 @@ interface Suggestion {
 }
 
 interface Relation {
-    friendshipId: string;
+    friendshipId: number;
     friend: Friend;
 }
 
 interface ItemProfileRelationProps {
-    profileId?: string;
+    profileId?: number;
     relationType: 'friends' | 'followed' | 'followers';
     isOwnProfile: boolean;
 }

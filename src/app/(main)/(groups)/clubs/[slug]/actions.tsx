@@ -4,7 +4,7 @@ import { fetchWithAuth } from "@/services/fetchWithAuth";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
-export const fetchMembersFromGroup = async (groupId: string) => {
+export const fetchMembersFromGroup = async (groupId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/group/private/${groupId}/members`, {
             method: "GET",

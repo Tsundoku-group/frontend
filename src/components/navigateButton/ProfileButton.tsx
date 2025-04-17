@@ -7,7 +7,7 @@ import {Edit2, User} from "lucide-react";
 import {useProfileContext} from "@/context/profileContext";
 
 type ProfileButtonProps = {
-    profileId: string;
+    profileId: number;
     email: string;
     onClose: () => void;
 };

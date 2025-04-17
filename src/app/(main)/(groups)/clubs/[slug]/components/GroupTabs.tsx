@@ -19,7 +19,7 @@ interface Member {
 }
 
 interface Props {
-    groupId: string;
+    groupId: number;
 }
 
 export default function GroupTabs({ groupId }: Props) {

@@ -27,9 +27,9 @@ import {useRouter} from "next/navigation";
 import {useSocket} from "@/context/socketContext";
 
 interface ProfileRelationCardProps {
-    friendshipId: string | null;
+    friendshipId: number | null;
     friend: {
-        friendId: string;
+        friendId: number;
         firstname: string;
         lastname: string;
         username: string;
@@ -49,7 +49,7 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
         isFollow: relationType === "followed",
     });
     const {activeProfileInStorage} = useProfileContext();
-    const profileId = activeProfileInStorage?.id;
+    const profileId = activeProfileInStorage?.id as number;
     const { socket } = useSocket();
     const router = useRouter();
 
@@ -109,7 +109,7 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
     };
 
     const handleAddFriend = async () => {
-        const result = await fetchAddProfileFriend(profileId as string, friend.friendId);
+        const result = await fetchAddProfileFriend(profileId, friend.friendId);
 
         if (result?.status === "success") {
             ShowToast("default", result.message);

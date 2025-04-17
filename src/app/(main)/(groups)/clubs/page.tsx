@@ -21,7 +21,7 @@ export default function ClubsPage() {
     const [activeTab, setActiveTab] = useState("all");
 
     const {activeProfileInStorage} = useProfileContext();
-    const profileId = activeProfileInStorage?.id as string;
+    const profileId = activeProfileInStorage?.id as number;
 
     const {data, isLoading} = useQuery<{ groups: GroupData[]; nextPage: number | null }>({
         queryKey: ["privateGroups", search, tagName, sort, page, activeTab],

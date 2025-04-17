@@ -1,8 +1,8 @@
 'use client';
 
 import React from "react";
-import CreatePost from "@/app/(main)/home/components/CreatePost";
-import Feed from "@/app/(main)/home/components/feed/Feed";
+import CreatePost from "@/components/post/CreatePost";
+import Feed from "@/components/post/feed/Feed";
 import {useGroupContext} from "@/context/groupContext";
 
 export default function Home() {

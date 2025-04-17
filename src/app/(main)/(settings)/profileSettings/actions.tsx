@@ -5,7 +5,7 @@ import {Profile, ProfilePicture} from "@/models/Profile";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
-export async function fetchUserProfileData(profileId: string): Promise<Profile> {
+export async function fetchUserProfileData(profileId: number): Promise<Profile> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}`, {
             method: 'GET',
@@ -24,7 +24,7 @@ export async function fetchUserProfileData(profileId: string): Promise<Profile> 
     }
 }
 
-export async function updateUserProfileData(profileId: string, profileData: Partial<Profile>): Promise<Profile> {
+export async function updateUserProfileData(profileId: number, profileData: Partial<Profile>): Promise<Profile> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}/edit`, {
             method: 'PUT',
@@ -69,7 +69,7 @@ export async function fetchActiveProfilePictures(profileId: number): Promise<Rec
     }
 }
 
-export async function fetchUploadImageProfile(userId: string, profileId: string, imageUrl: string, type: string): Promise<ProfilePicture> {
+export async function fetchUploadImageProfile(userId: number, profileId: number, imageUrl: string, type: string): Promise<ProfilePicture> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/upload`, {
             method: 'POST',
@@ -89,7 +89,7 @@ export async function fetchUploadImageProfile(userId: string, profileId: string,
     }
 }
 
-export async function deleteUserProfilePictureUrl(id: string, profileId: string, url: string, type: string): Promise<{ response: boolean; status: number; data: any } | { response: boolean; status: number; message: string; error: any }> {
+export async function deleteUserProfilePictureUrl(id: number, profileId: number, url: string, type: string): Promise<{ response: boolean; status: number; data: any } | { response: boolean; status: number; message: string; error: any }> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/remove`, {
             method: 'DELETE',

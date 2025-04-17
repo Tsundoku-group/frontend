@@ -2,24 +2,24 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchRecentPosts } from "@/app/(main)/home/actions";
+import PostCard from "@/components/post/post/PostCard";
 import InfiniteFeed from "./InfiniteFeed";
-import FeedSkeleton from "@/app/(main)/home/components/feed/FeedSkeleton";
+import FeedSkeleton from "@/components/post/feed/FeedSkeleton";
 import { useProfileContext } from "@/context/profileContext";
-import PostCard from "../post/PostCard";
 
 export default function Feed() {
     const queryClient = useQueryClient();
     const { activeProfileInStorage } = useProfileContext();
-    const profileId = activeProfileInStorage?.id as string;
+    const profileId = activeProfileInStorage?.id;
 
     const { data: posts, isLoading, error } = useQuery({
         queryKey: ["recentPosts"],
-        queryFn: async () => await fetchRecentPosts(profileId),
+        queryFn: async () => await fetchRecentPosts(profileId as number),
         staleTime: 60000,
         enabled: !!profileId,
     });
 
-    const handleDeletePost = (postId: string) => {
+    const handleDeletePost = (postId: number) => {
         queryClient.setQueryData(["recentPosts"], (oldData: any) =>
             oldData ? oldData.filter((post: any) => post.id !== postId) : []
         );
@@ -45,4 +45,4 @@ export default function Feed() {
             <InfiniteFeed />
         </div>
     );
-};
+}

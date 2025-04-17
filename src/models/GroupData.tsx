@@ -1,7 +1,7 @@
 import {Tag} from "@/models/Tag";
 
 export interface GroupData {
-    id: string;
+    id: number;
     name: string;
     description?: string;
     category?: string;
@@ -13,7 +13,7 @@ export interface GroupData {
     imageUrl?: string;
     isFavorite: boolean;
     isPinned: boolean;
-    membersPreview: [];
+    membersPreview?: [];
     tags: Tag[];
 }
 

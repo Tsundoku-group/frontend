@@ -13,7 +13,7 @@ import {useRouter} from "next/navigation";
 
 type Props = {
     params: {
-        profileId: string;
+        profileId: number;
     };
 };
 
@@ -24,7 +24,7 @@ const ProfilePage = React.memo(({params: {profileId}}: Props) => {
     const [imagesOtherProfiles, setImagesOtherProfiles] = useState<{ profileImageUrl: string; coverImageUrl: string } | null>(null);
     const router = useRouter();
 
-    const isOwnProfile = activeProfileInStorage?.id.toString() === profileId;
+    const isOwnProfile = activeProfileInStorage?.id === profileId;
 
     const {data: result, isLoading} = useQuery<ProfileResult>({
         queryKey: ['userProfile', profileId],

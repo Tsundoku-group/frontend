@@ -3,7 +3,7 @@ import {Card} from "@/components/ui/card";
 import ProfileRelationCard from "@/app/(main)/profile/[profileId]/relations/components/ProfileRelationCard";
 
 interface Friend {
-    friendId: string;
+    friendId: number;
     firstname: string;
     lastname: string;
     username: string;
@@ -11,7 +11,7 @@ interface Friend {
 
 interface Suggestion {
     friend: {
-        friendId: string;
+        friendId: number;
         firstname: string;
         lastname: string;
         username: string;
@@ -20,7 +20,7 @@ interface Suggestion {
 }
 
 interface Relation {
-    friendshipId: string | null;
+    friendshipId: number | null;
     friend: Friend;
 }
 

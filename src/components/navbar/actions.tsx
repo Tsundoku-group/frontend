@@ -26,7 +26,7 @@ export const fetchUserProfiles = async (userId: number) => {
     }
 };
 
-export const setUserProfileStatus = async (profileId: string, status: string) => {
+export const setUserProfileStatus = async (profileId: number, status: string) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}/update/status`, {
             method: 'PUT',
@@ -45,7 +45,7 @@ export const setUserProfileStatus = async (profileId: string, status: string) =>
     }
 }
 
-export const setActiveUserProfile = async (id: number, profileId: string) => {
+export const setActiveUserProfile = async (id: number, profileId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/active`, {
             method: 'POST',
@@ -88,7 +88,7 @@ export const addNewUserProfile = async (payload: any) => {
     }
 };
 
-export const fetchNotifications = async (profileId: string) => {
+export const fetchNotifications = async (profileId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/notification/${profileId}`, {
             method: 'GET',
@@ -111,7 +111,7 @@ export const fetchNotifications = async (profileId: string) => {
     }
 };
 
-export const markAsReadNotifications = async (profileId: string) => {
+export const markAsReadNotifications = async (profileId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/notification/${profileId}/read`, {
             method: 'POST',

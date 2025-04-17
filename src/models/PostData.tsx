@@ -1,8 +1,8 @@
 export interface PostData {
-    id?: string;
+    id?: number;
     title: string;
     content: string;
-    authorId?: string;
+    authorId?: number;
     groupId: number;
     visibility: "public" | "private";
 }

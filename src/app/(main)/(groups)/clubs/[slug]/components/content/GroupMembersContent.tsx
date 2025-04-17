@@ -10,7 +10,7 @@ import {useProfileContext} from "@/context/profileContext";
 import {useState} from "react";
 
 interface Member {
-    id: string;
+    id: number;
     firstName: string;
     lastName: string;
     username: string;
@@ -19,7 +19,7 @@ interface Member {
 }
 
 interface Props {
-    groupId: string;
+    groupId: number;
 }
 
 export default function GroupMembersContent({groupId}: Props) {
