@@ -46,7 +46,7 @@ export const updatePost = async (postData: PostData) => {
     }
 }
 
-export const deletePost = async (postData: { id: string; editorId?: string; }) => {
+export const deletePost = async (postData: { id: number; editorId?: number; }) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${postData.id}`, {
             method: "DELETE",
@@ -65,9 +65,9 @@ export const deletePost = async (postData: { id: string; editorId?: string; }) =
     }
 }
 
-export const fetchRecentPosts = async (profileId: string) => {
+export const fetchRecentPosts = async (groupId: number, profileId: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${profileId}/recent`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/groups/${groupId}/posts/recent?profileId=${profileId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -86,10 +86,10 @@ export const fetchRecentPosts = async (profileId: string) => {
     }
 }
 
-export const fetchOlderPosts = async (pageParam: number, limit = 20, profileId: string) => {
+export const fetchOlderPosts = async (pageParam: number, limit = 20, groupId: number, profileId: number) => {
     try {
         const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/post/${profileId}/older?limit=${limit}&offset=${(pageParam - 1) * limit}`,
+            `${symfonyUrl}/api/v1/groups/${groupId}/posts/older?profileId=${profileId}&limit=${limit}&offset=${(pageParam - 1) * limit}`,
             {
                 method: "GET",
                 headers: {"Content-Type": "application/json"},
@@ -133,8 +133,8 @@ export const fetchLastCommentsFromPost = async (postId: number, profileId: numbe
 }
 
 export const createCommentOnPost = async (commentData: {
-    postId: string;
-    authorId: string | undefined;
+    postId: number;
+    authorId: number | undefined;
     content: string
 }) => {
     try {
@@ -155,8 +155,8 @@ export const createCommentOnPost = async (commentData: {
 };
 
 export const updateCommentOnPost = async (
-    commentId: string,
-    authorId: string | undefined,
+    commentId: number,
+    authorId: number | undefined,
     content: string
 ) => {
     try {
@@ -178,7 +178,7 @@ export const updateCommentOnPost = async (
     }
 }
 
-export const deleteCommentOnPost = async (commentId: string, authorId: string) => {
+export const deleteCommentOnPost = async (commentId: number, authorId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/delete`, {
             method: "DELETE",
@@ -200,7 +200,7 @@ export const deleteCommentOnPost = async (commentId: string, authorId: string) =
 
 export const replyToComment = async (replyData: {
     postId: number;
-    parentId: string;
+    parentId: number;
     authorId: number;
     content: string;
 }) => {
@@ -221,7 +221,7 @@ export const replyToComment = async (replyData: {
     }
 };
 
-export const fetchRepliesForComment = async (commentId: string, profileId: number) => {
+export const fetchRepliesForComment = async (commentId: number, profileId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/${profileId}/children`, {
             method: "GET",
@@ -229,7 +229,7 @@ export const fetchRepliesForComment = async (commentId: string, profileId: numbe
                 "Content-Type": "application/json",
             }
         });
-        console.log(response)
+
         if (!response || !response.data) {
             return {comments: []}
         }

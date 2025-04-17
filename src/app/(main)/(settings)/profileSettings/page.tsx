@@ -104,7 +104,7 @@ const ProfileAndCoverImage: React.FC<ImageProps> = ({profileImage, coverImage, p
     const handleCropComplete = async (croppedImage: Blob, type: "profile" | "cover") => {
         const formData = new FormData();
         formData.append("file", croppedImage);
-        formData.append("profileId", activeProfileInStorage?.id || "");
+        formData.append("profileId", String(activeProfileInStorage?.id));
         formData.append("type", type);
 
         try {
@@ -114,7 +114,7 @@ const ProfileAndCoverImage: React.FC<ImageProps> = ({profileImage, coverImage, p
             });
 
             if (response.ok) {
-                refreshProfileImage(activeProfileInStorage?.id || "", type);
+                refreshProfileImage(activeProfileInStorage?.id as number, type);
                 setIsCropDialogOpen({type: null});
             } else {
                 ShowToast("destructive", "Erreur lors de l'upload.", "Erreur");
@@ -183,7 +183,7 @@ const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, 
     const [loading, setLoading] = useState(false);
     const {activeProfileInStorage, refreshProfileImage} = useProfileContext();
     const {user} = useAuthContext();
-    const profileId = activeProfileInStorage?.id || "";
+    const profileId = activeProfileInStorage?.id as number;
     const userId = user?.userId || 0;
 
     const aspectRatio = type === 'profile' ? 1 : 16 / 9;
@@ -292,8 +292,8 @@ const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, 
 
 async function handleUploadNewImage({file, profileId, userId, type, onUploadSuccess, onError, setLoading}: {
     file: File;
-    profileId: string;
-    userId: string;
+    profileId: number;
+    userId: number;
     type: string;
     onUploadSuccess: (url: string) => void;
     onError: (message: string) => void;
@@ -310,7 +310,7 @@ async function handleUploadNewImage({file, profileId, userId, type, onUploadSucc
         const formData = new FormData();
         formData.append("file", file);
         formData.append("filename", file.name);
-        formData.append("profileId", profileId);
+        formData.append("profileId", String(profileId));
         formData.append("type", type);
 
         const apiResponse = await fetch("/api/uploadImage", {
@@ -354,9 +354,9 @@ const ProfilePictureSection = React.memo(({imageUrl, coverUrl}: ProfilePictureSe
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const {user} = useAuthContext();
-    const userId = user?.userId as string;
+    const userId = user?.userId;
     const {activeProfileInStorage, refreshProfileImage} = useProfileContext();
-    const profileId = activeProfileInStorage?.id as string;
+    const profileId = activeProfileInStorage?.id as number;
 
     useEffect(() => {
         const fetchImages = async () => {
@@ -434,7 +434,7 @@ const ProfilePictureSection = React.memo(({imageUrl, coverUrl}: ProfilePictureSe
         }
     };
 
-    const UploadedImagesList = ({userId, profileId, type}: { userId: string, profileId: string, type: string }) => {
+    const UploadedImagesList = ({userId, profileId, type}: { userId: number, profileId: number, type: string }) => {
         const [images, setImages] = useState<{ url: string; type: string }[]>([]);
         const [isLoading, setIsLoading] = useState<boolean>(false);
         const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -715,7 +715,7 @@ const ProfilePictureSection = React.memo(({imageUrl, coverUrl}: ProfilePictureSe
                                             setCoverImage(url);
                                             setTempCoverPreview(url);
                                         }
-                                        refreshProfileImage(profileId, selectedType);
+                                        refreshProfileImage(profileId as number, selectedType);
                                         setIsDialogOpen(false);
                                     },
                                     onError: (message) => ShowToast("destructive", message),
@@ -739,10 +739,10 @@ export default function ProfileSettingsPage() {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const {activeProfileInStorage} = useProfileContext();
-    const profileId = activeProfileInStorage?.id as string;
+    const profileId = activeProfileInStorage?.id;
 
     const {mutate, pending} = useMutationState(async (updatedProfile: Profile) => {
-        return await updateUserProfileData(profileId, updatedProfile);
+        return await updateUserProfileData(profileId as number, updatedProfile);
     });
 
     const fetchUserProfile = useCallback(async () => {

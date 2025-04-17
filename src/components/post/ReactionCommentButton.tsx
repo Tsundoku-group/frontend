@@ -32,7 +32,7 @@ export default function ReactionCommentButton({
 
         const newHasLiked = !hasLiked;
         setHasLiked(newHasLiked);
-        console.log('commentId :', commentId)
+
         try {
             await likePost(profileId, receiverId, resourceType, commentId, "LIKE");
         } catch (err) {

@@ -1,32 +1,34 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { replyToComment, fetchRepliesForComment } from "@/app/(main)/home/actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { User, Send } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useProfileContext } from "@/context/profileContext";
-import { ShowToast } from "@/components/ShowToast";
-import PostDate from "@/app/(main)/home/components/post/PostDate";
-import ReactionCommentButton from "@/app/(main)/home/components/ReactionCommentButton";
+import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
+import {replyToComment, fetchRepliesForComment} from "@/app/(main)/home/actions";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {Button} from "@/components/ui/button";
+import {User, Send} from "lucide-react";
+import {useState, useEffect} from "react";
+import {useProfileContext} from "@/context/profileContext";
+import {ShowToast} from "@/components/ShowToast";
+import PostDate from "@/components/post/post/PostDate";
+import ReactionCommentButton from "@/components/post/ReactionCommentButton";
 
 interface RepliesSectionProps {
     postId: number;
-    commentId: string;
+    commentId: number;
     comment: {
-        author: { id: number },
+        author: {
+            id: number,
+        },
         hasLiked: boolean;
     };
 }
 
-export default function RepliesSection({ commentId, postId }: RepliesSectionProps) {
-    const { data, isLoading } = useQuery({
+export default function RepliesSection({commentId, postId}: RepliesSectionProps) {
+    const {data, isLoading} = useQuery({
         queryKey: ["replies", commentId],
         queryFn: () => fetchRepliesForComment(commentId, profileId as number),
         staleTime: 1000 * 60 * 5,
     });
-    const { activeProfileInStorage } = useProfileContext();
+    const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
     const queryClient = useQueryClient();
 
@@ -39,8 +41,8 @@ export default function RepliesSection({ commentId, postId }: RepliesSectionProp
         }
     }, [data]);
 
-    const { mutate: addReply } = useMutation({
-        mutationFn: async (replyData: { postId: number; parentId: string; authorId: number; content: string }) => {
+    const {mutate: addReply} = useMutation({
+        mutationFn: async (replyData: { postId: number; parentId: number; authorId: number; content: string }) => {
             return replyToComment(replyData);
         },
         onSuccess: (savedReply) => {
@@ -62,7 +64,7 @@ export default function RepliesSection({ commentId, postId }: RepliesSectionProp
             ShowToast("destructive", "Erreur lors de l'ajout de la réponse", "Erreur");
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ["replies", commentId] });
+            queryClient.invalidateQueries({queryKey: ["replies", commentId]});
         },
     });
 
@@ -70,8 +72,8 @@ export default function RepliesSection({ commentId, postId }: RepliesSectionProp
         <div className="mt-3 ml-8">
             <div className="flex items-center gap-3">
                 <Avatar className="w-8 h-8">
-                    <AvatarImage src={activeProfileInStorage?.profileImageUrl || ""} />
-                    <AvatarFallback><User /></AvatarFallback>
+                    <AvatarImage src={activeProfileInStorage?.profileImageUrl || ""}/>
+                    <AvatarFallback><User/></AvatarFallback>
                 </Avatar>
                 <input
                     type="text"
@@ -94,7 +96,7 @@ export default function RepliesSection({ commentId, postId }: RepliesSectionProp
                         }
                     }}
                 >
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4"/>
                 </Button>
             </div>
 
@@ -109,8 +111,8 @@ export default function RepliesSection({ commentId, postId }: RepliesSectionProp
                         >
                             <div className="flex gap-2 w-full">
                                 <Avatar className="w-8 h-8 flex-shrink-0 mt-4">
-                                    <AvatarImage src={reply.author?.profileImageUrl || ""} />
-                                    <AvatarFallback><User /></AvatarFallback>
+                                    <AvatarImage src={reply.author?.profileImageUrl || ""}/>
+                                    <AvatarFallback><User/></AvatarFallback>
                                 </Avatar>
 
                                 <div className="bg-secondary-black p-4 rounded-lg flex-1 w-full">
@@ -129,7 +131,7 @@ export default function RepliesSection({ commentId, postId }: RepliesSectionProp
                                     resourceType={"COMMENT"}
                                     initialHasLiked={reply.hasLiked}
                                 />
-                                <PostDate date={reply.createdAt} />
+                                <PostDate date={reply.createdAt}/>
                             </div>
                         </div>
                     ))}

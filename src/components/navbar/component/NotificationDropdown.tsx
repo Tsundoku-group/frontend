@@ -24,7 +24,7 @@ interface Notification {
 
 export default function NotificationDropdown() {
     const { activeProfileInStorage } = useProfileContext();
-    const profileId = activeProfileInStorage?.id as string;
+    const profileId = activeProfileInStorage?.id;
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [hasUnread, setHasUnread] = useState(false);

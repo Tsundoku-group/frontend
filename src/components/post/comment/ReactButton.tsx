@@ -5,10 +5,10 @@ import {likePost} from "@/app/(main)/home/actions";
 import {useSocket} from "@/context/socketContext";
 
 interface ReactionButtonProps {
-    postId: string;
-    profileId?: string;
+    postId: number;
+    profileId?: number;
     actorFirstName?: string;
-    receiverId: string;
+    receiverId: number;
     resourceType: "POST" | "COMMENT";
     initialHasLiked: boolean;
 }

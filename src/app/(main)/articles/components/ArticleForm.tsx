@@ -23,7 +23,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete })
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
     const { activeProfileInStorage } = useProfileContext();
-    const profileId = activeProfileInStorage?.id ? parseInt(activeProfileInStorage?.id) : undefined;
+    const profileId = activeProfileInStorage?.id;
 
     const statusLabels: { [key: string]: string } = {
         brouillon: "Brouillon",

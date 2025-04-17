@@ -18,7 +18,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     const [activeConversations, setActiveConversations] = useState<Set<string>>(new Set());
 
     const {user} = useAuthContext();
-    const socket = useSocket();
+    const {socket} = useSocket();
     const userId = user?.userId;
 
     const fetchConversationsData = useCallback(async () => {

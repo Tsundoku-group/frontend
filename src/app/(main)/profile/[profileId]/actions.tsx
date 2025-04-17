@@ -4,14 +4,14 @@ import {fetchWithAuth} from "@/services/fetchWithAuth";
 import {Profile, ProfileResult} from "@/models/Profile";
 
 interface Friend {
-    friendId: string;
+    friendId: number;
     firstname: string;
     lastname: string;
     username: string;
 }
 
 interface Suggestion {
-    friendId: string;
+    friendId: number;
     firstname: string;
     lastname: string;
     username: string;
@@ -19,13 +19,13 @@ interface Suggestion {
 }
 
 interface Relation {
-    friendshipId: string;
+    friendshipId: number;
     friend: Friend;
 }
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
-export const fetchUserProfile = async (profileId: string): Promise<ProfileResult> => {
+export const fetchUserProfile = async (profileId: number): Promise<ProfileResult> => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}`, {
             method: 'GET',
@@ -46,7 +46,7 @@ export const fetchUserProfile = async (profileId: string): Promise<ProfileResult
     }
 }
 
-export const fetchFriendsListFromProfile = async (profileId?: string, limit?: number, offset?: number): Promise<Relation[]> => {
+export const fetchFriendsListFromProfile = async (profileId?: number, limit?: number, offset?: number): Promise<Relation[]> => {
     try {
         const response = await fetchWithAuth(
             `${symfonyUrl}/api/v1/friendship/${profileId}/list?limit=${limit}&offset=${offset}`,
@@ -65,7 +65,7 @@ export const fetchFriendsListFromProfile = async (profileId?: string, limit?: nu
     }
 }
 
-export const fetchAddProfileFriend = async (profileId: string, friendId: string) => {
+export const fetchAddProfileFriend = async (profileId: number, friendId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${profileId}/request`, {
             method: 'POST',
@@ -125,7 +125,7 @@ export const fetchAddProfileFriend = async (profileId: string, friendId: string)
     }
 }
 
-export const fetchRemoveFriend = async (friendshipId: string | null, profileId: string, friendId: string) => {
+export const fetchRemoveFriend = async (friendshipId: number | null, profileId: number, friendId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${friendshipId}/remove`, {
             method: 'DELETE',
@@ -143,7 +143,7 @@ export const fetchRemoveFriend = async (friendshipId: string | null, profileId: 
     }
 }
 
-export const fetchFollowersListFromProfile = async (profileId?: string, limit?: number, offset?: number) => {
+export const fetchFollowersListFromProfile = async (profileId?: number, limit?: number, offset?: number) => {
     try {
         const response = await fetchWithAuth(`
         ${symfonyUrl}/api/v1/followers/${profileId}/followers?limit=${limit}&offset=${offset}`,
@@ -169,7 +169,7 @@ export const fetchFollowersListFromProfile = async (profileId?: string, limit?: 
     }
 }
 
-export const fetchFollowedListFromProfile = async (profileId?: string, limit?: number, offset?: number) => {
+export const fetchFollowedListFromProfile = async (profileId?: number, limit?: number, offset?: number) => {
     try {
         const response = await fetchWithAuth(
             `${symfonyUrl}/api/v1/followers/${profileId}/followed?limit=${limit}&offset=${offset}`,
@@ -195,7 +195,7 @@ export const fetchFollowedListFromProfile = async (profileId?: string, limit?: n
     }
 }
 
-export const fetchSuggestedFriendListFromProfile = async (profileId?: string, limit?: number, offset?: number) => {
+export const fetchSuggestedFriendListFromProfile = async (profileId?: number, limit?: number, offset?: number) => {
     try {
         const response = await fetchWithAuth(
             `${symfonyUrl}/api/v1/friendship/${profileId}/suggestions?limit=${limit}&offset=${offset}`,
@@ -221,7 +221,7 @@ export const fetchSuggestedFriendListFromProfile = async (profileId?: string, li
     }
 }
 
-export const fetchFollowProfile = async (profileId: string, followingId: string) => {
+export const fetchFollowProfile = async (profileId: number, followingId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/followers/follow/${profileId}`, {
             method: 'POST',
@@ -239,7 +239,7 @@ export const fetchFollowProfile = async (profileId: string, followingId: string)
     }
 }
 
-export const fetchUnfollowProfile = async (friendshipId: string | null, profileId: string, friendId: string) => {
+export const fetchUnfollowProfile = async (friendshipId: number | null, profileId: number, friendId: number) => {
     {
         try {
             const response = await fetchWithAuth(`${symfonyUrl}/api/followers/unfollow/${friendshipId}`, {
