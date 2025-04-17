@@ -12,12 +12,6 @@ import GroupAboutContent from "@/app/(main)/(groups)/clubs/[slug]/components/con
 import GroupMembersContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupMembersContent";
 import GroupActivityContent from "@/app/(main)/(groups)/clubs/[slug]/components/content/GroupActivityContent";
 
-interface Member {
-    id: number;
-    username: string;
-    avatarUrl?: string | null;
-}
-
 interface Props {
     groupId: number;
 }
@@ -50,7 +44,7 @@ export default function GroupTabs({ groupId }: Props) {
             </TabsList>
 
             <TabsContent value="activity" className="mt-4">
-                <GroupActivityContent />
+                <GroupActivityContent groupId={groupId}/>
             </TabsContent>
             <TabsContent value="members" className="mt-4">
                 <GroupMembersContent groupId={groupId} />

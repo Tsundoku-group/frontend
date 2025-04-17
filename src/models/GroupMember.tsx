@@ -1,5 +1,5 @@
 export interface GroupMember {
-    id: string;
+    id: number;
     firstName: string;
     lastName: string;
     username: string;

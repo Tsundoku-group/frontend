@@ -11,12 +11,12 @@ export const fetchPrivateGroups = async (
     sort: string,
     page: number,
     limit: number = 20,
-    profileId: number,
+    profileId: string,
     myGroups: boolean = false
 ): Promise<{ groups: GroupData[], nextPage: number | null }> => {
     try {
         const queryTag = tagName === "all" ? "" : tagName;
-        let url = `${symfonyUrl}/api/v1/group/private?search=${encodeURIComponent(search)}&tagName=${encodeURIComponent(queryTag)}&sort=${encodeURIComponent(sort)}&page=${page}&limit=${limit}&profileId=${profileId}`;
+        let url = `${symfonyUrl}/api/v1/groups?search=${encodeURIComponent(search)}&tagName=${encodeURIComponent(queryTag)}&sort=${encodeURIComponent(sort)}&page=${page}&limit=${limit}&profileId=${profileId}`;
 
         if (profileId !== null) {
             url += `&myGroups=${myGroups}`;
@@ -44,7 +44,7 @@ export const fetchPrivateGroups = async (
 
 export const fetchGroupBySlug = async (slug: string): Promise<GroupData | null> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/group/private/${slug}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/groups/${slug}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -82,7 +82,7 @@ export const fetchAllTags = async ()=> {
 
 export const joinPrivateGroup = async (
     groupId: number,
-    profileId: number,
+    profileId: string,
     role: string
 ) => {
     try {
@@ -106,7 +106,7 @@ export const joinPrivateGroup = async (
 
 export const toggleFavoriteGroup = async (
     groupId: number,
-    profileId: number,
+    profileId: string,
     isFavorite: boolean
 ) => {
     try {
@@ -134,7 +134,7 @@ export const toggleFavoriteGroup = async (
 
 export const togglePinnedGroup = async (
     groupId: number,
-    profileId: number,
+    profileId: string,
     isPinned: boolean
 ) => {
     try {

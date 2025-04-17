@@ -7,6 +7,7 @@ const symfonyUrl = process.env.SYMFONY_URL;
 
 export const createNewPost = async (postData: PostData) => {
     try {
+        console.log('postData :', postData);
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post`, {
             method: "POST",
             body: JSON.stringify(postData)
@@ -14,7 +15,7 @@ export const createNewPost = async (postData: PostData) => {
         if (!response) {
             throw new Error('Failed to create post');
         }
-
+        console.log(response);
         return response;
     } catch (error) {
         throw new Error("Erreur du serveur");
@@ -65,9 +66,9 @@ export const deletePost = async (postData: { id: number; editorId?: number; }) =
     }
 }
 
-export const fetchRecentPosts = async (profileId: number) => {
+export const fetchRecentPosts = async (groupId: number, profileId: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${profileId}/recent`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/groups/${groupId}/posts/recent?profileId=${profileId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -86,10 +87,10 @@ export const fetchRecentPosts = async (profileId: number) => {
     }
 }
 
-export const fetchOlderPosts = async (pageParam: number, limit = 20, profileId: number) => {
+export const fetchOlderPosts = async (pageParam: number, limit = 20, groupId: number, profileId: number) => {
     try {
         const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/post/${profileId}/older?limit=${limit}&offset=${(pageParam - 1) * limit}`,
+            `${symfonyUrl}/api/v1/groups/${groupId}/posts/older?profileId=${profileId}&limit=${limit}&offset=${(pageParam - 1) * limit}`,
             {
                 method: "GET",
                 headers: {"Content-Type": "application/json"},
@@ -133,8 +134,8 @@ export const fetchLastCommentsFromPost = async (postId: number, profileId: numbe
 }
 
 export const createCommentOnPost = async (commentData: {
-    postId: string;
-    authorId: string | undefined;
+    postId: number;
+    authorId: number | undefined;
     content: string
 }) => {
     try {
@@ -155,8 +156,8 @@ export const createCommentOnPost = async (commentData: {
 };
 
 export const updateCommentOnPost = async (
-    commentId: string,
-    authorId: string | undefined,
+    commentId: number,
+    authorId: number | undefined,
     content: string
 ) => {
     try {
@@ -178,7 +179,7 @@ export const updateCommentOnPost = async (
     }
 }
 
-export const deleteCommentOnPost = async (commentId: string, authorId: string) => {
+export const deleteCommentOnPost = async (commentId: number, authorId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/delete`, {
             method: "DELETE",

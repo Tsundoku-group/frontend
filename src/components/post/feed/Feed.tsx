@@ -7,14 +7,18 @@ import InfiniteFeed from "./InfiniteFeed";
 import FeedSkeleton from "@/components/post/feed/FeedSkeleton";
 import { useProfileContext } from "@/context/profileContext";
 
-export default function Feed() {
+interface Props {
+    groupId: number;
+}
+
+export default function Feed({groupId}: Props) {
     const queryClient = useQueryClient();
     const { activeProfileInStorage } = useProfileContext();
-    const profileId = activeProfileInStorage?.id;
+    const profileId = activeProfileInStorage?.id as number;
 
     const { data: posts, isLoading, error } = useQuery({
-        queryKey: ["recentPosts"],
-        queryFn: async () => await fetchRecentPosts(profileId as number),
+        queryKey: ["recentPosts", groupId, profileId],
+        queryFn: async () => await fetchRecentPosts(groupId, profileId),
         staleTime: 60000,
         enabled: !!profileId,
     });
@@ -37,12 +41,12 @@ export default function Feed() {
         <div className="w-full mx-auto">
             {posts && posts.length > 0 ? (
                 posts.map((post: any) => (
-                    <PostCard key={post.id} post={post} onDelete={handleDeletePost} />
+                    <PostCard key={post.id} post={post} groupId={groupId} onDelete={handleDeletePost} />
                 ))
             ) : (
                 <p className="text-center text-gray-500">Aucun post à afficher.</p>
             )}
-            <InfiniteFeed />
+            <InfiniteFeed groupId={groupId} />
         </div>
     );
 }

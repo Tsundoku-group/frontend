@@ -5,7 +5,6 @@ import {TooltipProvider} from "@/components/ui/tooltip";
 import "../global.css";
 import {ProfileProvider} from "@/context/profileContext";
 import React from "react";
-import {GroupProvider} from "@/context/groupContext";
 
 export const metadata: Metadata = {
     title: "Tsundoku",
@@ -21,11 +20,9 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
         <body>
         <AuthProvider>
             <ProfileProvider>
-                <GroupProvider>
-                    <TooltipProvider>
-                        {children}
-                    </TooltipProvider>
-                </GroupProvider>
+                <TooltipProvider>
+                    {children}
+                </TooltipProvider>
             </ProfileProvider>
         </AuthProvider>
         </body>

@@ -7,7 +7,6 @@ import {useProfileContext} from "@/context/profileContext";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
 import {deletePost, updatePost} from "@/app/(main)/home/actions";
-import {useGroupContext} from "@/context/groupContext";
 import {ShowToast} from "@/components/ShowToast";
 import {
     AlertDialog, AlertDialogAction,
@@ -34,7 +33,7 @@ interface Post {
     hasLiked: boolean;
 }
 
-export default function PostCard({post, onDelete}: { post: Post, onDelete: (id: number) => void }) {
+export default function PostCard({post, groupId, onDelete}: { post: Post, groupId: number, onDelete: (id: number) => void }) {
     const [showComments, setShowComments] = useState(false);
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
@@ -43,8 +42,6 @@ export default function PostCard({post, onDelete}: { post: Post, onDelete: (id: 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [editedContent, setEditedContent] = useState(post.content);
-
-    const {groupId} = useGroupContext();
 
     const handleEditPost = async () => {
         if (!profileId) return;

@@ -147,8 +147,8 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
                     </div>
                 </CardHeader>
                 <CardFooter className="flex justify-between items-center">
-                    <button onClick={handleViewProfile} className="text-primary text-sm hover:underline">Voir le
-                        profil
+                    <button onClick={handleViewProfile} className="text-primary text-sm hover:underline">
+                        Voir le profil
                     </button>
                     <div className="flex space-x-2">
                         {["friends", "followers", "followed", "suggestions"].includes(relationType) && !relationState.isFriend ? (

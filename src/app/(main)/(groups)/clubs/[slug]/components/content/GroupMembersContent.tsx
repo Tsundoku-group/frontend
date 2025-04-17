@@ -7,27 +7,30 @@ import {truncateString} from "@/utils/string-utils";
 import {Badge} from "@/components/ui/badge";
 import {Input} from "@/components/ui/input";
 import {useProfileContext} from "@/context/profileContext";
-import {useState} from "react";
-
-interface Member {
-    id: number;
-    firstName: string;
-    lastName: string;
-    username: string;
-    groupRole: string;
-    avatarUrl?: string | null;
-}
+import React, {useState} from "react";
+import {GroupMember} from "@/models/GroupMember";
+import {Button} from "@/components/ui/button";
+import {useRouter} from "next/navigation";
 
 interface Props {
     groupId: number;
 }
 
+function formatJoinDate(date: string) {
+    return new Date(date).toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+    });
+}
+
 export default function GroupMembersContent({groupId}: Props) {
     const [searchTerm, setSearchTerm] = useState("");
     const {activeProfileInStorage} = useProfileContext();
-    const profileId = activeProfileInStorage?.id;
+    const profileId = activeProfileInStorage?.id as number;
+    const router = useRouter();
 
-    const {data: members = [], isLoading, isError} = useQuery<Member[]>({
+    const {data: members = [], isLoading, isError} = useQuery<GroupMember[]>({
         queryKey: ['group-members', groupId],
         queryFn: () => fetchMembersFromGroup(groupId),
         staleTime: 1000 * 60 * 5,
@@ -44,8 +47,17 @@ export default function GroupMembersContent({groupId}: Props) {
         );
     });
 
-    const admins = filteredMembers.filter((member) => member.groupRole.toLowerCase() === "admin" && member.id !== profileId);
-    const regulars = filteredMembers.filter((member) => member.groupRole.toLowerCase() === "member" && member.id !== profileId);
+    const handleViewProfile = (memberId: number) => {
+        router.push(`/profile/${memberId}`);
+    };
+
+    const admins = filteredMembers.filter(
+        (member) => member.roleLabel === "Administrateur" && member.id !== profileId
+    );
+
+    const regulars = filteredMembers.filter(
+        (member) => member.roleLabel === "Membre" && member.id !== profileId
+    );
 
     if (isLoading) {
         return <p className="text-gray-400 italic">Chargement des membres...</p>;
@@ -71,48 +83,54 @@ export default function GroupMembersContent({groupId}: Props) {
                 <div className="grid grid-cols-1 gap-4 mb-6">
                     <div
                         key={currentMember.id}
-                        className="flex items-center gap-3 bg-secondary-black p-3 rounded-md border border-gray-700"
+                        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-secondary-black p-3 rounded-md border border-gray-700"
                     >
-                        <Avatar className="w-10 h-10">
+                        <Avatar className="w-10 h-10 shrink-0">
                             <AvatarImage src={currentMember.avatarUrl || ""}/>
                             <AvatarFallback>{currentMember.username[0]}</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
                             <div className="flex gap-1">
-                                <span className="text-sm font-medium text-white">
-                                    {truncateString(`${currentMember.firstName} ${currentMember.lastName}`, 30)}
-                                </span>
+                            <span className="text-sm font-medium text-white">
+                                {truncateString(`${currentMember.firstName} ${currentMember.lastName}`, 30)}
+                            </span>
                             </div>
                             <div className="text-xs text-gray-400">@{currentMember.username}</div>
-                            <Badge className="w-fit mt-1 text-xs font-medium">{currentMember.groupRole}</Badge>
+                            <Badge className="w-fit mt-1 text-xs font-medium">{currentMember.roleLabel}</Badge>
+                            <span className="text-xs text-gray-500">
+                            Membre depuis le {formatJoinDate(currentMember.joinAt.date)}
+                        </span>
+                            <Button className="w-fit mt-2" onClick={() => handleViewProfile(currentMember.id)}>Voir mon profil</Button>
                         </div>
                     </div>
                 </div>
             )}
 
             <div className="border-t border-gray-700 my-6"/>
-            <h6 className="text-lg font-semibold mb-2">
-                Administrateurs - {admins.length}
-            </h6>
+            <h6 className="text-lg font-semibold mb-2">Administrateurs - {admins.length}</h6>
 
             <div className="grid grid-cols-1 gap-4 mb-6">
                 {admins.length > 0 ? admins.map((member) => (
                     <div
                         key={member.id}
-                        className="flex items-center gap-3 bg-secondary-black p-3 rounded-md border border-gray-700"
+                        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-secondary-black p-3 rounded-md border border-gray-700"
                     >
-                        <Avatar className="w-10 h-10">
+                        <Avatar className="w-10 h-10 shrink-0">
                             <AvatarImage src={member.avatarUrl || ""}/>
                             <AvatarFallback>{member.username[0]}</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
                             <div className="flex gap-1">
-                              <span className="text-sm font-medium text-white">
-                                {truncateString(`${member.firstName} ${member.lastName}`, 30)}
-                              </span>
+                          <span className="text-sm font-medium text-white">
+                            {truncateString(`${member.firstName} ${member.lastName}`, 30)}
+                          </span>
                             </div>
                             <div className="text-xs text-gray-400">@{member.username}</div>
-                            <Badge className="w-fit mt-1 text-xs font-medium">{member.groupRole}</Badge>
+                            <Badge className="w-fit mt-1 text-xs font-medium">{member.roleLabel}</Badge>
+                            <span className="text-xs text-gray-500">
+                            Membre depuis le {formatJoinDate(member.joinAt.date)}
+                        </span>
+                            <Button className="w-fit mt-2" onClick={() => handleViewProfile(member.id)}>Voir le profil</Button>
                         </div>
                     </div>
                 )) : (
@@ -121,28 +139,30 @@ export default function GroupMembersContent({groupId}: Props) {
             </div>
 
             <div className="border-t border-gray-700 my-6"/>
-            <h6 className="text-lg font-semibold mb-2">
-                Membres - {regulars.length}
-            </h6>
+            <h6 className="text-lg font-semibold mb-2">Membres - {regulars.length}</h6>
 
             <div className="grid grid-cols-1 gap-4">
                 {regulars.length > 0 ? regulars.map((member) => (
                     <div
                         key={member.id}
-                        className="flex items-center gap-3 bg-secondary-black p-3 rounded-md border border-gray-700"
+                        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-secondary-black p-3 rounded-md border border-gray-700"
                     >
-                        <Avatar className="w-10 h-10">
+                        <Avatar className="w-10 h-10 shrink-0">
                             <AvatarImage src={member.avatarUrl || ""}/>
                             <AvatarFallback>{member.username[0]}</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
                             <div className="flex gap-1">
-                              <span className="text-sm font-medium text-white">
-                                {truncateString(`${member.firstName} ${member.lastName}`, 30)}
-                              </span>
+                          <span className="text-sm font-medium text-white">
+                            {truncateString(`${member.firstName} ${member.lastName}`, 30)}
+                          </span>
                             </div>
                             <div className="text-xs text-gray-400">@{member.username}</div>
-                            <Badge className="w-fit mt-1 text-xs font-medium">{member.groupRole}</Badge>
+                            <Badge className="w-fit mt-1 text-xs font-medium">{member.roleLabel}</Badge>
+                            <span className="text-xs text-gray-500">
+                            Membre depuis le {formatJoinDate(member.joinAt.date)}
+                        </span>
+                            <Button className="w-fit mt-2" onClick={() => handleViewProfile(member.id)}>Voir le profil</Button>
                         </div>
                     </div>
                 )) : (
