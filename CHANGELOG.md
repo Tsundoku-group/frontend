@@ -129,4 +129,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [t-90] Ajout de l'instantanée lors d'un post/comment/replyComment [#90](https://trello.com/c/YzkR5RuV/90-t-90-ajout-de-linstantan%C3%A9e-lors-dun-post-comment-replycomment)
   [t-91] Ajout des likes sur postcard [#91](https://trello.com/c/mwONkFnm/91-t-91-ajout-des-likes-sur-postcard)
   [t-92] Corrections Majeures Frontend [#92](https://trello.com/c/AFJZHg4E/92-t-92-corrections-majeures-frontend)
-- [t-93] Ajout des groupes privés [#97](https://trello.com/c/EPo2nCdD/93-t-93-ajout-des-groupes-priv%C3%A9s)
+- [t-93] Ajout des groupes privés [#93](https://trello.com/c/EPo2nCdD/93-t-93-ajout-des-groupes-priv%C3%A9s)
