@@ -6,7 +6,7 @@ import {
     fetchLastCommentsFromPost,
     updateCommentOnPost,
     deleteCommentOnPost
-} from "@/app/(main)/home/actions";
+} from "@/server-actions/main/home/actions";
 import {CornerDownRight, Send, User, EllipsisVertical, Pencil, Trash} from "lucide-react";
 import {useEffect, useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";

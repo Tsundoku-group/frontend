@@ -5,13 +5,18 @@ import { GroupData } from "@/models/GroupData";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
+const roleLabelMap: Record<string, string> = {
+    admin: "Administrateur",
+    member: "Membre",
+};
+
 export const fetchPrivateGroups = async (
     search: string,
     tagName: string,
     sort: string,
     page: number,
     limit: number = 20,
-    profileId: string,
+    profileId: number,
     myGroups: boolean = false
 ): Promise<{ groups: GroupData[], nextPage: number | null }> => {
     try {
@@ -82,7 +87,7 @@ export const fetchAllTags = async ()=> {
 
 export const joinPrivateGroup = async (
     groupId: number,
-    profileId: string,
+    profileId: number,
     role: string
 ) => {
     try {
@@ -106,7 +111,7 @@ export const joinPrivateGroup = async (
 
 export const toggleFavoriteGroup = async (
     groupId: number,
-    profileId: string,
+    profileId: number,
     isFavorite: boolean
 ) => {
     try {
@@ -134,7 +139,7 @@ export const toggleFavoriteGroup = async (
 
 export const togglePinnedGroup = async (
     groupId: number,
-    profileId: string,
+    profileId: number,
     isPinned: boolean
 ) => {
     try {
@@ -158,5 +163,29 @@ export const togglePinnedGroup = async (
         return response;
     } catch (error: any) {
         return { error: error.message };
+    }
+};
+
+export const fetchMembersFromGroup = async (groupId: number) => {
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/groups/${groupId}/members`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        if (!response || response.status !== 200) {
+            throw new Error("Not Found");
+        }
+
+        const members = response.data;
+
+        return members.map((member: any) => ({
+            ...member,
+            roleLabel: roleLabelMap[member.groupRole] ?? member.groupRole
+        }));
+    } catch (error) {
+        return [];
     }
 };

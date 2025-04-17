@@ -19,7 +19,7 @@ import {
     fetchFollowProfile,
     fetchRemoveFriend,
     fetchUnfollowProfile,
-} from "@/app/(main)/profile/[profileId]/actions";
+} from "@/server-actions/main/profile/actions";
 import {ShowToast} from "@/components/ShowToast";
 import {useProfileContext} from "@/context/profileContext";
 import {getProfileImageUrl} from "@/utils/profileImageUtils";

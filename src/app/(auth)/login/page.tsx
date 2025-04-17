@@ -3,7 +3,7 @@
 import React, {useState} from "react";
 import {useRouter} from "next/navigation";
 import {Eye, EyeOff, User, Lock, OctagonAlert, Command} from "lucide-react";
-import {HandleLogin} from "@/app/(auth)/login/actions";
+import {HandleLogin} from "@/server-actions/auth/login/actions";
 import {useAuthContext} from "@/context/authContext";
 import {useProfileContext} from "@/context/profileContext";
 

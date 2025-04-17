@@ -5,7 +5,7 @@ import ProfileHeader from "@/app/(main)/profile/[profileId]/components/header/Pr
 import Body from "@/app/(main)/profile/[profileId]/components/body/Body";
 import RightbarWrapper from "@/app/(main)/profile/[profileId]/components/rightbar/RightbarWrapper";
 import {ProfileResult} from "@/models/Profile";
-import {fetchUserProfile} from "@/app/(main)/profile/[profileId]/actions";
+import {fetchUserProfile} from "@/server-actions/main/profile/actions";
 import {getProfileImageUrl} from "@/utils/profileImageUtils";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useProfileContext} from "@/context/profileContext";

@@ -1,7 +1,7 @@
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import React, {useState} from "react";
-import {joinPrivateGroup, toggleFavoriteGroup, togglePinnedGroup} from "@/app/(main)/(groups)/clubs/actions";
+import {joinPrivateGroup, toggleFavoriteGroup, togglePinnedGroup} from "@/server-actions/main/groups/clubs/actions";
 import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";
 import MarkActions from "@/components/MarkActions";
@@ -23,7 +23,7 @@ export default function GroupCard({group}: GroupCardProps) {
     const router = useRouter();
 
     const {activeProfileInStorage} = useProfileContext();
-    const profileId = activeProfileInStorage?.id;
+    const profileId = activeProfileInStorage?.id as number;
 
     const handleJoinRequest = async () => {
         if (!profileId) return;

@@ -19,7 +19,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutationState } from "@/hooks/useMutationState";
-import { createFriendRequest } from "./actions";
+import { createFriendRequest } from "@/server-actions/main/chat/friends/actions";
 import { useAuthContext } from "@/context/authContext";
 import {ShowToast} from "@/components/ShowToast";
 import {useProfileContext} from "@/context/profileContext";

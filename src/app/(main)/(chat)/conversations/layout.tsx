@@ -6,7 +6,7 @@ import ItemList from "@/app/(main)/(chat)/components/item/ItemList";
 import {Loader2} from "lucide-react";
 import DMConversationItem from "@/app/(main)/(chat)/conversations/components/DMConversationItem";
 import {useAuthContext} from "@/context/authContext";
-import {fetchUserConversations} from "@/app/(main)/(chat)/conversations/actions";
+import {fetchUserConversations} from "@/server-actions/main/chat/conversations/actions";
 import StartNewConversation from "@/app/(main)/(chat)/conversations/components/StartNewConversation";
 import SearchBar from '@/app/(main)/(chat)/components/item/ItemSearchBar';
 import {useSocket} from "@/context/socketContext";

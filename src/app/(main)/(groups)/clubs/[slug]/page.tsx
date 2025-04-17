@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import GroupHeader from "@/app/(main)/(groups)/clubs/[slug]/components/GroupHeader";
-import { fetchGroupBySlug } from "@/app/(main)/(groups)/clubs/actions";
+import { fetchGroupBySlug } from "@/server-actions/main/groups/clubs/actions";
 import {GroupData} from "@/models/GroupData";
 import GroupTabs from "@/app/(main)/(groups)/clubs/[slug]/components/GroupTabs";
 

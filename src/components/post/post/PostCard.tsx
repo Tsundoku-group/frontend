@@ -6,7 +6,7 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useProfileContext} from "@/context/profileContext";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
-import {deletePost, updatePost} from "@/app/(main)/home/actions";
+import {deletePost, updatePost} from "@/server-actions/main/home/actions";
 import {ShowToast} from "@/components/ShowToast";
 import {
     AlertDialog, AlertDialogAction,

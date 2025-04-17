@@ -2,7 +2,7 @@
 
 import {useQuery} from '@tanstack/react-query'
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {fetchMembersFromGroup} from "@/app/(main)/(groups)/clubs/[slug]/actions";
+import {fetchMembersFromGroup} from "@/server-actions/main/groups/clubs/actions";
 import {truncateString} from "@/utils/string-utils";
 import {Badge} from "@/components/ui/badge";
 import {Input} from "@/components/ui/input";

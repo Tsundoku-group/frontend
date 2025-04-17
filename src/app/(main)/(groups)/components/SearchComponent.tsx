@@ -2,7 +2,7 @@ import {Input} from "@/components/ui/input";
 import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from "@/components/ui/select";
 import {useQuery} from "@tanstack/react-query";
 import {Tag} from "@/models/Tag";
-import {fetchAllTags} from "@/app/(main)/(groups)/clubs/actions";
+import {fetchAllTags} from "@/server-actions/main/groups/clubs/actions";
 
 interface SearchComponentProps {
     search: string;

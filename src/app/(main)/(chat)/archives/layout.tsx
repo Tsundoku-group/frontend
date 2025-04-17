@@ -4,7 +4,7 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Loader2} from 'lucide-react';
 import ArchivesConversationItem from '@/app/(main)/(chat)/archives/components/ArchivesConversationItem';
 import ItemList from '@/app/(main)/(chat)/components/item/ItemList';
-import {fetchArchivedConversations, handleUnarchiveAllConversations} from '@/app/(main)/(chat)/archives/actions';
+import {fetchArchivedConversations, handleUnarchiveAllConversations} from '@/server-actions/main/chat/archives/actions';
 import {useAuthContext} from '@/context/authContext';
 import SearchBar from '@/app/(main)/(chat)/components/item/ItemSearchBar';
 import {Checkbox} from "@/components/ui/checkbox";

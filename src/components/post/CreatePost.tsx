@@ -4,7 +4,7 @@ import React, {useState} from "react";
 import {Image, Smile, FileImage, User} from "lucide-react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
-import {createNewPost} from "@/app/(main)/home/actions";
+import {createNewPost} from "@/server-actions/main/home/actions";
 import {PostData} from "@/models/PostData";
 import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";

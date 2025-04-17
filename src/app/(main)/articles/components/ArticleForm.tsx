@@ -6,7 +6,7 @@ import { Article } from '@/models/Article';
 import { formatDate } from '@/utils/dateUtils';
 import { ArrowLeft } from 'lucide-react';
 import { useProfileContext } from '@/context/profileContext';
-import { submitArticle } from '../actions';
+import { submitArticle } from '@/server-actions/main/articles/actions';
 import ConfirmDialog from '@/components/ConfirmDialog';
 
 interface ArticleFormProps {

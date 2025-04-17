@@ -2,7 +2,7 @@
 
 import {useQuery} from "@tanstack/react-query";
 import {useState} from "react";
-import {fetchPrivateGroups} from "@/app/(main)/(groups)/clubs/actions";
+import {fetchPrivateGroups} from "@/server-actions/main/groups/clubs/actions";
 import {Skeleton} from "@/components/ui/skeleton";
 import GroupCard from "@/app/(main)/(groups)/components/GroupCard";
 import SearchComponent from "@/app/(main)/(groups)/components/SearchComponent";

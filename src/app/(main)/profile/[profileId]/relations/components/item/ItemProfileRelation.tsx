@@ -7,7 +7,7 @@ import {
     fetchFollowersListFromProfile,
     fetchFriendsListFromProfile,
     fetchSuggestedFriendListFromProfile,
-} from "@/app/(main)/profile/[profileId]/actions";
+} from "@/server-actions/main/profile/actions";
 import {ShowToast} from "@/components/ShowToast";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Button} from "@/components/ui/button";

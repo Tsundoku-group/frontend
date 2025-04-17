@@ -1,4 +1,4 @@
-import {fetchActiveProfilePictures,} from "@/app/(main)/(settings)/profileSettings/actions";
+import {fetchActiveProfilePictures,} from "@/server-actions/main/settings/actions";
 import {getDownloadURL, ref} from "@firebase/storage";
 import {storage} from "../../firebaseConfig";
 

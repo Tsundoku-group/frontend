@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchRecentPosts } from "@/app/(main)/home/actions";
+import { fetchRecentPosts } from "@/server-actions/main/home/actions";
 import PostCard from "@/components/post/post/PostCard";
 import InfiniteFeed from "./InfiniteFeed";
 import FeedSkeleton from "@/components/post/feed/FeedSkeleton";

@@ -1,7 +1,7 @@
 "use client";
 
 import {useInfiniteQuery, useQueryClient} from "@tanstack/react-query";
-import {fetchOlderPosts} from "@/app/(main)/home/actions";
+import {fetchOlderPosts} from "@/server-actions/main/home/actions";
 import PostCard from "@/components/post/post/PostCard";
 import {useEffect, useRef} from "react";
 import {useProfileContext} from "@/context/profileContext";

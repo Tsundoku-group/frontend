@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { CircleCheckBig, CircleX } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { handleResetPassword } from './actions';
+import { handleResetPassword } from '@/server-actions/auth/reset-password/actions';
 
 const PWD_REGEX: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 

@@ -24,7 +24,7 @@ import {
     fetchUploadImageProfile,
     fetchUserProfileData,
     updateUserProfileData,
-} from "@/app/(main)/(settings)/profileSettings/actions";
+} from "@/server-actions/main/settings/actions";
 import {Facebook, Instagram, Loader2, Twitter} from "lucide-react";
 import {useAuthContext} from "@/context/authContext";
 import {ShowToast} from "@/components/ShowToast";

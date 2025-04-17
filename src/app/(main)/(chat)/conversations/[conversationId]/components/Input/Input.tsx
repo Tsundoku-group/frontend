@@ -7,7 +7,7 @@ import {FormProvider, useForm} from "react-hook-form";
 import {FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import TextareaAutosize from "react-textarea-autosize";
 import {Button} from "@/components/ui/button";
-import {sendMessage} from "@/app/(main)/(chat)/conversations/actions";
+import {sendMessage} from "@/server-actions/main/chat/conversations/actions";
 import {useAuthContext} from "@/context/authContext";
 import EmojiPicker, {EmojiClickData} from 'emoji-picker-react';
 import {Smile} from "lucide-react";

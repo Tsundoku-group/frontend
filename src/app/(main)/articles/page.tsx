@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import CustomSelect from "./components/CustomSelect";
 import "./styles/styles.css";
 import ArticleForm from "./components/ArticleForm";
-import { fetchProfileArticles, deleteArticle, updateArticleStatus } from "./actions";
+import { fetchProfileArticles, deleteArticle, updateArticleStatus } from "@/server-actions/main/articles/actions";
 import { useProfileContext } from "@/context/profileContext";
 import { formatDate } from "@/utils/dateUtils";
 import { Article } from "@/models/Article";

@@ -6,7 +6,7 @@ import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import {useAuthContext} from "@/context/authContext";
 import {AlertCircle, CircleCheckBig, CircleX, Eye, EyeOff} from "lucide-react";
-import {fetchDeletePwd, fetchUpdatePwd, fetchVerifyPwd} from "@/app/(main)/(settings)/accountSettings/actions";
+import {fetchDeletePwd, fetchUpdatePwd, fetchVerifyPwd} from "@/server-actions/main/settings/actions";
 import {
     AlertDialog,
     AlertDialogContent, AlertDialogDescription, AlertDialogFooter,

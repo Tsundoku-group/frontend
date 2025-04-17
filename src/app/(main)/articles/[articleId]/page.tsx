@@ -1,7 +1,7 @@
 'use client';
 
 import { formatDate } from '@/utils/dateUtils';
-import { fetchArticle } from './actions';
+import { fetchArticle } from '@/server-actions/main/articles/actions';
 import { useEffect, useState } from 'react';
 import { Article } from '@/models/Article';
 import { ArrowLeft } from 'lucide-react';
