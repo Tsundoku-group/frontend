@@ -11,7 +11,7 @@ type ProfileContextType = {
     setActiveProfileInStorage: (profileData: Partial<Profile>, triggerLoading?: boolean) => void;
     isLoading: boolean;
     profileImageUrls: Record<string, string>;
-    refreshProfileImage: (profileId: string, type: "profile" | "cover") => void
+    refreshProfileImage: (profileId: number, type: "profile" | "cover") => void
 };
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -30,7 +30,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
     const router = useRouter();
 
     const loadProfileImages = useCallback(
-        async (profileId: string) => {
+        async (profileId: number) => {
             if (profileImageUrls[`${profileId}-profile`] && profileImageUrls[`${profileId}-cover`]) {
                 return;
             }
@@ -95,8 +95,13 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
             setIsLoading(true);
         }
 
+        if (typeof profileData.id !== "number") {
+            console.error("Le profil actif doit avoir un ID défini.");
+            return;
+        }
+
         const completeProfile: Profile = {
-            id: profileData.id as string,
+            id: profileData.id,
             firstName: profileData.firstName || "",
             lastName: profileData.lastName || "",
             username: profileData.username || "",
@@ -117,7 +122,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         }
     };
 
-    const refreshProfileImage = (profileId: string) => {
+    const refreshProfileImage = (profileId: number) => {
         const cacheKeys = {
             profile: `profile-image-${profileId}-profile`,
             cover: `profile-image-${profileId}-cover`,

@@ -4,10 +4,10 @@ import {likePost} from "@/app/(main)/home/actions";
 import {ShowToast} from "@/components/ShowToast";
 
 interface ReactionCommentButtonProps {
-    commentId: string;
-    profileId?: string;
+    commentId: number;
+    profileId?: number;
     actorFirstName?: string;
-    receiverId: string;
+    receiverId: number;
     resourceType: "POST" | "COMMENT";
     initialHasLiked: boolean;
 }

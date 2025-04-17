@@ -7,7 +7,7 @@ type ImageUrls = {
     cover?: string;
 };
 
-export const getProfileImageUrl = async (profileId: string): Promise<ImageUrls> => {
+export const getProfileImageUrl = async (profileId: number): Promise<ImageUrls> => {
     try {
         const response = await fetchActiveProfilePictures(profileId);
 

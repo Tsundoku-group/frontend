@@ -111,7 +111,7 @@ export const fetchOlderPosts = async (pageParam: number, limit = 20, profileId: 
     }
 }
 
-export const fetchLastCommentsFromPost = async (postId: string, profileId: string) => {
+export const fetchLastCommentsFromPost = async (postId: number, profileId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${postId}/${profileId}/comments`, {
             method: "GET",
@@ -199,9 +199,9 @@ export const deleteCommentOnPost = async (commentId: string, authorId: string) =
 }
 
 export const replyToComment = async (replyData: {
-    postId: string;
+    postId: number;
     parentId: string;
-    authorId: string;
+    authorId: number;
     content: string;
 }) => {
     try {
@@ -221,7 +221,7 @@ export const replyToComment = async (replyData: {
     }
 };
 
-export const fetchRepliesForComment = async (commentId: string, profileId: string) => {
+export const fetchRepliesForComment = async (commentId: string, profileId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/${profileId}/children`, {
             method: "GET",
@@ -243,10 +243,10 @@ export const fetchRepliesForComment = async (commentId: string, profileId: strin
 }
 
 export async function likePost(
-    actorId: string,
-    receiverId: string,
+    actorId: number,
+    receiverId: number,
     resourceType: "POST" | "COMMENT",
-    resourceId: string,
+    resourceId: number,
     reactType: "LIKE" | "SAD"
 ) {
     try {

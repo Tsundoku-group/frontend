@@ -1,5 +1,5 @@
 export interface Profile {
-    id: string;
+    id: number;
     role?: string;
     firstName?: string;
     lastName?: string;
@@ -22,7 +22,7 @@ export interface Profile {
 }
 
 export interface ProfilePicture {
-    id: string;
+    id: number;
     profileId: string;
     url: string;
     type: string;

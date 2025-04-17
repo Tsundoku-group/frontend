@@ -12,12 +12,10 @@ import PostDate from "@/app/(main)/home/components/post/PostDate";
 import ReactionCommentButton from "@/app/(main)/home/components/ReactionCommentButton";
 
 interface RepliesSectionProps {
-    postId: string;
+    postId: number;
     commentId: string;
     comment: {
-        author: {
-            id: string,
-        },
+        author: { id: number },
         hasLiked: boolean;
     };
 }
@@ -25,7 +23,7 @@ interface RepliesSectionProps {
 export default function RepliesSection({ commentId, postId }: RepliesSectionProps) {
     const { data, isLoading } = useQuery({
         queryKey: ["replies", commentId],
-        queryFn: () => fetchRepliesForComment(commentId, profileId as string),
+        queryFn: () => fetchRepliesForComment(commentId, profileId as number),
         staleTime: 1000 * 60 * 5,
     });
     const { activeProfileInStorage } = useProfileContext();
@@ -42,7 +40,7 @@ export default function RepliesSection({ commentId, postId }: RepliesSectionProp
     }, [data]);
 
     const { mutate: addReply } = useMutation({
-        mutationFn: async (replyData: { postId: string; parentId: string; authorId: string; content: string }) => {
+        mutationFn: async (replyData: { postId: number; parentId: string; authorId: number; content: string }) => {
             return replyToComment(replyData);
         },
         onSuccess: (savedReply) => {
@@ -89,7 +87,7 @@ export default function RepliesSection({ commentId, postId }: RepliesSectionProp
                             addReply({
                                 postId,
                                 parentId: commentId,
-                                authorId: profileId as string,
+                                authorId: profileId as number,
                                 content: replyContent
                             });
                             setReplyContent("");

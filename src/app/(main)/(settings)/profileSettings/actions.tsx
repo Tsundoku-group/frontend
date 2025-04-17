@@ -44,7 +44,7 @@ export async function updateUserProfileData(profileId: string, profileData: Part
     }
 }
 
-export async function fetchActiveProfilePictures(profileId: string): Promise<Record<string, ProfilePicture>> {
+export async function fetchActiveProfilePictures(profileId: number): Promise<Record<string, ProfilePicture>> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/${profileId}/active`,
             {
