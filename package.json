@@ -10,7 +10,7 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "postinstall": "chmod +x scripts/install-swc-binary.js && node scripts/install-swc-binary.js"
+    "postinstall": "chmod +x scripts/install-swc-binary.cjs && node scripts/install-swc-binary.cjs"
   },
   "dependencies": {
     "@emotion/css": "^11.13.5",
@@ -64,7 +64,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@next/swc-darwin-arm64": "^15.3.0",
+    "@next/swc-linux-arm64-gnu": "^15.3.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",

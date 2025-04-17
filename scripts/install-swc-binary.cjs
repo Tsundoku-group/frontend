@@ -1,5 +1,5 @@
-import { execSync } from 'node:child_process';
-import os from 'node:os';
+const { execSync } = require('child_process');
+const os = require('os');
 
 const platform = os.platform();
 const arch = os.arch();
