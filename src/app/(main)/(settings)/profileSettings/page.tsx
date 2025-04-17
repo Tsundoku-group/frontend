@@ -28,7 +28,7 @@ import {
 import {Facebook, Instagram, Loader2, Twitter} from "lucide-react";
 import {useAuthContext} from "@/context/authContext";
 import {ShowToast} from "@/components/ShowToast";
-import {storage} from "../../../../../firebaseConfig";
+import {storage} from "@/firebaseConfig";
 import {deleteObject, getDownloadURL, listAll, ref} from "@firebase/storage";
 import {
     Dialog,
