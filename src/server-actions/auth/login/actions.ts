@@ -1,6 +1,6 @@
 'use server';
 
-import { createSession } from '@/app/_lib/session';
+import { createSession } from '@/services/auth/session';
 import {Profile} from "@/models/Profile";
 
 const symfonyUrl = process.env.SYMFONY_URL;

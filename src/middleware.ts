@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { decrypt } from '@/app/_lib/session';
+import { decrypt } from '@/services/auth/session';
 
 export default async function middleware(req: NextRequest) {
     const STATIC_PROTECTED_ROUTES = new Set([

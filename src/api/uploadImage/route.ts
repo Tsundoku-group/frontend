@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
-import {storage} from '../../../../firebaseConfig';
+import {storage} from '../../../firebaseConfig';
 import {listAll} from "@firebase/storage";
 
 const MAX_IMAGES_PER_USER = 50;

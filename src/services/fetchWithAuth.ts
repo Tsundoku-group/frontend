@@ -1,7 +1,7 @@
 'use server'
 
 import { isTokenExpired, refreshAuthToken } from "@/services/refreshService";
-import { getSession } from "@/app/_lib/session";
+import { getSession } from "@/services/auth/session";
 
 interface FetchOptions extends RequestInit {
     headers?: { [key: string]: string };

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import {deleteSession} from "@/app/_lib/session";
+import {deleteSession} from "@/services/auth/session";
 import {useAuthContext} from "@/context/authContext";
 import {Button} from "@/components/ui/button";
 import {Plug} from "lucide-react";

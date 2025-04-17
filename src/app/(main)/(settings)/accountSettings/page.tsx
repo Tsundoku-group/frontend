@@ -17,7 +17,7 @@ import {
 import {ShowToast} from "@/components/ShowToast";
 import {Alert, AlertDescription} from "@/components/ui/alert";
 import Captcha from "@/components/captcha/UpdatePasswordCaptcha";
-import {deleteSession} from "@/app/_lib/session";
+import {deleteSession} from "@/services/auth/session";
 
 const PWD_REGEX: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 
