@@ -1,12 +1,13 @@
 'use client'
 
 import React from 'react';
-import {deleteSession} from "@/services/auth/session";
+import {deleteSession, getSession} from "@/services/auth/session";
 import {useAuthContext} from "@/context/authContext";
 import {Button} from "@/components/ui/button";
 import {Plug} from "lucide-react";
 import {useProfileContext} from "@/context/profileContext";
 import {setUserProfileStatus} from "@/server-actions/navbar/actions";
+import {revokeRefreshToken} from "@/services/refreshService";
 
 type LogoutButtonProps = {
     onClose: () => void;
@@ -20,6 +21,10 @@ const LogoutButton = ({onClose}: LogoutButtonProps) => {
         try {
             if (activeProfileInStorage) {
                 await setUserProfileStatus(activeProfileInStorage.id, "offline");
+            }
+            const session = await getSession();
+            if (session?.refreshToken) {
+                await revokeRefreshToken(session.refreshToken as string);
             }
             await deleteSession();
             setIsAuthenticated(false);

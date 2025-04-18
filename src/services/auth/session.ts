@@ -53,6 +53,21 @@ export async function verifySession(): Promise<{ userData: JWTPayload }> {
     return {userData: session};
 }
 
+export async function updateSessionTokens(token: string, refreshToken?: string) {
+    const session = await getSession();
+    if (!session) return;
+
+    const newSession = {
+        ...session,
+        token,
+        refreshToken: refreshToken || session.refreshToken,
+    };
+
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const encrypted = await encrypt(newSession);
+    cookies().set('session', encrypted, { httpOnly: true, expires });
+}
+
 export async function deleteSession(): Promise<void> {
     cookies().delete(cookieConfig.name);
     redirect('/login');
