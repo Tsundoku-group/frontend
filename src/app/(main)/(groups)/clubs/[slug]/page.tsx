@@ -22,10 +22,10 @@ export default function GroupPage({ params: {slug} }: Props) {
             try {
                 const data = await fetchGroupBySlug(slug);
 
-                if (!data) {
-                    setError("Groupe introuvable");
+                if (!data.group) {
+                    setError(data.message);
                 } else {
-                    setGroup(data);
+                    setGroup(data.group);
                 }
             } catch (err) {
                 setError("Erreur lors du chargement");

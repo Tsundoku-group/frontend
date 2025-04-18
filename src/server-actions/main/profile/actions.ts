@@ -1,7 +1,7 @@
 'use server'
 
-import {fetchWithAuth} from "@/services/fetchWithAuth";
-import {Profile, ProfileResult} from "@/models/Profile";
+import { fetchWithAuth } from "@/services/fetchWithAuth";
+import { Profile, ProfileResult } from "@/models/Profile";
 
 interface Friend {
     friendId: number;
@@ -29,130 +29,124 @@ export const fetchUserProfile = async (profileId: number): Promise<ProfileResult
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}`, {
             method: 'GET',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
         });
 
-        if (!response.response) {
-            return { error: "Impossible de récupérer le profil." };
-        }
-
-        if (404 === response.status) {
-            return { error: "Profil introuvable." };
+        if (!response?.response || response.status !== 200 || !response.data) {
+            return { error: 'Impossible de récupérer le profil.' };
         }
 
         return { data: response.data as Profile };
-    } catch (error) {
-        throw error;
+    } catch (error: any) {
+        return { error: error.message || 'Erreur serveur inconnue.' };
     }
-}
+};
 
 export const fetchFriendsListFromProfile = async (profileId?: number, limit?: number, offset?: number): Promise<Relation[]> => {
     try {
-        const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/friendship/${profileId}/list?limit=${limit}&offset=${offset}`,
-            {
-                method: 'GET',
-                headers: {'Content-Type': 'application/json'},
-            });
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${profileId}/list?limit=${limit}&offset=${offset}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
 
-        if (!response.response) {
-            throw new Error('Failed to fetch profile');
+        if (!response?.response || response.status !== 200 || !response.data) {
+            return [];
         }
 
         return response.data as Relation[];
-    } catch (error) {
+    } catch {
         return [];
     }
-}
+};
 
 export const fetchAddProfileFriend = async (profileId: number, friendId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${profileId}/request`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({friendId: friendId})
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ friendId }),
         });
 
-        if (!response.response) {
-            throw new Error('Failed to fetch profile');
+        if (!response?.response) {
+            return {
+                message: "Échec de l'envoi de la requête.",
+                status: 'error',
+            };
         }
 
-        if (404 === response.status) {
+        if (response.status === 404) {
             return {
                 message: "Le profil du demandeur ou du destinataire n'a pas été trouvé.",
-                status: "not found",
+                status: 'not_found',
+            };
+        }
+
+        if (response.status === 409 && typeof response.data === 'string') {
+            const messageMap: Record<string, string> = {
+                pending: "Demande d'amitié déjà envoyée. Statut : en attente.",
+                rejected: "La demande d'ami a été précédemment rejetée. Vous pouvez renvoyer la demande.",
+                exists: "Vous êtes déjà ami avec cet utilisateur.",
+                "request pending for you": "Cet utilisateur vous a déjà envoyé une demande. Veuillez l'accepter dans vos demandes en attente.",
+            };
+
+            const match = Object.keys(messageMap).find((key) =>
+                response.data.includes(key)
+            );
+
+            if (match) {
+                return {
+                    message: messageMap[match],
+                    status: match,
+                };
             }
         }
 
-        if (409 === response.status) {
-            if (response.data.includes('pending'))
-                return {
-                    message: "Demande d'amitié déjà envoyée. Statut : en attente.",
-                    status: 'pending',
-                };
-            if (response.data.includes('rejected')) {
-                return {
-                    message: "La demande d'ami a été précédemment rejetée. Vous pouvez renvoyer la demande.",
-                    status: 'rejected',
-                };
-            }
-
-            if (response.data.includes('exists')) {
-                return {
-                    message: "Vous êtes déjà ami avec cet utilisateur",
-                    status: 'exists',
-                }
-            }
-
-            if (response.data.includes('request pending for you')) {
-                return {
-                    message: "Cet utilisateur vous a déjà envoyé une demande. Veuillez l'accepter dans vos demandes en attente.",
-                    status: 'pendingForYou',
-                }
-            }
-        }
-        if (201 === response.status) {
+        if (response.status === 201) {
             return {
                 message: "Demande d'amitié envoyée avec succès.",
                 status: 'success',
             };
         }
-    } catch (error) {
+
         return {
-            message: "Une erreur est survenue. Veillez réessayer plus tard.",
+            message: "Réponse inattendue du serveur.",
+            status: 'error',
+        };
+    } catch (error: any) {
+        return {
+            message: error?.message || "Une erreur est survenue. Veuillez réessayer plus tard.",
             status: 'error',
         };
     }
-}
+};
 
 export const fetchRemoveFriend = async (friendshipId: number | null, profileId: number, friendId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${friendshipId}/remove`, {
             method: 'DELETE',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({'requesterId': profileId, 'receiverId': friendId}),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ requesterId: profileId, receiverId: friendId }),
         });
 
-        if (!response.response) {
-            throw new Error('Failed to fetch friendship');
+        if (!response?.response || response.status !== 200) {
+            return [];
         }
 
         return response;
-    } catch (error) {
+    } catch {
         return [];
     }
-}
+};
 
-export const fetchFollowersListFromProfile = async (profileId?: number, limit?: number, offset?: number) => {
+export const fetchFollowersListFromProfile = async (profileId?: number, limit?: number, offset?: number): Promise<Relation[]> => {
     try {
-        const response = await fetchWithAuth(`
-        ${symfonyUrl}/api/v1/followers/${profileId}/followers?limit=${limit}&offset=${offset}`,
-            {
-                method: 'GET',
-                headers: {'Content-Type': 'application/json'},
-            })
-        if (!response.response) {
-            throw new Error('Failed to fetch followers');
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/followers/${profileId}/followers?limit=${limit}&offset=${offset}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!response?.response || response.status !== 200 || !response.data) {
+            return [];
         }
 
         return response.data.map((item: any) => ({
@@ -164,21 +158,20 @@ export const fetchFollowersListFromProfile = async (profileId?: number, limit?: 
                 username: item.follower.followerUsername,
             },
         })) as Relation[];
-    } catch (error) {
+    } catch {
         return [];
     }
-}
+};
 
-export const fetchFollowedListFromProfile = async (profileId?: number, limit?: number, offset?: number) => {
+export const fetchFollowedListFromProfile = async (profileId?: number, limit?: number, offset?: number): Promise<Relation[]> => {
     try {
-        const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/followers/${profileId}/followed?limit=${limit}&offset=${offset}`,
-            {
-                method: 'GET',
-                headers: {'Content-Type': 'application/json'},
-            })
-        if (!response.response) {
-            throw new Error('Failed to fetch followed');
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/followers/${profileId}/followed?limit=${limit}&offset=${offset}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!response?.response || response.status !== 200 || !response.data) {
+            return [];
         }
 
         return response.data.map((item: any) => ({
@@ -190,23 +183,20 @@ export const fetchFollowedListFromProfile = async (profileId?: number, limit?: n
                 username: item.following.followingUsername,
             },
         })) as Relation[];
-    } catch (error) {
+    } catch {
         return [];
     }
-}
+};
 
-export const fetchSuggestedFriendListFromProfile = async (profileId?: number, limit?: number, offset?: number) => {
+export const fetchSuggestedFriendListFromProfile = async (profileId?: number, limit?: number, offset?: number): Promise<Suggestion[]> => {
     try {
-        const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/friendship/${profileId}/suggestions?limit=${limit}&offset=${offset}`,
-            {
-                method: 'GET',
-                headers: {'Content-Type': 'application/json'},
-            }
-        );
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${profileId}/suggestions?limit=${limit}&offset=${offset}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
 
-        if (!response.response) {
-            throw new Error('Failed to fetch friends suggestions');
+        if (!response?.response || response.status !== 200 || !response.data?.suggestions) {
+            return [];
         }
 
         return response.data.suggestions.map((item: any) => ({
@@ -216,45 +206,43 @@ export const fetchSuggestedFriendListFromProfile = async (profileId?: number, li
             username: item.username,
             commonFriendsCount: item.commonFriendsCount,
         })) as Suggestion[];
-    } catch (error) {
+    } catch {
         return [];
     }
-}
+};
 
 export const fetchFollowProfile = async (profileId: number, followingId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/followers/follow/${profileId}`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({'followingId': followingId}),
-        })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ followingId }),
+        });
 
-        if (!response.response) {
-            throw new Error('Failed to fetch profile');
+        if (!response?.response || response.status !== 200) {
+            return [];
         }
 
         return response;
-    } catch (error) {
+    } catch {
         return [];
     }
-}
+};
 
 export const fetchUnfollowProfile = async (friendshipId: number | null, profileId: number, friendId: number) => {
-    {
-        try {
-            const response = await fetchWithAuth(`${symfonyUrl}/api/followers/unfollow/${friendshipId}`, {
-                method: 'DELETE',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({'followerId': profileId, 'followingId': friendId}),
-            })
+    try {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/followers/unfollow/${friendshipId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ followerId: profileId, followingId: friendId }),
+        });
 
-            if (!response.response) {
-                throw new Error('Failed to fetch unfollow profile');
-            }
-
-            return response;
-        } catch (error) {
+        if (!response?.response || response.status !== 200) {
             return [];
         }
+
+        return response;
+    } catch {
+        return [];
     }
-}
+};

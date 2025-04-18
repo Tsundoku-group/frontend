@@ -76,7 +76,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
             return {previousComments};
         },
         onSuccess: (response) => {
-            const savedComment = response.comment;
+            const savedComment = response.data;
 
             ShowToast("default", "Commentaire ajouté !");
             setCommentContent("");

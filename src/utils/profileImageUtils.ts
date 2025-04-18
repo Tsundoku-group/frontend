@@ -1,39 +1,39 @@
 import {fetchActiveProfilePictures,} from "@/server-actions/main/settings/actions";
 import {getDownloadURL, ref} from "@firebase/storage";
 import {storage} from "@/config/firebaseConfig";
+import {ProfilePicture} from "@/models/Profile";
 
 type ImageUrls = {
     profile?: string;
     cover?: string;
 };
 
+
 export const getProfileImageUrl = async (profileId: number): Promise<ImageUrls> => {
     try {
         const response = await fetchActiveProfilePictures(profileId);
 
-        if (!response) {
-            throw new Error("Aucune image active trouvée.");
-        }
-
         const urls: ImageUrls = {};
+        const images: Record<string, ProfilePicture> = response.data;
 
-        for (const type in response) {
-            const firebasePath = extractFirebasePath(response[type].url);
+        for (const type in images) {
+            const image: ProfilePicture = images[type];
+            const firebasePath = extractFirebasePath(image.url);
+
             if (firebasePath) {
                 const firebaseRef = ref(storage, firebasePath);
                 const firebaseUrl = await getDownloadURL(firebaseRef);
-
                 urls[type as keyof ImageUrls] = `${firebaseUrl}?t=${Date.now()}`;
             }
         }
 
         return urls;
-    }  catch (error: any) {
-        if (404 === error.response && error.response.status) {
+    } catch (error: any) {
+        if (error?.response?.status === 404) {
             return {};
         }
 
-        throw error;
+        return {};
     }
 };
 

@@ -31,14 +31,18 @@ export default function GroupCard({group}: GroupCardProps) {
         try {
             const result = await joinPrivateGroup(group.id, profileId, "member");
 
-            if (result.error) {
-                ShowToast("destructive", result.error, "Erreur");
-            } else if (result.data) {
+            if (!result.success) {
+                ShowToast("destructive", result.message, "Erreur");
+            } else {
                 setStatus("pending");
                 ShowToast("default", "Votre demande a bien été envoyée");
             }
         } catch (error) {
-            ShowToast("destructive", "Une erreur est survenue. Veuillez réessayer ultérieurement.", "Erreur")
+            ShowToast(
+                "destructive",
+                "Une erreur est survenue. Veuillez réessayer ultérieurement.",
+                "Erreur"
+            );
         }
     };
 
@@ -46,8 +50,8 @@ export default function GroupCard({group}: GroupCardProps) {
         if (!profileId) return;
         try {
             const result = await toggleFavoriteGroup(group.id, profileId, !favorite);
-            if (result.error) {
-                ShowToast("destructive", result.error, "Erreur");
+            if (!result.success) {
+                ShowToast("destructive", result.message, "Erreur");
             } else {
                 setFavorite(!favorite);
                 ShowToast("default", !favorite ? "Ajouté aux favoris" : "Favori retiré");
@@ -59,16 +63,19 @@ export default function GroupCard({group}: GroupCardProps) {
 
     const handleTogglePinned = async () => {
         if (!profileId) return;
+
         try {
             const result = await togglePinnedGroup(group.id, profileId, !pinned);
-            if (result.error) {
-                ShowToast("destructive", result.error, "Erreur");
-            } else {
-                setPinned(!pinned);
-                ShowToast("default", !pinned ? "Épinglé" : "Désépinglé");
+
+            if (!result.success) {
+                ShowToast("destructive", result.message, "Erreur");
+                return;
             }
+
+            setPinned(!pinned);
+            ShowToast("default", !pinned ? "Épinglé" : "Désépinglé");
         } catch (error) {
-            ShowToast("destructive", "Une erreur est survenue. Veuillez réessayer ultérieurement.", "Erreur")
+            ShowToast("destructive", "Une erreur est survenue. Veuillez réessayer ultérieurement.", "Erreur");
         }
     };
 

@@ -1,7 +1,7 @@
 'use server'
 
 import { fetchWithAuth } from "@/services/fetchWithAuth";
-import {Article} from "@/models/Article";
+import { Article } from "@/models/Article";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
@@ -10,9 +10,17 @@ export const fetchProfileArticles = async (
     page: number = 1,
     sortField: string = "createdAt",
     sortOrder: string = "desc",
-) => {
+): Promise<{ articles: Article[]; pagination: any }> => {
     if (!profileId) {
-        throw new Error("Profile id is missing");
+        return {
+            articles: [],
+            pagination: {
+                currentPage: page,
+                limit: 15,
+                totalArticles: 0,
+                totalPages: 1,
+            },
+        };
     }
 
     try {
@@ -31,7 +39,15 @@ export const fetchProfileArticles = async (
         );
 
         if (response.status !== 200 || !response.data) {
-            throw new Error("Failed to fetch articles");
+            return {
+                articles: [],
+                pagination: {
+                    currentPage: page,
+                    limit: 15,
+                    totalArticles: 0,
+                    totalPages: 1,
+                },
+            };
         }
 
         return response.data;
@@ -48,9 +64,9 @@ export const fetchProfileArticles = async (
     }
 };
 
-export const deleteArticle = async (articleId: string, editorId: number) => {
+export const deleteArticle = async (articleId: string, editorId: number): Promise<{ success: boolean; message: string }> => {
     if (!articleId) {
-        console.error("Article id is missing");
+        return { success: false, message: "Article id is missing" };
     }
 
     try {
@@ -61,12 +77,12 @@ export const deleteArticle = async (articleId: string, editorId: number) => {
         });
 
         if (response.status !== 200) {
-            throw new Error("Failed to delete article: " + (response.data?.error || response.status));
+            return { success: false, message: response.data?.error || "Échec de la suppression." };
         }
 
-        return { success: true, message: "Article deleted successfully" };
-    } catch (error) {
-        console.error("Failed to delete article: ", error);
+        return { success: true, message: "Article supprimé avec succès." };
+    } catch (error: any) {
+        return { success: false, message: error.message || "Erreur serveur." };
     }
 };
 
@@ -74,9 +90,9 @@ export const submitArticle = async (
     articleId: string | null,
     payload: { title: string; content: string; status: string; authorId: number },
     profileId: number | undefined
-) => {
+): Promise<{ success: boolean; message: string; data?: any }> => {
     if (!profileId) {
-        throw new Error("Profile id is missing");
+        return { success: false, message: "Profil manquant." };
     }
 
     try {
@@ -84,67 +100,57 @@ export const submitArticle = async (
         const url = articleId ? `${symfonyUrl}/api/v1/post/${articleId}` : `${symfonyUrl}/api/v1/post`;
 
         const modifiedPayload = { ...payload, type: "article" };
-
-        const JSONBody = JSON.stringify(modifiedPayload);
-
         const response = await fetchWithAuth(url, {
             method,
             headers: { "Content-Type": "application/json" },
-            body: JSONBody
+            body: JSON.stringify(modifiedPayload)
         });
 
-        if (response.status !== 200 && response.status !== 201) {
-            const errorMsg = response.data && response.data.error ? response.data.error : "Failed to submit article";
-            throw new Error("Failed to submit article: " + errorMsg);
+        if (![200, 201].includes(response.status)) {
+            return { success: false, message: response.data?.error || "Erreur lors de l'envoi." };
         }
-        return response.data;
-    } catch (error) {
-        throw new Error("Failed to submit article: " + error);
+
+        return { success: true, message: "Article soumis.", data: response.data };
+    } catch (error: any) {
+        return { success: false, message: error.message || "Erreur serveur" };
     }
 };
 
-export const updateArticleStatus = async (articleId: string, newStatus: string, editorId: number) => {
-    if (articleId === "") {
-        console.error("Article id is missing");
+export const updateArticleStatus = async (articleId: string, newStatus: string, editorId: number): Promise<{ success: boolean; message: string }> => {
+    if (!articleId) {
+        return { success: false, message: "Identifiant d'article manquant." };
     }
-
-    const payload = { status: newStatus, editorId };
-    const JSONBody = JSON.stringify(payload);
 
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${articleId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSONBody
+            body: JSON.stringify({ status: newStatus, editorId })
         });
 
         if (response.status !== 200) {
-            console.error("Failed to update article status: ", response.data?.error || response.status);
+            return { success: false, message: response.data?.error || "Échec de mise à jour." };
         }
-        return response.data;
-    } catch (error) {
-        console.error("Failed to update article status: ", error);
+
+        return { success: true, message: "Statut mis à jour." };
+    } catch (error: any) {
+        return { success: false, message: error.message || "Erreur serveur" };
     }
 };
 
-export const fetchArticle = async (id: number) => {
+export const fetchArticle = async (id: number): Promise<Article | null> => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${id}`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
         });
 
-        const data = response.data;
-
-        if (response.status !== 200 || !data) {
-            throw new Error("Failed to fetch article");
+        if (response.status !== 200 || !response.data) {
+            return null;
         }
 
-        return data as Article;
-
+        return response.data as Article;
     } catch (error) {
-        throw new Error("Failed to fetch article");
+        return null;
     }
-}
+};

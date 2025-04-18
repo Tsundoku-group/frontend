@@ -6,7 +6,7 @@ import {useAuthContext} from "@/context/authContext";
 import {Button} from "@/components/ui/button";
 import {Plug} from "lucide-react";
 import {useProfileContext} from "@/context/profileContext";
-import {setUserProfileStatus} from "@/components/navbar/actions";
+import {setUserProfileStatus} from "@/server-actions/navbar/actions";
 
 type LogoutButtonProps = {
     onClose: () => void;

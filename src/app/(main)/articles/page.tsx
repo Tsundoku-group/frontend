@@ -56,26 +56,36 @@ export default function ArticlesPage() {
     };
 
     const handleDeleteArticle = async (articleId: string) => {
-        try {
-            if (!profileId) throw new Error("Profile id is missing");
-            await deleteArticle(articleId, profileId);
+        if (!profileId) {
+            console.error("L'identifiant du profil est manquant.");
+            return;
+        }
+
+        const result = await deleteArticle(articleId, profileId);
+
+        if (result?.success) {
             await loadArticles();
-        } catch (error) {
-            console.error("Failed to delete article: ", error);
+        } else {
+            console.error("Échec de la suppression de l'article :", result?.message || "Erreur inconnue");
         }
     };
 
     const handleStatusChange = async (articleId: string, newStatus: string) => {
-        try {
-            if (!profileId) throw new Error("Profile id is missing");
-            await updateArticleStatus(articleId, newStatus, profileId);
+        if (!profileId) {
+            console.error("L'identifiant du profil est manquant.");
+            return;
+        }
+
+        const result = await updateArticleStatus(articleId, newStatus, profileId);
+
+        if (result?.success) {
             setArticles(prevArticles =>
                 prevArticles.map(article =>
                     article.id === articleId ? { ...article, status: newStatus } : article
                 )
             );
-        } catch (error) {
-            console.error("Failed to update article status: ", error);
+        } else {
+            console.error("Échec de la mise à jour du statut :", result?.message || "Erreur inconnue");
         }
     };
 

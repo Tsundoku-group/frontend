@@ -750,8 +750,8 @@ export default function ProfileSettingsPage() {
         if (!profileId) return;
 
         try {
-            const data: Profile = await fetchUserProfileData(profileId);
-            setProfile({...data|| "Autre"});
+            const data = await fetchUserProfileData(profileId);
+            setProfile(data.data);
         } catch (error) {
             ShowToast("destructive", "Erreur lors de la récupération du profil. Veuillez réessayer plus tard.", "Erreur");
         }

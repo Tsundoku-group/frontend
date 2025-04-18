@@ -1,11 +1,15 @@
 'use server';
 
-import {fetchWithAuth} from "@/services/fetchWithAuth";
-import {Profile, ProfilePicture} from "@/models/Profile";
+import { fetchWithAuth } from "@/services/fetchWithAuth";
+import { Profile, ProfilePicture } from "@/models/Profile";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
-export async function fetchUserProfileData(profileId: number): Promise<Profile> {
+export async function fetchUserProfileData(profileId: number): Promise<{
+    data: Profile | null;
+    success: boolean;
+    message: string;
+}> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}`, {
             method: 'GET',
@@ -15,16 +19,20 @@ export async function fetchUserProfileData(profileId: number): Promise<Profile> 
         });
 
         if (!response || !response.data) {
-            throw new Error('Invalid response from the server');
+            return { data: null, success: false, message: 'Invalid response from the server' };
         }
 
-        return response.data as Profile;
-    } catch (error) {
-        throw new Error('Failed to fetch user profile data');
+        return { data: response.data as Profile, success: true, message: 'OK' };
+    } catch {
+        return { data: null, success: false, message: 'Failed to fetch user profile data' };
     }
 }
 
-export async function updateUserProfileData(profileId: number, profileData: Partial<Profile>): Promise<Profile> {
+export async function updateUserProfileData(profileId: number, profileData: Partial<Profile>): Promise<{
+    data: Profile | null;
+    success: boolean;
+    message: string;
+}> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}/edit`, {
             method: 'PUT',
@@ -35,124 +43,145 @@ export async function updateUserProfileData(profileId: number, profileData: Part
         });
 
         if (!response || !response.data) {
-            throw new Error('Invalid response from the server');
+            return { data: null, success: false, message: 'Invalid response from the server' };
         }
 
-        return response.data as Profile;
-    } catch (error) {
-        throw new Error('Failed to update user profile data');
+        return { data: response.data as Profile, success: true, message: 'OK' };
+    } catch {
+        return { data: null, success: false, message: 'Failed to update user profile data' };
     }
 }
 
-export async function fetchActiveProfilePictures(profileId: number): Promise<Record<string, ProfilePicture>> {
+export async function fetchActiveProfilePictures(profileId: number): Promise<{
+    data: Record<string, ProfilePicture>;
+    success: boolean;
+    message: string;
+}> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/${profileId}/active`,
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/${profileId}/active`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
-        if (404 === response.status) {
-            return {};
+        if (response.status === 404) {
+            return { data: {}, success: true, message: 'No images found' };
         }
 
         if (!response.response || response.status !== 200) {
-            throw new Error('Invalid response from the server');
+            return { data: {}, success: false, message: 'Invalid response from the server' };
         }
 
-        return response.data as Record<string, ProfilePicture>;
-    } catch (error) {
-        throw new Error('Impossible de récupérer les photos actives.');
+        return { data: response.data as Record<string, ProfilePicture>, success: true, message: 'OK' };
+    } catch {
+        return { data: {}, success: false, message: 'Impossible de récupérer les photos actives.' };
     }
 }
 
-export async function fetchUploadImageProfile(userId: number, profileId: number, imageUrl: string, type: string): Promise<ProfilePicture> {
+export async function fetchUploadImageProfile(userId: number, profileId: number, imageUrl: string, type: string): Promise<{
+    data: ProfilePicture | null;
+    success: boolean;
+    message: string;
+}> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/upload`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id: userId, profileId: profileId, url: imageUrl, type})
+            body: JSON.stringify({ id: userId, profileId, url: imageUrl, type })
         });
 
         if (!response.response || !response.data) {
-            throw new Error('Invalid response from the server');
+            return { data: null, success: false, message: 'Invalid response from the server' };
         }
 
-        return response.data as ProfilePicture;
-    } catch (error) {
-        throw new Error('Failed to fetch upload image');
+        return { data: response.data as ProfilePicture, success: true, message: 'OK' };
+    } catch {
+        return { data: null, success: false, message: 'Failed to fetch upload image' };
     }
 }
 
-export async function deleteUserProfilePictureUrl(id: number, profileId: number, url: string, type: string): Promise<{ response: boolean; status: number; data: any } | { response: boolean; status: number; message: string; error: any }> {
+export async function deleteUserProfilePictureUrl(id: number, profileId: number, url: string, type: string): Promise<{
+    success: boolean;
+    status: number;
+    message: string;
+    data?: any;
+    error?: any;
+}> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/remove`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id, profileId, url, type})
+            body: JSON.stringify({ id, profileId, url, type })
         });
 
-        if (!response.response || 200 !== response.status) {
-            throw new Error('Invalid response from the server');
+        if (!response.response || response.status !== 200) {
+            return { success: false, status: response.status, message: 'Invalid response from the server', error: response.data };
         }
 
-        return response;
+        return { success: true, status: response.status, message: 'Deleted successfully', data: response.data };
     } catch (error) {
-        throw new Error('Failed to delete profile picture');
+        return { success: false, status: 500, message: 'Failed to delete profile picture', error };
     }
 }
 
-export async function fetchVerifyPwd(currentPassword: string) {
+export async function fetchVerifyPwd(currentPassword: string): Promise<{
+    success: boolean;
+    status: number;
+    message: string;
+}> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/users/password/verify`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({currentPassword})
+            body: JSON.stringify({ currentPassword })
         });
 
         if (!response.response) {
-            throw new Error("Erreur lors de la vérification du mot de passe.");
+            return { success: false, status: response?.status || 500, message: 'Erreur lors de la vérification du mot de passe.' };
         }
 
-        return response;
+        return { success: true, status: response.status, message: 'Mot de passe vérifié' };
     } catch (error) {
-        throw error;
+        return { success: false, status: 500, message: 'Erreur interne serveur' };
     }
 }
 
-export async function fetchUpdatePwd({ newPassword, captchaToken }: { newPassword: string; captchaToken: string }) {
+export async function fetchUpdatePwd({ newPassword, captchaToken }: { newPassword: string; captchaToken: string }): Promise<{
+    success: boolean;
+    status: number;
+    message: string;
+}> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/users/password/update`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                newPassword: newPassword,
-                captchaToken: captchaToken,
-            })
+            body: JSON.stringify({ newPassword, captchaToken })
         });
 
         if (!response.response) {
-            throw new Error("Erreur lors de la vérification du nouveau mot de passe.")
+            return { success: false, status: response?.status || 500, message: 'Erreur lors de la vérification du nouveau mot de passe.' };
         }
 
-        return response;
-    } catch (error) {
-        throw error;
+        return { success: true, status: response.status, message: 'Mot de passe mis à jour' };
+    } catch {
+        return { success: false, status: 500, message: 'Erreur interne' };
     }
 }
 
-export async function fetchDeletePwd(userId: string) {
+export async function fetchDeletePwd(userId: string): Promise<{
+    success: boolean;
+    status: number;
+    message: string;
+}> {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/users/${userId}/delete/request`, {
             method: 'DELETE',
@@ -162,11 +191,11 @@ export async function fetchDeletePwd(userId: string) {
         });
 
         if (!response.response) {
-            throw new Error("Erreur lors de la suppression du compte.")
+            return { success: false, status: response?.status || 500, message: 'Erreur lors de la suppression du compte.' };
         }
 
-        return response;
-    } catch (error) {
-        throw error;
+        return { success: true, status: response.status, message: 'Compte supprimé avec succès' };
+    } catch {
+        return { success: false, status: 500, message: 'Erreur serveur interne' };
     }
 }

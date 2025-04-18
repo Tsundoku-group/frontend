@@ -13,6 +13,12 @@ interface SearchComponentProps {
     setSort: (value: string) => void;
 }
 
+interface FetchAllTagsResponse {
+    tags: Tag[];
+    code: number;
+    message: string;
+}
+
 export default function SearchComponent({
                                             search,
                                             setSearch,
@@ -21,12 +27,12 @@ export default function SearchComponent({
                                             sort,
                                             setSort
                                         }: SearchComponentProps) {
-    const { data: tagsData, isLoading: tagsLoading } = useQuery<Tag[]>({
+    const { data: tagsResponse, isLoading: tagsLoading } = useQuery<FetchAllTagsResponse, Error>({
         queryKey: ['tags'],
         queryFn: () => fetchAllTags(),
         staleTime: 60000,
     });
-    
+
     return (
         <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
             <div className="relative w-full md:w-1/3">
@@ -48,7 +54,7 @@ export default function SearchComponent({
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">📂 Toutes les catégories</SelectItem>
-                    {!tagsLoading && tagsData?.map((tag) => (
+                    {!tagsLoading && tagsResponse?.tags?.map((tag) => (
                         <SelectItem key={tag.slug} value={tag.slug}>
                             {tag.name}
                         </SelectItem>

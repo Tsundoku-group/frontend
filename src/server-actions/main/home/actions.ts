@@ -1,7 +1,7 @@
-'use server'
+'use server';
 
-import {fetchWithAuth} from "@/services/fetchWithAuth";
-import {PostData} from "@/models/PostData";
+import { fetchWithAuth } from "@/services/fetchWithAuth";
+import { PostData } from "@/models/PostData";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
@@ -11,23 +11,22 @@ export const createNewPost = async (postData: PostData) => {
             method: "POST",
             body: JSON.stringify(postData)
         });
-        if (!response) {
-            throw new Error('Failed to create post');
+
+        if (!response || !response.response) {
+            return { success: false, message: 'Création de post échouée.' };
         }
 
-        return response;
-    } catch (error) {
-        throw new Error("Erreur du serveur");
+        return { success: true, data: response.data };
+    } catch {
+        return { success: false, message: 'Erreur du serveur.' };
     }
-}
+};
 
 export const updatePost = async (postData: PostData) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${postData.id}`, {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 title: "",
                 content: postData.content,
@@ -36,55 +35,50 @@ export const updatePost = async (postData: PostData) => {
             })
         });
 
-        if (!response) {
-            throw new Error('Failed to update post');
+        if (!response || !response.response) {
+            return { success: false, message: 'Mise à jour échouée.' };
         }
 
-        return response;
-    } catch (error) {
-        throw new Error("Erreur du serveur");
+        return { success: true, data: response.data };
+    } catch {
+        return { success: false, message: 'Erreur du serveur.' };
     }
-}
+};
 
-export const deletePost = async (postData: { id: number; editorId?: number; }) => {
+export const deletePost = async (postData: { id: number; editorId?: number }) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${postData.id}`, {
             method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(postData)
         });
 
-        if (!response.response || 200 !== response.status) {
-            throw new Error('Failed to delete post');
+        if (!response.response || response.status !== 200) {
+            return { success: false, message: 'Suppression échouée.' };
         }
-        return response.data;
-    } catch (error) {
-        throw new Error("Erreur du serveur");
+
+        return { success: true, data: response.data };
+    } catch {
+        return { success: false, message: 'Erreur du serveur.' };
     }
-}
+};
 
 export const fetchRecentPosts = async (groupId: number, profileId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/groups/${groupId}/posts/recent?profileId=${profileId}`, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            }
+            headers: { "Content-Type": "application/json" }
         });
 
-        const data = response.data;
-
         if (!response || !response.data || !Array.isArray(response.data.posts)) {
-            return [];
+            return { success: false, posts: [] };
         }
 
-        return data.posts;
-    } catch (error) {
-        throw new Error("Erreur du serveur");
+        return { success: true, posts: response.data.posts };
+    } catch {
+        return { success: false, posts: [] };
     }
-}
+};
 
 export const fetchOlderPosts = async (pageParam: number, limit = 20, groupId: number, profileId: number) => {
     try {
@@ -92,65 +86,60 @@ export const fetchOlderPosts = async (pageParam: number, limit = 20, groupId: nu
             `${symfonyUrl}/api/v1/groups/${groupId}/posts/older?profileId=${profileId}&limit=${limit}&offset=${(pageParam - 1) * limit}`,
             {
                 method: "GET",
-                headers: {"Content-Type": "application/json"},
+                headers: { "Content-Type": "application/json" }
             }
         );
+
         if (!response || !response.data || !Array.isArray(response.data.posts)) {
-            return {posts: [], nextPage: undefined};
+            return { posts: [], nextPage: undefined };
         }
 
         const hasMore = response.data.posts.length === limit;
-        const nextPage = hasMore ? pageParam + 1 : undefined;
-
         return {
             posts: response.data.posts,
-            nextPage
+            nextPage: hasMore ? pageParam + 1 : undefined
         };
-    } catch (error) {
-        throw new Error("Erreur du serveur");
+    } catch {
+        return { posts: [], nextPage: undefined };
     }
-}
+};
 
 export const fetchLastCommentsFromPost = async (postId: number, profileId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${postId}/${profileId}/comments`, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            }
+            headers: { "Content-Type": "application/json" }
         });
 
         if (!response || !response.data) {
-            return {comments: []}
+            return { comments: [] };
         }
 
-        return {
-            comments: response.data.comments,
-        }
-    } catch (error) {
-        throw new Error("Erreur du serveur");
+        return { comments: response.data.comments };
+    } catch {
+        return { comments: [] };
     }
-}
+};
 
 export const createCommentOnPost = async (commentData: {
     postId: number;
     authorId: number | undefined;
-    content: string
+    content: string;
 }) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/add/post`, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(commentData)
         });
 
-        if (!response.response || 201 !== response.status) {
-            throw new Error('Failed to create comment');
+        if (!response.response || response.status !== 201) {
+            return { success: false, message: 'Création du commentaire échouée.' };
         }
 
-        return response.data;
-    } catch (error) {
-        throw new Error("Erreur du serveur");
+        return { success: true, data: response.data };
+    } catch {
+        return { success: false, message: 'Erreur du serveur.' };
     }
 };
 
@@ -162,41 +151,37 @@ export const updateCommentOnPost = async (
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/update`, {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({authorId, content})
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ authorId, content })
         });
 
-        if (!response.response || 200 !== response.status) {
-            throw new Error('Failed to update comment');
+        if (!response.response || response.status !== 200) {
+            return { success: false, message: 'Mise à jour échouée.' };
         }
 
-        return response.data;
-    } catch (error) {
-        throw new Error("Erreur du serveur");
+        return { success: true, data: response.data };
+    } catch {
+        return { success: false, message: 'Erreur du serveur.' };
     }
-}
+};
 
 export const deleteCommentOnPost = async (commentId: number, authorId: number) => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/delete`, {
             method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({authorId})
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ authorId })
         });
 
-        if (!response.response || 200 !== response.status) {
-            throw new Error('Failed to delete comment');
+        if (!response.response || response.status !== 200) {
+            return { success: false, message: 'Suppression du commentaire échouée.' };
         }
 
-        return response.data;
-    } catch (error) {
-        throw new Error("Erreur du serveur");
+        return { success: true, data: response.data };
+    } catch {
+        return { success: false, message: 'Erreur du serveur.' };
     }
-}
+};
 
 export const replyToComment = async (replyData: {
     postId: number;
@@ -207,17 +192,17 @@ export const replyToComment = async (replyData: {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/add/reply`, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(replyData)
         });
 
-        if (!response.response || 201 !== response.status) {
-            throw new Error('Failed to create reply');
+        if (!response.response || response.status !== 201) {
+            return { success: false, message: 'Réponse échouée.' };
         }
 
-        return response.data;
-    } catch (error) {
-        throw new Error("Erreur du serveur");
+        return { success: true, data: response.data };
+    } catch {
+        return { success: false, message: 'Erreur du serveur.' };
     }
 };
 
@@ -225,22 +210,18 @@ export const fetchRepliesForComment = async (commentId: number, profileId: numbe
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/${profileId}/children`, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            }
+            headers: { "Content-Type": "application/json" }
         });
 
         if (!response || !response.data) {
-            return {comments: []}
+            return { replies: [] };
         }
 
-        return {
-            replies: response.data
-        }
-    } catch (error) {
-        throw new Error("Erreur du serveur");
+        return { replies: response.data };
+    } catch {
+        return { replies: [] };
     }
-}
+};
 
 export async function likePost(
     actorId: number,
@@ -252,7 +233,7 @@ export async function likePost(
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/react/toggle`, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 actorId,
                 receiverId,
@@ -262,12 +243,12 @@ export async function likePost(
             }),
         });
 
-        if (!response.response || 200 !== response.status) {
-            throw new Error("Erreur lors du like");
+        if (!response.response || response.status !== 200) {
+            return { success: false, message: "Erreur lors de l'enregistrement de la réaction." };
         }
 
-        return response;
-    } catch (error) {
-        throw error;
+        return { success: true, data: response.data };
+    } catch {
+        return { success: false, message: 'Erreur du serveur.' };
     }
 }

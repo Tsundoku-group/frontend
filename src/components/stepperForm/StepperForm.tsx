@@ -13,7 +13,7 @@ import {
     AlertDialogAction,
     AlertDialogCancel, AlertDialogTitle, AlertDialogDescription
 } from '@/components/ui/alert-dialog';
-import {addNewUserProfile, setActiveUserProfile} from "@/components/navbar/actions";
+import {addNewUserProfile, setActiveUserProfile} from "@/server-actions/navbar/actions";
 import {ShowToast} from "@/components/ShowToast";
 import {z} from "zod";
 import {useForm} from "react-hook-form";
@@ -109,9 +109,9 @@ const StepperForm = ({onSuccess}: { onSuccess: () => void }) => {
             ShowToast("destructive", "Une erreur est survenue. Veuillez réessayer plus tard", "Erreur");
         }
 
-        if (newProfileAdd && newProfileAdd.id) {
-            await setActiveUserProfile(userId, newProfileAdd.id);
-            setActiveProfileInStorage(newProfileAdd, true);
+        if (newProfileAdd && newProfileAdd.data.id) {
+            await setActiveUserProfile(userId, newProfileAdd.data.id);
+            setActiveProfileInStorage(newProfileAdd.data, true);
         }
     });
 

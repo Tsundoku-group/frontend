@@ -2,6 +2,8 @@
 
 import { fetchWithAuth } from "@/services/fetchWithAuth";
 import { GroupData } from "@/models/GroupData";
+import {GroupMember} from "@/models/GroupMember";
+import {Tag} from "@/models/Tag";
 
 const symfonyUrl = process.env.SYMFONY_URL;
 
@@ -9,6 +11,12 @@ const roleLabelMap: Record<string, string> = {
     admin: "Administrateur",
     member: "Membre",
 };
+
+export interface FetchAllTagsResponse {
+    tags: Tag[];
+    code: number;
+    message: string;
+}
 
 export const fetchPrivateGroups = async (
     search: string,
@@ -47,26 +55,40 @@ export const fetchPrivateGroups = async (
     }
 };
 
-export const fetchGroupBySlug = async (slug: string): Promise<GroupData | null> => {
+export const fetchGroupBySlug = async (
+    slug: string
+): Promise<{ group: GroupData | null; code: number; message: string }> => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/groups/${slug}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         });
 
         if (!response.response || response.status !== 200) {
-            return null;
+            return {
+                group: null,
+                code: response.status,
+                message: response?.message || "Erreur de récupération du groupe",
+            };
         }
 
-        return response.data;
-    } catch (error) {
-        return null;
+        return {
+            group: response.data,
+            code: 200,
+            message: "OK",
+        };
+    } catch (error: any) {
+        return {
+            group: null,
+            code: 500,
+            message: "Erreur réseau ou interne",
+        };
     }
-}
+};
 
-export const fetchAllTags = async ()=> {
+export const fetchAllTags = async (): Promise<FetchAllTagsResponse> => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/tags`, {
             method: "GET",
@@ -75,21 +97,37 @@ export const fetchAllTags = async ()=> {
             }
         });
 
-        if (!response || 200 !== response.status) {
-            return [];
+        if (!response || response.status !== 200) {
+            return {
+                tags: [],
+                code: response?.status || 500,
+                message: response?.message || "Erreur de récupération des tags",
+            };
         }
 
-        return response.data.tags;
-    } catch (error) {
-        return [];
+        return {
+            tags: response.data.tags as Tag[],
+            code: 200,
+            message: "OK",
+        };
+    } catch (error: any) {
+        return {
+            tags: [],
+            code: 500,
+            message: "Erreur réseau ou interne",
+        };
     }
-}
+};
 
 export const joinPrivateGroup = async (
     groupId: number,
     profileId: number,
     role: string
-) => {
+): Promise<{
+    success: boolean;
+    code: number;
+    message: string;
+}> => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/group/profile`, {
             method: "POST",
@@ -100,12 +138,24 @@ export const joinPrivateGroup = async (
         });
 
         if (!response.response || response.status !== 201) {
-            return { error: response.data?.error || "Erreur inconnue lors de la requête" };
+            return {
+                success: false,
+                code: response?.status || 500,
+                message: response?.data?.error || "Impossible de rejoindre le groupe",
+            };
         }
 
-        return { data: response.data };
+        return {
+            success: true,
+            code: 201,
+            message: "Rejoint avec succès",
+        };
     } catch (error: any) {
-        return { error: error.message || "Erreur inconnue" };
+        return {
+            success: false,
+            code: 500,
+            message: error?.message || "Erreur serveur inattendue",
+        };
     }
 };
 
@@ -113,7 +163,11 @@ export const toggleFavoriteGroup = async (
     groupId: number,
     profileId: number,
     isFavorite: boolean
-) => {
+): Promise<{
+    success: boolean;
+    code: number;
+    message: string;
+}> => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/marks`, {
             method: "POST",
@@ -121,19 +175,32 @@ export const toggleFavoriteGroup = async (
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                profileId: profileId,
+                profileId,
                 targetId: groupId,
                 targetType: "group",
-                isFavorite: isFavorite,
+                isFavorite,
             }),
         });
 
         if (!response.response || response.status !== 201) {
-            return {error: "not found"};
+            return {
+                success: false,
+                code: response?.status || 500,
+                message: response?.message || "Impossible de modifier l'état du favori",
+            };
         }
-        return response;
+
+        return {
+            success: true,
+            code: 201,
+            message: "État du favori mis à jour avec succès.",
+        };
     } catch (error: any) {
-        return { error: error.message };
+        return {
+            success: false,
+            code: 500,
+            message: error?.message || "Erreur serveur inattendue",
+        };
     }
 };
 
@@ -141,7 +208,11 @@ export const togglePinnedGroup = async (
     groupId: number,
     profileId: number,
     isPinned: boolean
-) => {
+): Promise<{
+    success: boolean;
+    code: number;
+    message: string;
+}> => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/marks`, {
             method: "POST",
@@ -149,41 +220,53 @@ export const togglePinnedGroup = async (
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                profileId: profileId,
+                profileId,
                 targetId: groupId,
                 targetType: "group",
-                isPinned: isPinned,
+                isPinned,
             }),
         });
 
         if (!response.response || response.status !== 201) {
-            return {error: "not found"};
+            return {
+                success: false,
+                code: response.status,
+                message: response?.message || "Impossible de modifier l'état de l'épingle",
+            };
         }
 
-        return response;
+        return {
+            success: true,
+            code: 201,
+            message: "État de l'épingle mis à jour avec succès.",
+        };
     } catch (error: any) {
-        return { error: error.message };
+        return {
+            success: false,
+            code: 500,
+            message: error?.message || "Erreur serveur inattendue",
+        };
     }
 };
 
-export const fetchMembersFromGroup = async (groupId: number) => {
+export const fetchMembersFromGroup = async (
+    groupId: number
+): Promise<GroupMember[]> => {
     try {
         const response = await fetchWithAuth(`${symfonyUrl}/api/v1/groups/${groupId}/members`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         });
 
-        if (!response || response.status !== 200) {
+        if (!response?.response || response.status !== 200 || !response.data) {
             return [];
         }
 
-        const members = response.data;
-
-        return members.map((member: any) => ({
+        return response.data.map((member: any) => ({
             ...member,
-            roleLabel: roleLabelMap[member.groupRole] ?? member.groupRole
+            roleLabel: roleLabelMap[member.groupRole] ?? member.groupRole,
         }));
     } catch (error) {
         return [];
