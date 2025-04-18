@@ -208,7 +208,7 @@ export default function Navbar() {
                     <div className="text-xs text-gray-400 mb-1">{isSwitching === 'profiles' ? 'Changer de profil' : 'Changer de statut'}</div>
                     <RadioGroup value={currentValue} onValueChange={(val) => {
                         if (isSwitching === 'profiles') {
-                            handleProfileChange(parseInt(val));
+                            void handleProfileChange(parseInt(val));
                         } else {
                             activeProfile && handleStatusProfileChange(activeProfile, val);
                         }

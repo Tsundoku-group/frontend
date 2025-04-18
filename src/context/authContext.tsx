@@ -49,7 +49,7 @@ export function AuthProvider({children}: { children: React.ReactNode; }) {
                 setError('Erreur: failed to get session');
             }
         };
-        checkAuthBySession();
+        void checkAuthBySession();
     }, [router]);
 
     const logout = useCallback(async () => {

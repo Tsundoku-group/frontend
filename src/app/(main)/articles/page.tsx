@@ -41,7 +41,9 @@ export default function ArticlesPage() {
 
     useEffect(() => {
         if (profileId) {
-            loadArticles();
+            loadArticles().catch((error) => {
+                console.error("Erreur lors du chargement des articles :", error);
+            });
         }
     }, [profileId, loadArticles]);
 

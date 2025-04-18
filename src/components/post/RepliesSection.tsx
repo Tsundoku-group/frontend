@@ -64,7 +64,7 @@ export default function RepliesSection({commentId, postId}: RepliesSectionProps)
             ShowToast("destructive", "Erreur lors de l'ajout de la réponse", "Erreur");
         },
         onSettled: () => {
-            queryClient.invalidateQueries({queryKey: ["replies", commentId]});
+            void queryClient.invalidateQueries({queryKey: ["replies", commentId]});
         },
     });
 

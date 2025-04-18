@@ -36,7 +36,7 @@ export default function InfiniteFeed({groupId}: Props) {
 
         const observer = new IntersectionObserver(([entry]) => {
             if (entry.isIntersecting) {
-                fetchNextPage();
+                void fetchNextPage();
             }
         }, {rootMargin: "600px"});
 

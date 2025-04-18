@@ -91,14 +91,14 @@ const ArchivesConversationItem = React.memo(({id, imageUrl, username, lastMessag
                                 <DropdownMenuItem
                                     onClick={(event) => {
                                         event.stopPropagation();
-                                        handleRestoreClick();
+                                        void handleRestoreClick();
                                     }}>
                                     Restaurer<ArchiveRestore className="h-4 w-4 ml-8"/>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={(event) => {
                                         event.stopPropagation();
-                                        handleDeleteClick();
+                                        void handleDeleteClick();
                                     }}>
                                     Supprimer<Trash2 className="h-4 w-4 ml-7"/>
                                 </DropdownMenuItem>

@@ -221,7 +221,7 @@ export default function PostCard({post, groupId, onDelete}: { post: Post, groupI
                         <AlertDialogAction className="bg-red-highlight"
                                            disabled={isDeleting}
                                            onClick={() => {
-                                               handleDeletePost();
+                                               void handleDeletePost();
                                                setIsDialogOpen(false);
                                            }}>
                             {isDeleting ? "Suppression..." : "Supprimer"}

@@ -57,7 +57,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             socketInstance.off("newNotification");
             socketInstance.disconnect();
         };
-    }, [profileId, socket]);
+    }, [profileId]);
 
     const addNotification = (notification: Notification) => {
         setNotifications((prev) => [notification, ...prev]);

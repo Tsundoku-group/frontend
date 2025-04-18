@@ -86,7 +86,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
             const parsedProfile = JSON.parse(storedProfile) as Profile;
             setActiveProfileInStorageState(parsedProfile);
 
-            loadProfileImages(parsedProfile.id);
+            void loadProfileImages(parsedProfile.id);
         }
         setInitialLoading(false);
     }, [loadProfileImages]);
@@ -114,7 +114,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         setActiveProfileInStorageState(completeProfile);
 
         if (profileData.id) {
-            loadProfileImages(profileData.id);
+            void loadProfileImages(profileData.id);
         }
 
         if (triggerLoading) {
@@ -132,7 +132,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         localStorage.removeItem(cacheKeys.profile);
         localStorage.removeItem(cacheKeys.cover);
 
-        loadProfileImages(profileId);
+        void loadProfileImages(profileId);
     };
 
     if (initialLoading) {

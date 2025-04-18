@@ -95,7 +95,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
         },
         onSuccess: () => {
             ShowToast("default", "Commentaire modifié !");
-            queryClient.invalidateQueries({queryKey: ["comments", postId]});
+            void queryClient.invalidateQueries({queryKey: ["comments", postId]});
             setEditingCommentId(null);
         },
         onError: () => {
@@ -130,7 +130,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({queryKey: ["comments", postId]});
+            void queryClient.invalidateQueries({queryKey: ["comments", postId]});
         },
     });
 

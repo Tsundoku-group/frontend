@@ -47,7 +47,7 @@ const FriendsPage = React.memo(() => {
             }
         };
 
-        fetchFriendsData();
+        void fetchFriendsData();
     }, [userId]);
 
     const onStartConversation = async (friendId: string) => {

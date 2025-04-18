@@ -22,7 +22,7 @@ export default function ArticlePage({ params }: { params: { articleId: number } 
                 console.error("Failed to fetch article: ", error);
             }
         }
-        loadArticle();
+        void loadArticle();
     }, [params.articleId]);
 
     return (

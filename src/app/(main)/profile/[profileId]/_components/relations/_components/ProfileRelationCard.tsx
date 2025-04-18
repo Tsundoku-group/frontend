@@ -65,7 +65,7 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
             }
         }
 
-        fetchOtherProfileImages();
+        void fetchOtherProfileImages();
     }, [friend.friendId]);
 
     const handleAction = async () => {

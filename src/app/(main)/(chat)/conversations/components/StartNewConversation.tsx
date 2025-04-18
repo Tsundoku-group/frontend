@@ -14,7 +14,7 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {Check, SquarePen} from "lucide-react";
 import {useAuthContext} from "@/context/authContext";
-import {fetchFriendsList} from "@/app/(main)/(chat)/friends/actions";
+import {fetchFriendsList} from "@/server-actions/main/chat/friends/actions";
 import {startNewConversation} from "@/server-actions/main/chat/conversations/actions";
 import {Loader2} from "lucide-react";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
@@ -105,7 +105,7 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
     const handleDialogOpenChange = (open: boolean) => {
         setIsDialogOpen(open);
         if (open) {
-            loadFriends();
+            void loadFriends();
         }
         setSelectedFriend(null);
     };

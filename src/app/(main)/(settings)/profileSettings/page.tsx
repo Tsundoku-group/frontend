@@ -204,7 +204,7 @@ const ImageCropDialog: React.FC<ImageCropDialogProps> = ({firebasePath, isOpen, 
         };
 
         if (firebasePath) {
-            loadFirebaseImage();
+            void loadFirebaseImage();
         } else {
             setImageUrl(null);
         }
@@ -393,7 +393,7 @@ const ProfilePictureSection = React.memo(({imageUrl, coverUrl}: ProfilePictureSe
             }
         };
 
-        fetchImages();
+        void fetchImages();
     }, [profileId]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
@@ -470,7 +470,7 @@ const ProfilePictureSection = React.memo(({imageUrl, coverUrl}: ProfilePictureSe
                 }
             }
 
-            fetchImages();
+            void fetchImages();
         }, [profileId, type]);
 
         const handleDeleteImage = async (url: string, type: string) => {
@@ -758,7 +758,7 @@ export default function ProfileSettingsPage() {
     }, [profileId]);
 
     useEffect(() => {
-        fetchUserProfile();
+        void fetchUserProfile();
     }, [fetchUserProfile]);
 
     const {register, handleSubmit, reset, formState} = useForm<z.infer<typeof ProfileSchema>>({

@@ -62,7 +62,7 @@ const AddFriends = () => {
     });
 
     const handleSubmit = form.handleSubmit((values) => {
-        createRequest(values);
+        void createRequest(values);
     });
 
     return (

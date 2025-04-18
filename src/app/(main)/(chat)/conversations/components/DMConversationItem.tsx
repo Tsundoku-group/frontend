@@ -216,14 +216,14 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={(event) => {
                                     event.stopPropagation();
-                                    handleArchiveClick();
+                                    void handleArchiveClick();
                                 }}>
                                     Archives<ArchiveRestore className="h-4 w-4 ml-8"/>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={(event) => {
                                         event.stopPropagation();
-                                        handleDeleteClick();
+                                        void handleDeleteClick();
                                     }}>
                                     Supprimer<Trash2 className="h-4 w-4 ml-5"/>
                                 </DropdownMenuItem>

@@ -69,7 +69,14 @@ const ConversationView = React.memo(({conversationId}: Props) => {
     }, [conversationId]);
 
     useEffect(() => {
-        fetchData();
+        const run = async () => {
+            try {
+                await fetchData();
+            } catch (err) {
+                console.error("Erreur dans fetchData:", err);
+            }
+        };
+        run();
     }, [fetchData]);
 
     useEffect(() => {
@@ -109,7 +116,10 @@ const ConversationView = React.memo(({conversationId}: Props) => {
             }
         };
 
-        markUnreadMessagesAsRead();
+        markUnreadMessagesAsRead()
+            .catch((err) => {
+                console.error("Erreur lors du marquage des messages comme lus :", err);
+            });
 
     }, [socket, messages, conversationId, otherParticipant, user?.userId]);
     

@@ -34,7 +34,7 @@ export default function GroupPage({ params: {slug} }: Props) {
             }
         };
 
-        loadGroup();
+        void loadGroup();
     }, [slug]);
 
     if (loading) return <div className="text-white">Chargement...</div>;

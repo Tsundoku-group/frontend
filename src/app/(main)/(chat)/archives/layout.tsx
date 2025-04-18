@@ -38,7 +38,7 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (userId) {
-            fetchArchivedConversationsData();
+            void fetchArchivedConversationsData();
         }
     }, [fetchArchivedConversationsData, userId]);
 

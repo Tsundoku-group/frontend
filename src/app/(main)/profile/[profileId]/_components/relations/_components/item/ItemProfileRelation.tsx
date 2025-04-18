@@ -97,7 +97,7 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({profileId, rel
 
     useEffect(() => {
         if (relationType === 'friends' && activeTab === 'suggestions') {
-            fetchSuggestions(itemsPerPage, suggestionsOffset);
+            void fetchSuggestions(itemsPerPage, suggestionsOffset);
         } else {
             setLoading(true);
             fetchRelations(relationType, itemsPerPage, offset)

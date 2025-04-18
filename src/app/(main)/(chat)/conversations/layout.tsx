@@ -39,7 +39,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     }, [userId]);
 
     useEffect(() => {
-        fetchConversationsData();
+        void fetchConversationsData();
     }, [fetchConversationsData]);
 
     useEffect(() => {

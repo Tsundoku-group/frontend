@@ -53,7 +53,7 @@ export default function NotificationDropdown() {
             }
         };
 
-        loadNotifications();
+        void loadNotifications();
     }, [profileId]);
 
     useEffect(() => {
