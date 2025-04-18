@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { IoCloudUpload } from "react-icons/io5";
 
 const DragAndDropImage = () => {
