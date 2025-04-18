@@ -3,7 +3,7 @@
 import { createSession } from '@/services/auth/session';
 import {Profile} from "@/models/Profile";
 
-const symfonyUrl = process.env.SYMFONY_URL;
+import { symfonyUrl } from "@/constants/symfonyUrl";
 
 interface LoginResponse {
     success: boolean;

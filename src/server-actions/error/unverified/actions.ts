@@ -1,6 +1,6 @@
 'use server'
 
-const symfonyUrl = process.env.SYMFONY_URL;
+import { symfonyUrl } from "@/constants/symfonyUrl";
 
 export const handleResendVerification = async (email: string) => {
     const response = await fetch(`${symfonyUrl}/resend-confirmation`, {

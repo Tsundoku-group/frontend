@@ -2,8 +2,7 @@
 
 import { fetchWithAuth } from "@/services/fetchWithAuth";
 import { PostData } from "@/models/PostData";
-
-const symfonyUrl = process.env.SYMFONY_URL;
+import { symfonyUrl } from "@/constants/symfonyUrl";
 
 export const createNewPost = async (postData: PostData) => {
     try {

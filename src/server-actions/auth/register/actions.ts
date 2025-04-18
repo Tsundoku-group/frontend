@@ -1,6 +1,6 @@
 'use server'
 
-const symfonyUrl = process.env.SYMFONY_URL;
+import { symfonyUrl } from "@/constants/symfonyUrl";
 
 interface RegisterResponse {
     success: boolean;

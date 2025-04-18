@@ -2,8 +2,7 @@
 
 import {fetchWithAuth} from "@/services/fetchWithAuth";
 import {ChatConversation, ChatParticipant} from "@/models/ChatConversation";
-
-const symfonyUrl = process.env.SYMFONY_URL;
+import { symfonyUrl } from "@/constants/symfonyUrl";
 
 export const fetchUserConversations = async (userId: unknown): Promise<ChatConversation[]> => {
     try {

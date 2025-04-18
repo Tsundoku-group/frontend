@@ -2,8 +2,7 @@
 
 import { fetchWithAuth } from "@/services/fetchWithAuth";
 import { Profile, ProfilePicture } from "@/models/Profile";
-
-const symfonyUrl = process.env.SYMFONY_URL;
+import { symfonyUrl } from "@/constants/symfonyUrl";
 
 export async function fetchUserProfileData(profileId: number): Promise<{
     data: Profile | null;

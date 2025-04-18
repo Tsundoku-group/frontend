@@ -1,6 +1,6 @@
 'use server';
 
-const symfonyUrl = process.env.SYMFONY_URL;
+import { symfonyUrl } from "@/constants/symfonyUrl";
 
 export const handleResetPassword = async (token: string | null, password: string) => {
     if (!token) {

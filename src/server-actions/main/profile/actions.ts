@@ -2,6 +2,7 @@
 
 import { fetchWithAuth } from "@/services/fetchWithAuth";
 import { Profile, ProfileResult } from "@/models/Profile";
+import { symfonyUrl } from "@/constants/symfonyUrl";
 
 interface Friend {
     friendId: number;
@@ -22,8 +23,6 @@ interface Relation {
     friendshipId: number;
     friend: Friend;
 }
-
-const symfonyUrl = process.env.SYMFONY_URL;
 
 export const fetchUserProfile = async (profileId: number): Promise<ProfileResult> => {
     try {

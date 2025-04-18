@@ -4,8 +4,7 @@ import { fetchWithAuth } from "@/services/fetchWithAuth";
 import { GroupData } from "@/models/GroupData";
 import {GroupMember} from "@/models/GroupMember";
 import {Tag} from "@/models/Tag";
-
-const symfonyUrl = process.env.SYMFONY_URL;
+import { symfonyUrl } from "@/constants/symfonyUrl";
 
 const roleLabelMap: Record<string, string> = {
     admin: "Administrateur",

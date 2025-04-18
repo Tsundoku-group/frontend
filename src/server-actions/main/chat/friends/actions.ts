@@ -1,8 +1,7 @@
 'use server';
 
 import {fetchWithAuth} from "@/services/fetchWithAuth";
-
-const symfonyUrl = process.env.SYMFONY_URL;
+import { symfonyUrl } from "@/constants/symfonyUrl";
 
 interface Friend {
     id: string;

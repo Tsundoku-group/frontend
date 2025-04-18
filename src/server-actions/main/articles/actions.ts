@@ -2,8 +2,7 @@
 
 import { fetchWithAuth } from "@/services/fetchWithAuth";
 import { Article } from "@/models/Article";
-
-const symfonyUrl = process.env.SYMFONY_URL;
+import { symfonyUrl } from "@/constants/symfonyUrl";
 
 export const fetchProfileArticles = async (
     profileId: number | undefined,
