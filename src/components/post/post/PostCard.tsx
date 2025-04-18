@@ -6,7 +6,7 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useProfileContext} from "@/context/profileContext";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
-import {deletePost, updatePost} from "@/app/(main)/home/actions";
+import {deletePost, updatePost} from "@/server-actions/main/home/actions";
 import {ShowToast} from "@/components/ShowToast";
 import {
     AlertDialog, AlertDialogAction,
@@ -15,6 +15,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ReactionButton from "@/components/post/comment/ReactButton";
+import Image from "next/image";
 
 interface Post {
     id: number;
@@ -164,7 +165,7 @@ export default function PostCard({post, groupId, onDelete}: { post: Post, groupI
                     <div className="grid gap-2 mt-3 rounded-lg overflow-hidden"
                          style={{gridTemplateColumns: `repeat(${Math.min(post.images.length, 2)}, 1fr)`}}>
                         {post.images.map((image, index) => (
-                            <img
+                            <Image
                                 key={index}
                                 src={image}
                                 alt={`Post image ${index}`}
@@ -220,7 +221,7 @@ export default function PostCard({post, groupId, onDelete}: { post: Post, groupI
                         <AlertDialogAction className="bg-red-highlight"
                                            disabled={isDeleting}
                                            onClick={() => {
-                                               handleDeletePost();
+                                               void handleDeletePost();
                                                setIsDialogOpen(false);
                                            }}>
                             {isDeleting ? "Suppression..." : "Supprimer"}

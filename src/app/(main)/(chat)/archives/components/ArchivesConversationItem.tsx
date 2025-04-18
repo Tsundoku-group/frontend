@@ -1,11 +1,11 @@
-import React, {useState} from "react";
+import React from "react";
 import {Card} from "@/components/ui/card";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {ArchiveRestore, EllipsisVertical, Trash2, User} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import {handleDeleteConversation} from "@/app/(main)/(chat)/conversations/actions";
-import {handleUnarchiveConversation} from "@/app/(main)/(chat)/archives/actions";
+import {handleDeleteConversation} from "@/server-actions/main/chat/conversations/actions";
+import {handleUnarchiveConversation} from "@/server-actions/main/chat/archives/actions";
 import {Checkbox} from "@/components/ui/checkbox";
 import {ShowToast} from "@/components/ShowToast";
 import {ChatConversation} from "@/models/ChatConversation";
@@ -36,7 +36,7 @@ const ArchivesConversationItem = React.memo(({id, imageUrl, username, lastMessag
             await handleDeleteConversation(id);
             ShowToast("default", "Conversation supprimée !");
         } catch (error) {
-            ShowToast("destructive", "Une conversation n'a pas pu être supprimée.", "Erreur");
+            ShowToast("destructive", "Une conversations n'a pas pu être supprimée.", "Erreur");
         }
     };
 
@@ -50,7 +50,7 @@ const ArchivesConversationItem = React.memo(({id, imageUrl, username, lastMessag
 
             ShowToast("default", "Conversation restaurée !");
         } catch (error) {
-            ShowToast("destructive", "Une conversation n'a pas pu être restaurée.", "Erreur");
+            ShowToast("destructive", "Une conversations n'a pas pu être restaurée.", "Erreur");
         }
     };
 
@@ -91,14 +91,14 @@ const ArchivesConversationItem = React.memo(({id, imageUrl, username, lastMessag
                                 <DropdownMenuItem
                                     onClick={(event) => {
                                         event.stopPropagation();
-                                        handleRestoreClick();
+                                        void handleRestoreClick();
                                     }}>
                                     Restaurer<ArchiveRestore className="h-4 w-4 ml-8"/>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={(event) => {
                                         event.stopPropagation();
-                                        handleDeleteClick();
+                                        void handleDeleteClick();
                                     }}>
                                     Supprimer<Trash2 className="h-4 w-4 ml-7"/>
                                 </DropdownMenuItem>

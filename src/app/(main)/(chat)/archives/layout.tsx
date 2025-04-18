@@ -3,10 +3,10 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Loader2} from 'lucide-react';
 import ArchivesConversationItem from '@/app/(main)/(chat)/archives/components/ArchivesConversationItem';
-import ItemList from '@/app/(main)/(chat)/components/item/ItemList';
-import {fetchArchivedConversations, handleUnarchiveAllConversations} from '@/app/(main)/(chat)/archives/actions';
+import ItemList from '@/app/(main)/(chat)/_components/item/ItemList';
+import {fetchArchivedConversations, handleUnarchiveAllConversations} from '@/server-actions/main/chat/archives/actions';
 import {useAuthContext} from '@/context/authContext';
-import SearchBar from '@/app/(main)/(chat)/components/item/ItemSearchBar';
+import SearchBar from '@/app/(main)/(chat)/_components/item/ItemSearchBar';
 import {Checkbox} from "@/components/ui/checkbox";
 import {CheckedState} from "@radix-ui/react-checkbox";
 import {ChatConversation, LastMessage} from "@/models/ChatConversation";
@@ -38,7 +38,7 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (userId) {
-            fetchArchivedConversationsData();
+            void fetchArchivedConversationsData();
         }
     }, [fetchArchivedConversationsData, userId]);
 

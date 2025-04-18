@@ -6,7 +6,7 @@ import {
     fetchLastCommentsFromPost,
     updateCommentOnPost,
     deleteCommentOnPost
-} from "@/app/(main)/home/actions";
+} from "@/server-actions/main/home/actions";
 import {CornerDownRight, Send, User, EllipsisVertical, Pencil, Trash} from "lucide-react";
 import {useEffect, useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -76,7 +76,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
             return {previousComments};
         },
         onSuccess: (response) => {
-            const savedComment = response.comment;
+            const savedComment = response.data;
 
             ShowToast("default", "Commentaire ajouté !");
             setCommentContent("");
@@ -95,7 +95,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
         },
         onSuccess: () => {
             ShowToast("default", "Commentaire modifié !");
-            queryClient.invalidateQueries({queryKey: ["comments", postId]});
+            void queryClient.invalidateQueries({queryKey: ["comments", postId]});
             setEditingCommentId(null);
         },
         onError: () => {
@@ -130,7 +130,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({queryKey: ["comments", postId]});
+            void queryClient.invalidateQueries({queryKey: ["comments", postId]});
         },
     });
 

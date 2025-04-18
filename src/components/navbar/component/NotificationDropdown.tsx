@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchNotifications, markAsReadNotifications } from "@/components/navbar/actions";
+import { fetchNotifications, markAsReadNotifications } from "@/server-actions/navbar/actions";
 import { useProfileContext } from "@/context/profileContext";
 import { useSocket } from "@/context/socketContext";
 import { startOfToday, differenceInDays, subDays, isSameDay } from "date-fns";
@@ -53,7 +53,7 @@ export default function NotificationDropdown() {
             }
         };
 
-        loadNotifications();
+        void loadNotifications();
     }, [profileId]);
 
     useEffect(() => {
@@ -78,7 +78,7 @@ export default function NotificationDropdown() {
         try {
             const response = await markAsReadNotifications(profileId);
 
-            if (response.status === 200) {
+            if (response.code === 200) {
                 setNotifications((prev) => prev.map(n => ({ ...n, isRead: true })));
                 setHasUnread(false);
             }

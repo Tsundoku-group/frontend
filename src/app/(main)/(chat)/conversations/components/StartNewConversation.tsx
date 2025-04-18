@@ -14,8 +14,8 @@ import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {Check, SquarePen} from "lucide-react";
 import {useAuthContext} from "@/context/authContext";
-import {fetchFriendsList} from "@/app/(main)/(chat)/friends/actions";
-import {startNewConversation} from "@/app/(main)/(chat)/conversations/actions";
+import {fetchFriendsList} from "@/server-actions/main/chat/friends/actions";
+import {startNewConversation} from "@/server-actions/main/chat/conversations/actions";
 import {Loader2} from "lucide-react";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
 import {Input} from "@/components/ui/input";
@@ -61,7 +61,7 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
 
     const handleStartConversation = async () => {
         if (!selectedFriend) {
-            ShowToast("destructive", "Erreur", "Veuillez sélectionner un(e) ami(e) pour commencer une conversation.");
+            ShowToast("destructive", "Erreur", "Veuillez sélectionner un(e) ami(e) pour commencer une conversations.");
             return;
         }
 
@@ -81,12 +81,12 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
             if (response.success) {
                 onNewConversation(newConversation);
 
-                ShowToast("default", "Nouvelle conversation démarrée !", "");
+                ShowToast("default", "Nouvelle conversations démarrée !", "");
                 setIsDialogOpen(false);
 
                 router.push(`/conversations/${response.conversationId}`);
             } else {
-                ShowToast("destructive", "Erreur", response.error || "Erreur lors de la création de la conversation.");
+                ShowToast("destructive", "Erreur", response.error || "Erreur lors de la création de la conversations.");
             }
         } catch (error) {
             const errorMessage = (error as Error).message || "Il y a eu un problème avec votre demande.";
@@ -105,7 +105,7 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
     const handleDialogOpenChange = (open: boolean) => {
         setIsDialogOpen(open);
         if (open) {
-            loadFriends();
+            void loadFriends();
         }
         setSelectedFriend(null);
     };
@@ -176,7 +176,7 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
 
                 <DialogFooter>
                     <Button onClick={handleStartConversation} disabled={loading}>
-                        {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : "Commencer la conversation"}
+                        {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : "Commencer la conversations"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

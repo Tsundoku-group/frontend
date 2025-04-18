@@ -1,6 +1,6 @@
 import {Heart} from "lucide-react";
 import {useState, useEffect} from "react";
-import {likePost} from "@/app/(main)/home/actions";
+import {likePost} from "@/server-actions/main/home/actions";
 import {ShowToast} from "@/components/ShowToast";
 
 interface ReactionCommentButtonProps {

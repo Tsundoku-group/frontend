@@ -1,7 +1,7 @@
 'use client';
 
 import { formatDate } from '@/utils/dateUtils';
-import { fetchArticle } from './actions';
+import { fetchArticle } from '@/server-actions/main/articles/actions';
 import { useEffect, useState } from 'react';
 import { Article } from '@/models/Article';
 import { ArrowLeft } from 'lucide-react';
@@ -22,7 +22,7 @@ export default function ArticlePage({ params }: { params: { articleId: number } 
                 console.error("Failed to fetch article: ", error);
             }
         }
-        loadArticle();
+        void loadArticle();
     }, [params.articleId]);
 
     return (

@@ -13,7 +13,7 @@ import {
     handleDeleteConversation,
     handleMuteConversationDuration,
     handleUnmuteConversation
-} from "@/app/(main)/(chat)/conversations/actions";
+} from "@/server-actions/main/chat/conversations/actions";
 import {
     Dialog,
     DialogContent,
@@ -88,7 +88,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
     const handleUnmute = useCallback(async () => {
         try {
             await handleUnmuteConversation(id);
-            ShowToast("default", "Cette conversation n'est plus en sourdine !");
+            ShowToast("default", "Cette conversations n'est plus en sourdine !");
             setOpenMuteDialog(false);
 
             setConversations(prevConversations =>
@@ -110,7 +110,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
 
             setConversations(prevConversations => prevConversations.filter(conv => conv.id !== id));
         } catch (error) {
-            ShowToast("destructive", "Erreur lors de la suppression de la conversation.", "Erreur");
+            ShowToast("destructive", "Erreur lors de la suppression de la conversations.", "Erreur");
         }
     }, [id, setConversations]);
 
@@ -124,7 +124,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
 
             ShowToast("default", "Conversation archivée !");
         } catch {
-            ShowToast("destructive", "Erreur", "Une conversation n'a pas pu être archivée.");
+            ShowToast("destructive", "Erreur", "Une conversations n'a pas pu être archivée.");
         }
     }, [id, setConversations]);
 
@@ -216,14 +216,14 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={(event) => {
                                     event.stopPropagation();
-                                    handleArchiveClick();
+                                    void handleArchiveClick();
                                 }}>
                                     Archives<ArchiveRestore className="h-4 w-4 ml-8"/>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={(event) => {
                                         event.stopPropagation();
-                                        handleDeleteClick();
+                                        void handleDeleteClick();
                                     }}>
                                     Supprimer<Trash2 className="h-4 w-4 ml-5"/>
                                 </DropdownMenuItem>

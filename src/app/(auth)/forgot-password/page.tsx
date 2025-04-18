@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { handleForgotPassword } from '@/app/(auth)/forgot-password/actions';
+import { handleForgotPassword } from '@/server-actions/auth/forgot-password/actions';
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('');

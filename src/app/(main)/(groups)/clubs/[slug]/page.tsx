@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import GroupHeader from "@/app/(main)/(groups)/clubs/[slug]/components/GroupHeader";
-import { fetchGroupBySlug } from "@/app/(main)/(groups)/clubs/actions";
+import GroupHeader from "@/app/(main)/(groups)/clubs/[slug]/_components/GroupHeader";
+import { fetchGroupBySlug } from "@/server-actions/main/groups/clubs/actions";
 import {GroupData} from "@/models/GroupData";
-import GroupTabs from "@/app/(main)/(groups)/clubs/[slug]/components/GroupTabs";
+import GroupTabs from "@/app/(main)/(groups)/clubs/[slug]/_components/GroupTabs";
 
 type Props = {
     params: {
@@ -22,10 +22,10 @@ export default function GroupPage({ params: {slug} }: Props) {
             try {
                 const data = await fetchGroupBySlug(slug);
 
-                if (!data) {
-                    setError("Groupe introuvable");
+                if (!data.group) {
+                    setError(data.message);
                 } else {
-                    setGroup(data);
+                    setGroup(data.group);
                 }
             } catch (err) {
                 setError("Erreur lors du chargement");
@@ -34,7 +34,7 @@ export default function GroupPage({ params: {slug} }: Props) {
             }
         };
 
-        loadGroup();
+        void loadGroup();
     }, [slug]);
 
     if (loading) return <div className="text-white">Chargement...</div>;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, {createContext, useEffect, useState, useCallback} from "react";
+import React, {createContext, useEffect, useState, useCallback, useRef} from "react";
 import {useRouter} from "next/navigation";
 import LoadingSkeleton from "@/components/loader/LoadingSkeleton";
 import {Profile} from "@/models/Profile";
@@ -29,55 +29,56 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
 
-    const loadProfileImages = useCallback(
-        async (profileId: number) => {
-            if (profileImageUrls[`${profileId}-profile`] && profileImageUrls[`${profileId}-cover`]) {
-                return;
-            }
+    const profileImageUrlsRef = useRef<Record<string, string>>({});
 
-            const cacheKeys = {
-                profile: `profile-image-${profileId}-profile`,
-                cover: `profile-image-${profileId}-cover`,
-            };
+    useEffect(() => {
+        profileImageUrlsRef.current = profileImageUrls;
+    }, [profileImageUrls]);
 
-            const cachedImages = {
-                profile: localStorage.getItem(cacheKeys.profile),
-                cover: localStorage.getItem(cacheKeys.cover),
-            };
+    const loadProfileImages = useCallback(async (profileId: number) => {
+        const currentUrls = profileImageUrlsRef.current;
 
-            setProfileImageUrls(prev => ({
-                ...prev,
-                ...(cachedImages.profile ? { [`${profileId}-profile`]: cachedImages.profile } : {}),
-                ...(cachedImages.cover ? { [`${profileId}-cover`]: cachedImages.cover } : {})
-            }));
+        if (currentUrls[`${profileId}-profile`] && currentUrls[`${profileId}-cover`]) {
+            return;
+        }
 
-            try {
-                const urls = await getProfileImageUrl(profileId);
+        const cacheKeys = {
+            profile: `profile-image-${profileId}-profile`,
+            cover: `profile-image-${profileId}-cover`,
+        };
 
-                for (const type of ["profile", "cover"] as const) {
-                    if (urls[type]) {
-                        const timestampedUrl = `${urls[type]}?t=${Date.now()}`;
-                        setProfileImageUrls(prev => ({
-                            ...prev,
-                            [`${profileId}-${type}`]: timestampedUrl
-                        }));
-                        localStorage.setItem(cacheKeys[type], timestampedUrl);
-                    } else {
-                        setProfileImageUrls(prev => ({
-                            ...prev,
-                            [`${profileId}-${type}`]:""
-                        }));
-                    }
-                }
-            } catch (error: any) {
+        const cachedImages = {
+            profile: localStorage.getItem(cacheKeys.profile),
+            cover: localStorage.getItem(cacheKeys.cover),
+        };
+
+        // Appliquer les images en cache
+        setProfileImageUrls(prev => ({
+            ...prev,
+            ...(cachedImages.profile ? { [`${profileId}-profile`]: cachedImages.profile } : {}),
+            ...(cachedImages.cover ? { [`${profileId}-cover`]: cachedImages.cover } : {})
+        }));
+
+        try {
+            const urls = await getProfileImageUrl(profileId);
+
+            for (const type of ["profile", "cover"] as const) {
+                const url = urls[type];
+                const timestampedUrl = `${url}?t=${Date.now()}`;
                 setProfileImageUrls(prev => ({
                     ...prev,
-                    [`${profileId}-profile`]: "",
-                    [`${profileId}-cover`]: ""
+                    [`${profileId}-${type}`]: timestampedUrl
                 }));
+                localStorage.setItem(cacheKeys[type], timestampedUrl);
             }
-        }, []
-    );
+        } catch (error) {
+            setProfileImageUrls(prev => ({
+                ...prev,
+                [`${profileId}-profile`]: "",
+                [`${profileId}-cover`]: ""
+            }));
+        }
+    }, []);
 
     useEffect(() => {
         const storedProfile = localStorage.getItem("activeProfile");
@@ -85,7 +86,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
             const parsedProfile = JSON.parse(storedProfile) as Profile;
             setActiveProfileInStorageState(parsedProfile);
 
-            loadProfileImages(parsedProfile.id);
+            void loadProfileImages(parsedProfile.id);
         }
         setInitialLoading(false);
     }, [loadProfileImages]);
@@ -113,7 +114,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         setActiveProfileInStorageState(completeProfile);
 
         if (profileData.id) {
-            loadProfileImages(profileData.id);
+            void loadProfileImages(profileData.id);
         }
 
         if (triggerLoading) {
@@ -131,7 +132,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         localStorage.removeItem(cacheKeys.profile);
         localStorage.removeItem(cacheKeys.cover);
 
-        loadProfileImages(profileId);
+        void loadProfileImages(profileId);
     };
 
     if (initialLoading) {

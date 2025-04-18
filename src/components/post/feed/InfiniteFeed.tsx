@@ -1,7 +1,7 @@
 "use client";
 
 import {useInfiniteQuery, useQueryClient} from "@tanstack/react-query";
-import {fetchOlderPosts} from "@/app/(main)/home/actions";
+import {fetchOlderPosts} from "@/server-actions/main/home/actions";
 import PostCard from "@/components/post/post/PostCard";
 import {useEffect, useRef} from "react";
 import {useProfileContext} from "@/context/profileContext";
@@ -36,7 +36,7 @@ export default function InfiniteFeed({groupId}: Props) {
 
         const observer = new IntersectionObserver(([entry]) => {
             if (entry.isIntersecting) {
-                fetchNextPage();
+                void fetchNextPage();
             }
         }, {rootMargin: "600px"});
 

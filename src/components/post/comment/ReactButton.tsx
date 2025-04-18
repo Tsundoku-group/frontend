@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Heart} from "lucide-react";
 import {ShowToast} from "@/components/ShowToast";
-import {likePost} from "@/app/(main)/home/actions";
+import {likePost} from "@/server-actions/main/home/actions";
 import {useSocket} from "@/context/socketContext";
 
 interface ReactionButtonProps {

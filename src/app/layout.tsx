@@ -2,7 +2,7 @@ import type {Metadata} from "next";
 import "./globals.css";
 import {AuthProvider} from "@/context/authContext";
 import {TooltipProvider} from "@/components/ui/tooltip";
-import "../global.css";
+import "@/global.css";
 import {ProfileProvider} from "@/context/profileContext";
 import React from "react";
 

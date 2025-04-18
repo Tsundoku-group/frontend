@@ -1,7 +1,7 @@
 "use client";
 
 import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
-import {replyToComment, fetchRepliesForComment} from "@/app/(main)/home/actions";
+import {replyToComment, fetchRepliesForComment} from "@/server-actions/main/home/actions";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
 import {User, Send} from "lucide-react";
@@ -64,7 +64,7 @@ export default function RepliesSection({commentId, postId}: RepliesSectionProps)
             ShowToast("destructive", "Erreur lors de l'ajout de la réponse", "Erreur");
         },
         onSettled: () => {
-            queryClient.invalidateQueries({queryKey: ["replies", commentId]});
+            void queryClient.invalidateQueries({queryKey: ["replies", commentId]});
         },
     });
 

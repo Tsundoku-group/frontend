@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useProfileContext } from "@/context/profileContext";
 
@@ -27,19 +27,19 @@ const SocketContext = createContext<SocketContextType>({
 export const useSocket = () => useContext(SocketContext);
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-    const [socket, setSocket] = useState<Socket | null>(null);
+    const socketRef = useRef<Socket | null>(null);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id;
 
     useEffect(() => {
-        if (!profileId || socket) return;
+        if (!profileId || socketRef.current) return;
 
         const socketInstance = io("http://localhost:3000");
 
         socketInstance.on('connect', () => {
             console.log("✅ Connecté à WebSocket");
-            setSocket(socketInstance);
+            socketRef.current = socketInstance;
             socketInstance.emit("joinNotificationRoom", profileId);
         });
 
@@ -50,7 +50,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         socketInstance.on('connect_error', (err) => console.error('❌ Erreur WebSocket:', err));
         socketInstance.on('disconnect', () => {
             console.log('❌ Déconnecté du WebSocket');
-            setSocket(null);
+            socketRef.current = null;
         });
 
         return () => {
@@ -64,7 +64,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <SocketContext.Provider value={{ socket, notifications, addNotification }}>
+        <SocketContext.Provider value={{ socket: socketRef.current, notifications, addNotification }}>
             {children}
         </SocketContext.Provider>
     );

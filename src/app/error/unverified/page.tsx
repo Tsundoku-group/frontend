@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle } from 'lucide-react';
 import { useAuthContext } from "@/context/authContext";
-import { handleResendVerification } from './actions';
-import { deleteSession } from "@/app/_lib/session";
+import { handleResendVerification } from '@/server-actions/error/unverified/actions';
+import { deleteSession } from "@/services/auth/session";
 
 export default function UnverifiedPage() {
     const { user } = useAuthContext();

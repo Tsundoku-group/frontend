@@ -3,9 +3,10 @@
 import React, {useState} from "react";
 import {useRouter} from "next/navigation";
 import {Eye, EyeOff, User, Lock, OctagonAlert, Command} from "lucide-react";
-import {HandleLogin} from "@/app/(auth)/login/actions";
+import {HandleLogin} from "@/server-actions/auth/login/actions";
 import {useAuthContext} from "@/context/authContext";
 import {useProfileContext} from "@/context/profileContext";
+import Image from "next/image";
 
 export default function LoginPage() {
     const [email, setEmail] = useState<string>('admin@admin.com');
@@ -69,7 +70,7 @@ export default function LoginPage() {
                     <h4 className="text-lg font-bold text-pink-100">Tsundoku</h4>
                 </div>
                 <div className="absolute inset-0 opacity-30">
-                    <img
+                    <Image
                         src=""
                         alt=""
                         className="object-cover w-full h-full"

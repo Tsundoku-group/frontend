@@ -2,10 +2,10 @@
 
 import { ArrowDownUp, Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
-import CustomSelect from "./components/CustomSelect";
-import "./styles/styles.css";
-import ArticleForm from "./components/ArticleForm";
-import { fetchProfileArticles, deleteArticle, updateArticleStatus } from "./actions";
+import CustomSelect from "@/app/(main)/articles/_components/CustomSelect";
+import "@/app/(main)/articles/_styles/styles.css";
+import ArticleForm from "@/app/(main)/articles/_components/ArticleForm";
+import { fetchProfileArticles, deleteArticle, updateArticleStatus } from "@/server-actions/main/articles/actions";
 import { useProfileContext } from "@/context/profileContext";
 import { formatDate } from "@/utils/dateUtils";
 import { Article } from "@/models/Article";
@@ -41,7 +41,9 @@ export default function ArticlesPage() {
 
     useEffect(() => {
         if (profileId) {
-            loadArticles();
+            loadArticles().catch((error) => {
+                console.error("Erreur lors du chargement des articles :", error);
+            });
         }
     }, [profileId, loadArticles]);
 
@@ -56,26 +58,36 @@ export default function ArticlesPage() {
     };
 
     const handleDeleteArticle = async (articleId: string) => {
-        try {
-            if (!profileId) throw new Error("Profile id is missing");
-            await deleteArticle(articleId, profileId);
+        if (!profileId) {
+            console.error("L'identifiant du profil est manquant.");
+            return;
+        }
+
+        const result = await deleteArticle(articleId, profileId);
+
+        if (result?.success) {
             await loadArticles();
-        } catch (error) {
-            console.error("Failed to delete article: ", error);
+        } else {
+            console.error("Échec de la suppression de l'article :", result?.message || "Erreur inconnue");
         }
     };
 
     const handleStatusChange = async (articleId: string, newStatus: string) => {
-        try {
-            if (!profileId) throw new Error("Profile id is missing");
-            await updateArticleStatus(articleId, newStatus, profileId);
+        if (!profileId) {
+            console.error("L'identifiant du profil est manquant.");
+            return;
+        }
+
+        const result = await updateArticleStatus(articleId, newStatus, profileId);
+
+        if (result?.success) {
             setArticles(prevArticles =>
                 prevArticles.map(article =>
                     article.id === articleId ? { ...article, status: newStatus } : article
                 )
             );
-        } catch (error) {
-            console.error("Failed to update article status: ", error);
+        } else {
+            console.error("Échec de la mise à jour du statut :", result?.message || "Erreur inconnue");
         }
     };
 

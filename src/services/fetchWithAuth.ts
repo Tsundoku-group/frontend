@@ -1,7 +1,7 @@
 'use server'
 
 import { isTokenExpired, refreshAuthToken } from "@/services/refreshService";
-import { getSession } from "@/app/_lib/session";
+import {deleteSession, getSession} from "@/services/auth/session";
 
 interface FetchOptions extends RequestInit {
     headers?: { [key: string]: string };
@@ -20,21 +20,25 @@ async function getToken() {
     }
 
     const session = await getSession();
-    let token: string  = session?.token as string;
+    let token: string = session?.token as string;
 
     if (token && await isTokenExpired(token)) {
         const newToken = await refreshAuthToken(session?.refreshToken);
         if (newToken) {
-            token = newToken;
             const expirationTime = getExpirationTime(newToken);
             cachedToken = { token: newToken, expirationTime };
+            return newToken;
+        } else {
+            await deleteSession();
+            return null;
         }
     } else if (token) {
         const expirationTime = getExpirationTime(token);
         cachedToken = { token, expirationTime };
+        return token;
     }
 
-    return token;
+    return null;
 }
 
 export async function fetchWithAuth(url: string, options: FetchOptions = {}) {

@@ -23,7 +23,7 @@ export interface GroupData {
     activities?: string[];
     whoCanJoin?: string;
     externalLinks?: string[];
-    createdBy: {
+    createdBy?: {
         id: number;
         username: string;
     };

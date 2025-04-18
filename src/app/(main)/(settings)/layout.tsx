@@ -1,5 +1,5 @@
 import React from "react";
-import SettingsSidebarWrapper from "@/app/(main)/(settings)/components/sidebar/SettingsSidebarWrapper";
+import SettingsSidebarWrapper from "@/app/(main)/(settings)/_components/sidebar/SettingsSidebarWrapper";
 
 type Props = React.PropsWithChildren<{}>;
 

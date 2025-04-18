@@ -6,7 +6,7 @@ import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 import {useAuthContext} from "@/context/authContext";
 import {AlertCircle, CircleCheckBig, CircleX, Eye, EyeOff} from "lucide-react";
-import {fetchDeletePwd, fetchUpdatePwd, fetchVerifyPwd} from "@/app/(main)/(settings)/accountSettings/actions";
+import {fetchDeletePwd, fetchUpdatePwd, fetchVerifyPwd} from "@/server-actions/main/settings/actions";
 import {
     AlertDialog,
     AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
@@ -17,7 +17,7 @@ import {
 import {ShowToast} from "@/components/ShowToast";
 import {Alert, AlertDescription} from "@/components/ui/alert";
 import Captcha from "@/components/captcha/UpdatePasswordCaptcha";
-import {deleteSession} from "@/app/_lib/session";
+import {deleteSession} from "@/services/auth/session";
 
 const PWD_REGEX: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 

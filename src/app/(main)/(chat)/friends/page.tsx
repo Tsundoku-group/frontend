@@ -1,16 +1,16 @@
 "use client";
 
 import React, {useState, useEffect} from "react";
-import ItemList from "../components/item/ItemList";
-import ConversationFallBack from "../components/conversation/ConversationFallBack";
+import ItemList from "@/app/(main)/(chat)/_components/item/ItemList";
+import ConversationFallBack from "@/app/(main)/(chat)/_components/conversation/ConversationFallBack";
 import AddFriends from "./components/AddFriends";
 import {Loader2} from "lucide-react";
 import FriendsList from "@/app/(main)/(chat)/friends/components/FriendsList";
-import {fetchFriendsList} from "./actions";
+import {fetchFriendsList} from "@/server-actions/main/chat/friends/actions";
 import {useAuthContext} from "@/context/authContext";
-import SearchBar from "@/app/(main)/(chat)/components/item/ItemSearchBar";
+import SearchBar from "@/app/(main)/(chat)/_components/item/ItemSearchBar";
 import {useRouter} from "next/navigation";
-import {startNewConversation} from "@/app/(main)/(chat)/conversations/actions";
+import {startNewConversation} from "@/server-actions/main/chat/conversations/actions";
 import {ShowToast} from "@/components/ShowToast";
 
 type Friend = {
@@ -47,7 +47,7 @@ const FriendsPage = React.memo(() => {
             }
         };
 
-        fetchFriendsData();
+        void fetchFriendsData();
     }, [userId]);
 
     const onStartConversation = async (friendId: string) => {
@@ -62,7 +62,7 @@ const FriendsPage = React.memo(() => {
                 ShowToast("default", "Conversation créée !", "");
                 router.push(`/conversations/${newConversationId}`);
             } else {
-                ShowToast("destructive", "Erreur", response.error || "Erreur lors de la création de la conversation.");
+                ShowToast("destructive", "Erreur", response.error || "Erreur lors de la création de la conversations.");
             }
         } catch (error) {
             const errorMessage = (error as Error).message || "Il y a eu un problème avec votre demande.";

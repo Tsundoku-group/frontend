@@ -3,7 +3,7 @@ import Message from "@/app/(main)/(chat)/conversations/[conversationId]/componen
 import {Loader2} from "lucide-react";
 import ScrollToBottomButton from "@/components/ScrollToBottomButton";
 import {useSocket} from "@/context/socketContext";
-import {fetchMessagesFromConversationId} from "@/app/(main)/(chat)/conversations/actions";
+import {fetchMessagesFromConversationId} from "@/server-actions/main/chat/conversations/actions";
 import {useAuthContext} from "@/context/authContext";
 
 type Props = {
