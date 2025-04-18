@@ -17,6 +17,8 @@ const ReviewsCard = () => {
                 <Image
                     src="https://covers.openlibrary.org/b/id/8231991-L.jpg"
                     alt="image"
+                    width={0}
+                    height={0}
                     className="w-16 h-16 object-cover rounded-lg mr-4"
                 />
                 <div>

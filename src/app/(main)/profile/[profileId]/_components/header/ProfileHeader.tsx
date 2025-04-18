@@ -50,7 +50,13 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             <div className="bg-gray-900 rounded-t-2xl text-white shadow-lg overflow-hidden">
                 <div className="w-full h-24 bg-gray-700 rounded-t-2xl overflow-hidden">
                     {coverImageUrl ? (
-                        <Image src={coverImageUrl} alt="Cover" className="w-full h-full object-cover"/>
+                        <Image
+                            src={coverImageUrl}
+                            alt="Cover"
+                            width={300}
+                            height={400}
+                            className="object-cover"
+                        />
                     ) : (
                         <div className="w-full h-full bg-gradient-to-r from-indigo-600 to-purple-600"></div>
                     )}
@@ -119,6 +125,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                                         <Image
                                             src={profileImageUrl || ""}
                                             alt="Profile Image"
+                                            width={0}
+                                            height={0}
+                                            sizes="100vw"
                                             className="w-auto max-w-full max-h-[80vh] object-contain rounded-lg shadow-lg"
                                         />
                                     </div>

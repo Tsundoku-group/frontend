@@ -32,6 +32,8 @@ const ArticlesCard = () => {
                         <Image
                             src={article.imageUrl}
                             alt={article.title}
+                            width={0}
+                            height={0}
                             className="w-full h-24 object-cover rounded-lg"
                         />
                         <div>
