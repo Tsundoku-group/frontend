@@ -1,7 +1,7 @@
 'use server';
 
 import { jwtDecode } from "jwt-decode";
-import {deleteSession, getSession, updateSessionTokens} from "@/services/auth/session";
+import {deleteSession, updateSessionTokens} from "@/services/auth/session";
 import { symfonyUrl } from "@/constants/symfonyUrl";
 
 interface DecodedToken {
