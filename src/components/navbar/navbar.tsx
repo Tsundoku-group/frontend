@@ -8,7 +8,7 @@ import ProfileButton from '@/components/navigateButton/ProfileButton';
 import SettingsButton from '@/components/navigateButton/SettingsButton';
 import { useAuthContext } from '@/context/authContext';
 import { Button } from '@/components/ui/button';
-import { fetchUserProfiles, setActiveUserProfile, setUserProfileStatus } from '@/components/navbar/actions';
+import { fetchUserProfiles, setActiveUserProfile, setUserProfileStatus } from '@/server-actions/navbar/actions';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { truncateString } from '@/utils/string-utils';
@@ -91,7 +91,7 @@ export default function Navbar() {
         if (!userId || userProfiles.length > 0) return;
         setLoading(true);
         fetchUserProfiles(userId).then((data) => {
-            setUserProfiles(data);
+            setUserProfiles(data.profiles);
             setLoading(false);
         }).catch(() => {
             ShowToast('destructive', 'Erreur lors de la récupération des profils', 'Erreur');
@@ -103,8 +103,8 @@ export default function Navbar() {
         if (!userId || !profileId) return;
         try {
             const profileData = await setActiveUserProfile(userId, profileId);
-            setActiveProfileInStorage(profileData);
-            setActiveProfile(profileData.id);
+            setActiveProfileInStorage(profileData.data);
+            setActiveProfile(profileData.data?.id);
             setUserProfiles(prev => prev.map(p => ({ ...p, activeProfile: p.id === profileId })));
             setIsDropdownOpen(false);
             ShowToast('default', 'Vous allez être redirigé vers votre autre profil');
@@ -155,8 +155,24 @@ export default function Navbar() {
                 <label htmlFor={`status-${status}`} className="flex items-center w-full cursor-pointer">
                     <div className="w-4 h-4 rounded-full flex items-center justify-center">
                         {status === 'online' && <div className="w-full h-full bg-green-500 rounded-full" />}
-                        {status === 'do_not_disturb' && <Image src="/icons/status/minus-red-circle.svg" alt="Do not disturb" className="w-full h-full" />}
-                        {status === 'away' && <Image src="/icons/status/yellow-moon.svg" alt="Away" className="w-full h-full" />}
+                        {status === 'do_not_disturb' && (
+                            <Image
+                                src="/icons/status/minus-red-circle.svg"
+                                alt="Do not disturb"
+                                width={20}
+                                height={20}
+                                className="w-full h-full"
+                            />
+                        )}
+                        {status === 'away' && (
+                            <Image
+                                src="/icons/status/yellow-moon.svg"
+                                alt="Away"
+                                width={20}
+                                height={20}
+                                className="w-full h-full"
+                            />
+                        )}
                         {status === 'offline' && <div className="w-full h-full bg-gray-400 rounded-full flex items-center justify-center"><div className="w-2/4 h-2/4 bg-gray-900 rounded-full" /></div>}
                     </div>
                     <span className="ml-4">{labels[status]}</span>
@@ -199,7 +215,19 @@ export default function Navbar() {
                     }} className="space-y-2">
                         {items}
                     </RadioGroup>
-                    {isSwitching === 'profiles' && userProfiles.length < 5 && <AddProfileButton onProfileAdded={() => fetchUserProfiles(userId).then(setUserProfiles)} onClose={() => setIsDropdownOpen(false)} />}
+                    {isSwitching === 'profiles' && userProfiles.length < 5 && (
+                        <AddProfileButton
+                            onProfileAdded={async () => {
+                                const result = await fetchUserProfiles(userId);
+                                if (result.success) {
+                                    setUserProfiles(result.profiles);
+                                } else {
+                                    ShowToast('destructive', result.message, 'Erreur');
+                                }
+                            }}
+                            onClose={() => setIsDropdownOpen(false)}
+                        />
+                    )}
                     <Button onClick={() => setIsSwitching('main')} className="flex text-white mt-2">
                         <ChevronLeft className="w-4 h-4" /> <span>Retour</span>
                     </Button>
