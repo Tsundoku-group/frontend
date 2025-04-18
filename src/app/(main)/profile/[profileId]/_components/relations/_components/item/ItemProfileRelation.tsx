@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Card} from "@/components/ui/card";
 import ProfileRelationList from "@/app/(main)/profile/[profileId]/_components/relations/_components/ProfileRelationList";
 import ItemSearchProfileBar from "@/app/(main)/profile/[profileId]/_components/relations/_components/item/ItemSearchProfileBar";
@@ -55,39 +55,45 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({profileId, rel
     const paginatedRelations = filteredProfileRelations.slice(offset, offset + itemsPerPage);
     const paginatedSuggestions = suggestions.slice(suggestionsOffset, suggestionsOffset + itemsPerPage);
 
-    const fetchRelations = async (
-        type: 'friends' | 'followed' | 'followers',
-        limit: number,
-        offset: number
-    ) => {
-        try {
-            let data = [];
-            switch (type) {
-                case 'friends':
-                    data = await fetchFriendsListFromProfile(profileId, limit, offset);
-                    break;
-                case 'followed':
-                    data = await fetchFollowedListFromProfile(profileId, limit, offset);
-                    break;
-                case 'followers':
-                    data = await fetchFollowersListFromProfile(profileId, limit, offset);
-                    break;
+    const fetchRelations = useCallback(
+        async (
+            type: 'friends' | 'followed' | 'followers',
+            limit: number,
+            offset: number
+        ) => {
+            try {
+                let data = [];
+                switch (type) {
+                    case 'friends':
+                        data = await fetchFriendsListFromProfile(profileId, limit, offset);
+                        break;
+                    case 'followed':
+                        data = await fetchFollowedListFromProfile(profileId, limit, offset);
+                        break;
+                    case 'followers':
+                        data = await fetchFollowersListFromProfile(profileId, limit, offset);
+                        break;
+                }
+                return Array.isArray(data) ? data : [];
+            } catch (error) {
+                ShowToast('destructive', 'Un problème est survenu ! Veuillez réessayer plus tard.', 'Erreur');
+                return [];
             }
-            return Array.isArray(data) ? data : [];
-        } catch (error) {
-            ShowToast('destructive', 'Un problème est survenu ! Veuillez réessayer plus tard.', 'Erreur');
-            return [];
-        }
-    };
+        },
+        [profileId]
+    );
 
-    const fetchSuggestions = async (limit: number, offset: number) => {
-        try {
-            const data = await fetchSuggestedFriendListFromProfile(profileId, limit, offset);
-            setSuggestions(data);
-        } catch (error) {
-            ShowToast('destructive', 'Un problème est survenu ! Veuillez réessayer plus tard.', 'Erreur');
-        }
-    };
+    const fetchSuggestions = useCallback(
+        async (limit: number, offset: number) => {
+            try {
+                const data = await fetchSuggestedFriendListFromProfile(profileId, limit, offset);
+                setSuggestions(data);
+            } catch (error) {
+                ShowToast('destructive', 'Un problème est survenu ! Veuillez réessayer plus tard.', 'Erreur');
+            }
+        },
+        [profileId]
+    );
 
     useEffect(() => {
         if (relationType === 'friends' && activeTab === 'suggestions') {
@@ -101,7 +107,7 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({profileId, rel
                 })
                 .finally(() => setLoading(false));
         }
-    }, [profileId, relationType, activeTab, currentPage, suggestionsPage]);
+    }, [profileId, relationType, activeTab, currentPage, suggestionsPage, fetchSuggestions, suggestionsOffset, fetchRelations, offset]);
 
     const resetSearchProfileBar = () => {
         setFilteredProfileRelations(profileRelationList);

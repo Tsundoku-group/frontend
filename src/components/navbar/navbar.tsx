@@ -215,7 +215,7 @@ export default function Navbar() {
                     }} className="space-y-2">
                         {items}
                     </RadioGroup>
-                    {isSwitching === 'profiles' && userProfiles.length < 5 && (
+                    {isSwitching === 'profiles' && userProfiles.length < 5 && loading && (
                         <AddProfileButton
                             onProfileAdded={async () => {
                                 const result = await fetchUserProfiles(userId);
