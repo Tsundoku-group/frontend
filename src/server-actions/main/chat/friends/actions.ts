@@ -12,7 +12,7 @@ interface Friend {
 
 export async function fetchFriendsList(userId: string): Promise<Friend[]> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${userId}/list`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendships/${userId}/list`, {
             method: 'GET',
         });
 
@@ -28,7 +28,7 @@ export async function fetchFriendsList(userId: string): Promise<Friend[]> {
 
 export async function createFriendRequest(requesterUsername: string, receiverUsername: string) {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/friendship/request`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/friendships/request`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

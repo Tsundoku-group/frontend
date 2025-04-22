@@ -6,7 +6,7 @@ import { symfonyUrl } from "@/constants/symfonyUrl";
 
 export const createNewPost = async (postData: PostData) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/posts`, {
             method: "POST",
             body: JSON.stringify(postData)
         });
@@ -23,7 +23,7 @@ export const createNewPost = async (postData: PostData) => {
 
 export const updatePost = async (postData: PostData) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${postData.id}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/posts/${postData.id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -46,7 +46,7 @@ export const updatePost = async (postData: PostData) => {
 
 export const deletePost = async (postData: { id: number; editorId?: number }) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${postData.id}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/posts/${postData.id}`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(postData)
@@ -105,9 +105,10 @@ export const fetchOlderPosts = async (pageParam: number, limit = 20, groupId: nu
 
 export const fetchLastCommentsFromPost = async (postId: number, profileId: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${postId}/${profileId}/comments`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comments/post/${postId}`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({profileId})
         });
 
         if (!response || !response.data) {
@@ -126,7 +127,7 @@ export const createCommentOnPost = async (commentData: {
     content: string;
 }) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/add/post`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comments`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(commentData)
@@ -148,7 +149,7 @@ export const updateCommentOnPost = async (
     content: string
 ) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/update`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comments/${commentId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ authorId, content })
@@ -166,7 +167,7 @@ export const updateCommentOnPost = async (
 
 export const deleteCommentOnPost = async (commentId: number, authorId: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/delete`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comments/${commentId}`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ authorId })
@@ -189,7 +190,7 @@ export const replyToComment = async (replyData: {
     content: string;
 }) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/add/reply`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comments/replies`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(replyData)
@@ -207,9 +208,10 @@ export const replyToComment = async (replyData: {
 
 export const fetchRepliesForComment = async (commentId: number, profileId: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comment/${commentId}/${profileId}/children`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comments/${commentId}/children`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({profileId})
         });
 
         if (!response || !response.data) {
@@ -230,7 +232,7 @@ export async function likePost(
     reactType: "LIKE" | "SAD"
 ) {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/react/toggle`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/reacts`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

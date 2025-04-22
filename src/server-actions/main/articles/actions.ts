@@ -30,7 +30,7 @@ export const fetchProfileArticles = async (
         });
 
         const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/post/${profileId}/articles?${queryParams.toString()}`,
+            `${symfonyUrl}/api/v1/posts/${profileId}/articles?${queryParams.toString()}`,
             {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -69,7 +69,7 @@ export const deleteArticle = async (articleId: string, editorId: number): Promis
     }
 
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${articleId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/posts/${articleId}`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ editorId })
@@ -96,7 +96,7 @@ export const submitArticle = async (
 
     try {
         const method = articleId ? "PUT" : "POST";
-        const url = articleId ? `${symfonyUrl}/api/v1/post/${articleId}` : `${symfonyUrl}/api/v1/post`;
+        const url = articleId ? `${symfonyUrl}/api/v1/posts/${articleId}` : `${symfonyUrl}/api/v1/post`;
 
         const modifiedPayload = { ...payload, type: "article" };
         const response = await fetchWithAuth(url, {
@@ -121,7 +121,7 @@ export const updateArticleStatus = async (articleId: string, newStatus: string, 
     }
 
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${articleId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/posts/${articleId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: newStatus, editorId })
@@ -139,7 +139,7 @@ export const updateArticleStatus = async (articleId: string, newStatus: string, 
 
 export const fetchArticle = async (id: number): Promise<Article | null> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${id}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/posts/${id}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         });

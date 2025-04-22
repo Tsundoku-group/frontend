@@ -10,7 +10,7 @@ export async function fetchUserProfileData(profileId: number): Promise<{
     message: string;
 }> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profiles/${profileId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ export async function updateUserProfileData(profileId: number, profileData: Part
     message: string;
 }> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}/edit`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profiles/${profileId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ export async function fetchUploadImageProfile(userId: number, profileId: number,
     message: string;
 }> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/upload`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -110,7 +110,7 @@ export async function deleteUserProfilePictureUrl(id: number, profileId: number,
     error?: any;
 }> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo/remove`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/photo`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

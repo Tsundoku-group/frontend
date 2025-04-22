@@ -18,7 +18,7 @@ export const fetchUserProfiles = async (
     profiles: UserProfile[];
 }> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${userId}/all`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profiles/${userId}/all`, {
             method: 'GET',
         });
 
@@ -56,7 +56,7 @@ export const setUserProfileStatus = async (
     message: string;
 }> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}/update/status`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profiles/${profileId}/update/status`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export const setActiveUserProfile = async (
     data?: any;
 }> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/active`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profiles/active`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ export const addNewUserProfile = async (
     data?: any;
 }> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/new`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profiles`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ export const fetchNotifications = async (
     data: any[];
 }> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/notification/${profileId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/notifications/${profileId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -224,7 +224,7 @@ export const markAsReadNotifications = async (
     message: string;
 }> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/notification/${profileId}/read`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/notifications/${profileId}/read`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

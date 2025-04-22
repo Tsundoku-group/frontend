@@ -6,7 +6,7 @@ import { symfonyUrl } from "@/constants/symfonyUrl";
 
 export const fetchArchivedConversations = async (userId: string): Promise<ChatConversation[]> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${userId}/archived`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${userId}/archived`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ export const fetchArchivedConversations = async (userId: string): Promise<ChatCo
 
 export const handleUnarchiveConversation = async (conversationId: string) => {
     try {
-        return await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${conversationId}/unarchive`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${conversationId}/unarchive`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export const handleUnarchiveConversation = async (conversationId: string) => {
 
 export const handleUnarchiveAllConversations = async (userId: string) => {
     try {
-        return await fetchWithAuth(`${symfonyUrl}/api/v1/conversation/${userId}/unarchive/all`, {
+        return await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${userId}/unarchive/all`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
