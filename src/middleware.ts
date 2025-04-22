@@ -13,7 +13,9 @@ export default async function middleware(req: NextRequest) {
         '/accessibilitySettings',
         '/appearanceSettings',
         '/notificationSettings',
-        '/profile'
+        '/profile',
+        '/challenges',
+        '/articles',
     ]);
 
     const DYNAMIC_PROTECTED_PATTERNS = [

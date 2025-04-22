@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {Home, User, BookOpen, Trophy, MessageCircle, Users, PenTool} from 'lucide-react';
-import {useSocket} from "@/context/socketContext";
-import {useProfileContext} from "@/context/profileContext";
-import {useRouter} from "next/navigation";
+import React, { useEffect, useState } from 'react';
+import { Home, User, BookOpen, Trophy, MessageCircle, Users, PenTool } from 'lucide-react';
+import { useSocket } from "@/context/socketContext";
+import { useProfileContext } from "@/context/profileContext";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [isClient, setIsClient] = useState(false);
-    const {socket} = useSocket();
-    const {activeProfileInStorage} = useProfileContext();
+    const { socket } = useSocket();
+    const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id;
     const router = useRouter();
 
@@ -69,10 +69,10 @@ export default function Sidebar() {
                 </div>
                 <div className="flex items-center justify-around mb-4 mt-4">
                     <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -mr-5" onClick={handleBackToHome}>
-                        <Home className="text-text-white"/>
+                        <Home className="text-text-white" />
                     </div>
                     <div className="bg-tertiary-black p-3 rounded-lg cursor-pointer -ml-5" onClick={handleBackToProfilePage}>
-                        <User className="text-text-white"/>
+                        <User className="text-text-white" />
                     </div>
                 </div>
             </div>
@@ -81,19 +81,19 @@ export default function Sidebar() {
                 <ul className="space-y-4">
                     <li>
                         <a href="#" className="flex items-center text-text-white hover:text-white">
-                            <BookOpen className="mr-3"/>
+                            <BookOpen className="mr-3" />
                             <span>Étagères</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" className="flex items-center text-text-white hover:text-white">
-                            <Trophy className="mr-3"/>
+                        <a href="/challenges" className="flex items-center text-text-white hover:text-white">
+                            <Trophy className="mr-3" />
                             <span>Défis</span>
                         </a>
                     </li>
                     <li>
                         <a href="/conversations" className="flex items-center text-text-white hover:text-white">
-                            <MessageCircle className="mr-3"/>
+                            <MessageCircle className="mr-3" />
                             <span>Messages</span>
                             {unreadMessages > 0 && (
                                 <span
@@ -105,13 +105,13 @@ export default function Sidebar() {
                     </li>
                     <li>
                         <a href="/clubs" className="flex items-center text-text-white hover:text-white">
-                            <Users className="mr-3"/>
+                            <Users className="mr-3" />
                             <span>Clubs</span>
                         </a>
                     </li>
                     <li>
                         <a href="/articles" className="flex items-center text-text-white hover:text-white">
-                            <PenTool className="mr-3"/>
+                            <PenTool className="mr-3" />
                             <span>Articles</span>
                         </a>
                     </li>
