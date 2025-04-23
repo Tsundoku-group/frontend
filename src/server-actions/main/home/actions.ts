@@ -64,7 +64,7 @@ export const deletePost = async (postData: { id: number; editorId?: number }) =>
 
 export const fetchRecentPosts = async (groupId: number, profileId: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/groups/${groupId}/posts/recent?profileId=${profileId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/groups/${groupId}/posts/recent?profileId=${profileId}&type=post`, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         });
@@ -82,7 +82,7 @@ export const fetchRecentPosts = async (groupId: number, profileId: number) => {
 export const fetchOlderPosts = async (pageParam: number, limit = 20, groupId: number, profileId: number) => {
     try {
         const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/groups/${groupId}/posts/older?profileId=${profileId}&limit=${limit}&offset=${(pageParam - 1) * limit}`,
+            `${symfonyUrl}/api/v1/groups/${groupId}/posts/older?profileId=${profileId}&type=post&limit=${limit}&offset=${(pageParam - 1) * limit}`,
             {
                 method: "GET",
                 headers: { "Content-Type": "application/json" }

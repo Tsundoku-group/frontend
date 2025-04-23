@@ -14,7 +14,7 @@ export default function ArticlePage({ params }: { params: { articleId: number } 
         async function loadArticle() {
             try {
                 const data = await fetchArticle(params.articleId);
-                console.log(data);
+
                 if (data !== undefined && data !== null) {
                     setArticle(data);
                 }
