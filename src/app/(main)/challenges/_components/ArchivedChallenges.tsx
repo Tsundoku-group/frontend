@@ -8,7 +8,7 @@ export default function ArchivedChallenges() {
         <>
             <h2>Défis archivés</h2>
             {/* map des défis en cours */}
-            <div>
+            <div className="bg-secondary-black text-text-white p-4 rounded-lg flex flex-col gap-4 border border-tertiary-black">
                 <span>Tag type de défi</span>
                 {/* <Image du badge /> */}
                 <h3>Nom du défi</h3>

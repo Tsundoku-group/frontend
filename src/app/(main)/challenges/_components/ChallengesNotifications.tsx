@@ -5,7 +5,7 @@ import React from 'react'
 
 export default function ChallengesNotifications() {
     return (
-        <>
+        <div className="col-span-3 bg-secondary-black text-text-white p-4 rounded-lg flex flex-col gap-4 border border-tertiary-black">
             <span>Défis reçus</span>
             {/* map des défis reçus */}
             <div>
@@ -40,6 +40,6 @@ export default function ChallengesNotifications() {
                 <span>Nouveau défi</span>
             </button>
 
-        </>
+        </div>
     )
 }
