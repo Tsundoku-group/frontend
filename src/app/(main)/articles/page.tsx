@@ -29,11 +29,9 @@ export default function ArticlesPage() {
     const loadArticles = useCallback(async () => {
         try {
             const data = await fetchProfileArticles(profileId, currentPage, sortField, sortOrder);
-            console.log(data);
             setArticles(data.articles || []);
             setTotalPages(data.pagination?.totalPages || 1);
         } catch (error) {
-            console.error("Failed to fetch articles: ", error);
             setArticles([]);
             setTotalPages(1);
         }

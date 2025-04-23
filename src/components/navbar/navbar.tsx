@@ -188,7 +188,7 @@ export default function Navbar() {
     const dropdownContent = (
         <DropdownMenuContent className="overflow-hidden w-64 mt-2 bg-tertiary-black border-tertiary-black">
             <div
-                className="flex transition-transform duration-300 ease-in-out"
+                className="flex transition-transform duration-200 ease-in-out"
                 style={{ transform: isSwitching === 'status' ? 'translateX(-50%)' : isSwitching === 'profiles' ? 'translateX(-50%)' : 'translateX(0%)', width: '200%' }}
             >
                 <div className="w-1/2 p-2 flex flex-col space-y-2">

@@ -19,6 +19,10 @@ const nextConfig = {
                 hostname: 'localhost',
             },
         ],
+        domains: [
+            'covers.openlibrary.org',
+            'github.com',
+        ],
     },
 };
 

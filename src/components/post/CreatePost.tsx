@@ -52,6 +52,7 @@ export default function CreatePost({ groupId }: { groupId: number}) {
             authorId: profileId,
             groupId: groupId,
             visibility,
+            type: 'post'
         };
 
         addPost(postData);

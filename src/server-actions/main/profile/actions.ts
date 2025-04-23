@@ -26,7 +26,7 @@ interface Relation {
 
 export const fetchUserProfile = async (profileId: number): Promise<ProfileResult> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profile/${profileId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/profiles/${profileId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -43,7 +43,7 @@ export const fetchUserProfile = async (profileId: number): Promise<ProfileResult
 
 export const fetchFriendsListFromProfile = async (profileId?: number, limit?: number, offset?: number): Promise<Relation[]> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${profileId}/list?limit=${limit}&offset=${offset}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendships/${profileId}/list?limit=${limit}&offset=${offset}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -60,7 +60,7 @@ export const fetchFriendsListFromProfile = async (profileId?: number, limit?: nu
 
 export const fetchAddProfileFriend = async (profileId: number, friendId: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${profileId}/request`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendships/${profileId}/request`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ friendId }),
@@ -121,7 +121,7 @@ export const fetchAddProfileFriend = async (profileId: number, friendId: number)
 
 export const fetchRemoveFriend = async (friendshipId: number | null, profileId: number, friendId: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${friendshipId}/remove`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendships/${friendshipId}/remove`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ requesterId: profileId, receiverId: friendId }),
@@ -189,7 +189,7 @@ export const fetchFollowedListFromProfile = async (profileId?: number, limit?: n
 
 export const fetchSuggestedFriendListFromProfile = async (profileId?: number, limit?: number, offset?: number): Promise<Suggestion[]> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendship/${profileId}/suggestions?limit=${limit}&offset=${offset}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendships/${profileId}/suggestions?limit=${limit}&offset=${offset}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         });

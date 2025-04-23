@@ -128,7 +128,7 @@ export const joinPrivateGroup = async (
     message: string;
 }> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/group/profile`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/groups/profile`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

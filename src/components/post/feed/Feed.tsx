@@ -43,10 +43,12 @@ export default function Feed({ groupId }: Props) {
 
     return (
         <div className="w-full mx-auto">
-            {data.posts && data.posts.length > 0 ? (
-                data.posts.map((post: any) => (
-                    <PostCard key={post.id} post={post} groupId={groupId} onDelete={handleDeletePost} />
-                ))
+            {Array.isArray(data.posts) && data.posts.length > 0 ? (
+                <>
+                    {data.posts.map((post: any) => (
+                        <PostCard key={post.id} post={post} groupId={groupId} onDelete={handleDeletePost} />
+                    ))}
+                </>
             ) : (
                 <p className="text-center text-gray-500">Aucun post à afficher.</p>
             )}

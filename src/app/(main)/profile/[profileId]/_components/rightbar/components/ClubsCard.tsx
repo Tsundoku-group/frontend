@@ -42,6 +42,8 @@ const ClubsCard = () => {
                         <Image
                             src={club.avatar}
                             alt={club.name}
+                            width={0}
+                            height={0}
                             className="w-10 h-10 rounded-full object-cover"
                         />
                         <div>
@@ -55,6 +57,8 @@ const ClubsCard = () => {
                                         key={i}
                                         src={img}
                                         alt={`Contact ${i + 1}`}
+                                        width={0}
+                                        height={0}
                                         className="w-6 h-6 rounded-full object-cover"
                                     />
                                 ))}

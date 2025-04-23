@@ -1,14 +1,14 @@
 'use server'
 
-import { fetchWithAuth } from "@/services/fetchWithAuth";
-import { Article } from "@/models/Article";
-import { symfonyUrl } from "@/constants/symfonyUrl";
+import {fetchWithAuth} from "@/services/fetchWithAuth";
+import {Article} from "@/models/Article";
+import {symfonyUrl} from "@/constants/symfonyUrl";
 
 export const fetchProfileArticles = async (
     profileId: number | undefined,
     page: number = 1,
     sortField: string = "createdAt",
-    sortOrder: string = "desc",
+    sortOrder: string = "desc"
 ): Promise<{ articles: Article[]; pagination: any }> => {
     if (!profileId) {
         return {
@@ -26,14 +26,15 @@ export const fetchProfileArticles = async (
         const queryParams = new URLSearchParams({
             page: page.toString(),
             sortField,
-            sortOrder
+            sortOrder,
+            type: 'article'
         });
 
         const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/post/${profileId}/articles?${queryParams.toString()}`,
+            `${symfonyUrl}/api/v1/posts/${profileId}/articles?${queryParams.toString()}`,
             {
                 method: "GET",
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
             }
         );
 
@@ -63,85 +64,92 @@ export const fetchProfileArticles = async (
     }
 };
 
-export const deleteArticle = async (articleId: string, editorId: number): Promise<{ success: boolean; message: string }> => {
+export const deleteArticle = async (articleId: string, editorId: number): Promise<{
+    success: boolean;
+    message: string
+}> => {
     if (!articleId) {
-        return { success: false, message: "Article id is missing" };
+        return {success: false, message: "Article id is missing"};
     }
 
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${articleId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/posts/${articleId}`, {
             method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ editorId })
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({editorId})
         });
 
         if (response.status !== 200) {
-            return { success: false, message: response.data?.error || "Échec de la suppression." };
+            return {success: false, message: response.data?.error || "Échec de la suppression."};
         }
 
-        return { success: true, message: "Article supprimé avec succès." };
+        return {success: true, message: "Article supprimé avec succès."};
     } catch (error: any) {
-        return { success: false, message: error.message || "Erreur serveur." };
+        return {success: false, message: error.message || "Erreur serveur."};
     }
 };
 
 export const submitArticle = async (
     articleId: string | null,
-    payload: { title: string; content: string; status: string; authorId: number },
+    payload: { title: string; content: string; status: string; authorId: number, type: 'article' },
     profileId: number | undefined
 ): Promise<{ success: boolean; message: string; data?: any }> => {
     if (!profileId) {
-        return { success: false, message: "Profil manquant." };
+        return {success: false, message: "Profil manquant."};
     }
 
     try {
         const method = articleId ? "PUT" : "POST";
-        const url = articleId ? `${symfonyUrl}/api/v1/post/${articleId}` : `${symfonyUrl}/api/v1/post`;
+        const url = articleId ? `${symfonyUrl}/api/v1/posts/${articleId}` : `${symfonyUrl}/api/v1/posts`;
 
-        const modifiedPayload = { ...payload, type: "article" };
+        const modifiedPayload = {...payload, type: "article"};
         const response = await fetchWithAuth(url, {
             method,
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify(modifiedPayload)
         });
 
         if (![200, 201].includes(response.status)) {
-            return { success: false, message: response.data?.error || "Erreur lors de l'envoi." };
+            return {success: false, message: response.data?.error || "Erreur lors de l'envoi."};
         }
 
-        return { success: true, message: "Article soumis.", data: response.data };
+        return {success: true, message: "Article soumis.", data: response.data};
     } catch (error: any) {
-        return { success: false, message: error.message || "Erreur serveur" };
+        return {success: false, message: error.message || "Erreur serveur"};
     }
 };
 
-export const updateArticleStatus = async (articleId: string, newStatus: string, editorId: number): Promise<{ success: boolean; message: string }> => {
+export const updateArticleStatus = async (articleId: string, newStatus: string, editorId: number): Promise<{
+    success: boolean;
+    message: string
+}> => {
     if (!articleId) {
-        return { success: false, message: "Identifiant d'article manquant." };
+        return {success: false, message: "Identifiant d'article manquant."};
     }
 
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${articleId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/posts/${articleId}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: newStatus, editorId })
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({status: newStatus, editorId})
         });
 
         if (response.status !== 200) {
-            return { success: false, message: response.data?.error || "Échec de mise à jour." };
+            return {success: false, message: response.data?.error || "Échec de mise à jour."};
         }
 
-        return { success: true, message: "Statut mis à jour." };
+        return {success: true, message: "Statut mis à jour."};
     } catch (error: any) {
-        return { success: false, message: error.message || "Erreur serveur" };
+        return {success: false, message: error.message || "Erreur serveur"};
     }
 };
 
 export const fetchArticle = async (id: number): Promise<Article | null> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/post/${id}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/posts/${id}`, {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({type: 'article'}),
         });
 
         if (response.status !== 200 || !response.data) {

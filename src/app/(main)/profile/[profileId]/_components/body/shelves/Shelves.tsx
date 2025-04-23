@@ -45,6 +45,8 @@ const ShelvesSection = ({title, books, icon}: ShelvesSectionProps) => {
                         <Image
                             src={book.coverUrl || ""}
                             alt={`Couverture de ${book.title ?? "livre inconnu"}`}
+                            width={0}
+                            height={0}
                             className="w-28 h-28 object-cover rounded-lg shadow-lg"
                         />
                     </div>
