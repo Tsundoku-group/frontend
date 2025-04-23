@@ -4,12 +4,12 @@ import {ChatConversation, LastMessage} from "@/models/ChatConversation";
 import React, {useCallback, useEffect, useMemo, useState} from "react";
 import ItemList from "@/app/(main)/(chat)/_components/item/ItemList";
 import {Loader2} from "lucide-react";
-import DMConversationItem from "@/app/(main)/(chat)/conversations/components/DMConversationItem";
-import {useAuthContext} from "@/context/authContext";
+import DMConversationItem from "@/app/(main)/(chat)/conversations/_components/DMConversationItem";
 import {fetchUserConversations} from "@/server-actions/main/chat/conversations/actions";
-import StartNewConversation from "@/app/(main)/(chat)/conversations/components/StartNewConversation";
+import StartNewConversation from "@/app/(main)/(chat)/conversations/_components/StartNewConversation";
 import SearchBar from '@/app/(main)/(chat)/_components/item/ItemSearchBar';
 import {useSocket} from "@/context/socketContext";
+import {useProfileContext} from "@/context/profileContext";
 
 const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState<boolean>(true);
@@ -17,16 +17,17 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     const [allConversations, setAllConversations] = useState<ChatConversation[]>([]);
     const [activeConversations, setActiveConversations] = useState<Set<string>>(new Set());
 
-    const {user} = useAuthContext();
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id as number;
     const {socket} = useSocket();
-    const userId = user?.userId;
+
 
     const fetchConversationsData = useCallback(async () => {
-        if (!userId) return;
+        if (!profileId) return;
         setLoading(true);
 
         try {
-            const data: ChatConversation[] = await fetchUserConversations(userId);
+            const data: ChatConversation[] = await fetchUserConversations(profileId);
 
             setConversations(data);
             setAllConversations(data);
@@ -36,7 +37,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    }, [userId]);
+    }, [profileId]);
 
     useEffect(() => {
         void fetchConversationsData();
@@ -83,7 +84,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     }, [socket, activeConversations]);
 
     useEffect(() => {
-        if (socket && userId) {
+        if (socket && profileId) {
             socket.on('conversationRead', ({conversationId}) => {
 
                 setConversations((prevConversations) =>
@@ -106,18 +107,18 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 socket.off('conversationRead');
             };
         }
-    }, [socket, userId]);
+    }, [socket, profileId]);
 
     const getOtherMember = useCallback((conversation: ChatConversation) => {
-        return conversation.participants.find(participant => participant.id !== userId);
-    }, [userId]);
+        return conversation.participants.find(participant => participant.id !== profileId);
+    }, [profileId]);
 
     const lastMessageDetails = useMemo(() => {
         return conversations.map(conversation => {
             const lastMessage = conversation.lastMessage as LastMessage || {};
             const otherMember = getOtherMember(conversation);
 
-            const isReadForCurrentUser = lastMessage.sent_by === user?.email || lastMessage.isRead;
+            const isReadForCurrentUser = lastMessage.sent_by === activeProfileInStorage?.username || lastMessage.isRead;
 
             return {
                 id: conversation.id,
@@ -131,7 +132,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 otherParticipantId: otherMember?.id
             };
         });
-    }, [conversations, getOtherMember, user?.email]);
+    }, [conversations, getOtherMember,profileId]);
 
     const resetSearchBarConversations = useCallback(() => {
         setConversations(allConversations);

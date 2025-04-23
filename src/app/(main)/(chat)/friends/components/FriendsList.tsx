@@ -5,16 +5,12 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {Send, User} from "lucide-react";
 import {Button} from "@/components/ui/button";
+import {Friend} from "@/models/Friend";
 
 type Props = {
-    friends: {
-        id: string;
-        imageUrl?: string;
-        username?: string;
-        email: string;
-    }[];
+    friends: Friend[];
     loading: boolean;
-    onStartConversation: (friendId: string) => void;
+    onStartConversation: (friendId: number) => void;
 };
 
 const FriendsList = ({ friends, loading, onStartConversation }: Props) => {
@@ -25,7 +21,7 @@ const FriendsList = ({ friends, loading, onStartConversation }: Props) => {
     return (
         <div className="flex flex-col gap-2 w-full">
             {friends.map((friend) => (
-                <Card key={friend.id} className="w-full p-2 flex flex-row items-center justify-between gap-2">
+                <Card key={friend.friendId} className="w-full p-2 flex flex-row items-center justify-between gap-2">
                     <div className="flex items-center gap-4 truncate">
                         <Avatar>
                             <AvatarImage src={friend.imageUrl} />
@@ -39,7 +35,7 @@ const FriendsList = ({ friends, loading, onStartConversation }: Props) => {
                     </div>
                     <div className="flex gap-2">
                         <Button
-                            onClick={() => onStartConversation(friend.id)}
+                            onClick={() => onStartConversation(friend.friendId)}
                             size="icon"
                         >
                             <Send className="w-4 h-4" />

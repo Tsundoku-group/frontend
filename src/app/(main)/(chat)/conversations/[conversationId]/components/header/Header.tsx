@@ -7,7 +7,7 @@ import { useSocket } from "@/context/socketContext";
 type Props = {
     imageUrl?: string;
     name: string;
-    otherParticipantId: string;
+    otherParticipantId: number;
 };
 
 const Header = ({ imageUrl, name, otherParticipantId }: Props) => {

@@ -15,13 +15,14 @@ import {useSocket} from "@/context/socketContext";
 import {v4 as uuidv4} from 'uuid';
 import {ShowToast} from "@/components/ShowToast";
 import {ChatParticipant} from "@/models/ChatConversation";
+import {useProfileContext} from "@/context/profileContext";
 
 const chatMessageSchema = z.object({
     content: z.string().optional(),
 });
 
 type Props = {
-    conversationId: string;
+    conversationId: number;
     otherParticipant?: ChatParticipant;
 };
 
@@ -31,9 +32,10 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
     const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
 
     const {user} = useAuthContext();
+    const {activeProfileInStorage} = useProfileContext();
     const {socket} = useSocket();
     const userEmail = user?.email;
-    const userId = user?.userId;
+    const profileId = activeProfileInStorage?.id as number;
 
     const createMessage = async (payload: any) => {
         try {
@@ -44,7 +46,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
                 socket.emit('send_msg', JSON.stringify({
                     roomId: conversationId,
                     id: uuid,
-                    userId: userId,
+                    profileId: profileId,
                     content: payload.message,
                     receiverData: otherParticipant,
                     sender_email: userEmail,
@@ -95,7 +97,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
         if (socket && conversationId && value.trim() !== "") {
 
             if (!isTyping) {
-                socket.emit("typing", {roomId: conversationId, userId});
+                socket.emit("typing", {roomId: conversationId, profileId});
                 setIsTyping(true);
             }
 
@@ -104,7 +106,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
             }
 
             const timeoutId = setTimeout(() => {
-                socket.emit("stopTyping", {roomId: conversationId, userId});
+                socket.emit("stopTyping", {roomId: conversationId, profileId});
                 setIsTyping(false);
             }, 3000);
 

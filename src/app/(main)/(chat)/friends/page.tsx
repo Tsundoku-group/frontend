@@ -12,13 +12,8 @@ import SearchBar from "@/app/(main)/(chat)/_components/item/ItemSearchBar";
 import {useRouter} from "next/navigation";
 import {startNewConversation} from "@/server-actions/main/chat/conversations/actions";
 import {ShowToast} from "@/components/ShowToast";
-
-type Friend = {
-    id: string;
-    username: string;
-    email: string;
-    imageUrl?: string;
-};
+import {useProfileContext} from "@/context/profileContext";
+import {Friend} from "@/models/Friend";
 
 const FriendsPage = React.memo(() => {
     const [friendList, setFriendList] = useState<Friend[]>([]);
@@ -27,16 +22,16 @@ const FriendsPage = React.memo(() => {
     const [loading, setLoading] = useState<boolean>(true);
 
     const router = useRouter();
-    const {user} = useAuthContext();
-    const userId = user?.userId as string;
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id as number;
 
     useEffect(() => {
         const fetchFriendsData = async () => {
-            if (!userId) return;
+            if (!profileId) return;
 
             setLoading(true);
             try {
-                const data = await fetchFriendsList(userId);
+                const data = await fetchFriendsList(profileId);
                 setFriendList(data);
                 setFilteredFriends(data);
                 setAllFriends(data);
@@ -48,14 +43,14 @@ const FriendsPage = React.memo(() => {
         };
 
         void fetchFriendsData();
-    }, [userId]);
+    }, [profileId]);
 
-    const onStartConversation = async (friendId: string) => {
-        const friend = friendList.find((f) => f.id === friendId);
+    const onStartConversation = async (friendId: number) => {
+        const friend = friendList.find((f) => f.friendId === friendId);
         if (!friend) return;
 
         try {
-            const response = await startNewConversation(user.email as string, friendId);
+            const response = await startNewConversation(friend.username, friendId);
 
             if (response.success) {
                 const newConversationId = response.conversationId;
@@ -82,7 +77,7 @@ const FriendsPage = React.memo(() => {
                         placeholder="Rechercher un(e) ami(e)..."
                         items={friendList}
                         setFilteredItems={setFilteredFriends}
-                        getLabel={(friend) => friend.username || friend.email}
+                        getLabel={(friend) => friend.username}
                         resetItems={resetSearchBarFriends}
                     />
                     {loading ? (
@@ -92,7 +87,8 @@ const FriendsPage = React.memo(() => {
                             Ajoute des amis pour commencer à chatter
                         </p>
                     ) : (
-                        <FriendsList friends={filteredFriends} loading={loading} onStartConversation={onStartConversation}/>
+                        <FriendsList friends={filteredFriends} loading={loading}
+                                     onStartConversation={onStartConversation}/>
                     )}
                 </ItemList>
             </div>

@@ -4,20 +4,21 @@ import {fetchWithAuth} from "@/services/fetchWithAuth";
 import { symfonyUrl } from "@/constants/symfonyUrl";
 
 interface Friend {
-    id: string;
+    friendId: number;
+    firstname: string;
+    lastname: string;
     username: string;
-    email: string;
     imageUrl?: string;
 }
 
-export async function fetchFriendsList(userId: string): Promise<Friend[]> {
+export async function fetchFriendsList(profileId: number): Promise<Friend[]> {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendships/${userId}/list`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/friendships/${profileId}/list`, {
             method: 'GET',
         });
 
         if (200 === response.status) {
-            return response.data;
+            return response.data.map((item: any) => item.friend);
         } else {
             return [];
         }

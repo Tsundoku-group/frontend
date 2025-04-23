@@ -14,16 +14,17 @@ import Body from "@/app/(main)/(chat)/conversations/[conversationId]/components/
 import {useAuthContext} from "@/context/authContext";
 import {useSocket} from "@/context/socketContext";
 import {ChatParticipant} from "@/models/ChatConversation";
+import {useProfileContext} from "@/context/profileContext";
 
 type Props = {
-    conversationId: string;
+    conversationId: number;
     context?: "archive" | "active";
 };
 
 type Message = {
-    id: string;
+    id: number;
     content: string;
-    sender_id: string;
+    sender_id: number;
     sent_by: string;
     sent_at: string;
     sender_email: string;
@@ -42,12 +43,14 @@ const ConversationView = React.memo(({conversationId}: Props) => {
 
     const {user} = useAuthContext();
     const {socket} = useSocket();
-    const userEmail = user?.email as string;
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id as number;
+
     const messageContainerRef = useRef<HTMLDivElement | null>(null);
 
     const otherParticipant = useMemo(() => {
-        return participants.find(participant => participant.email !== userEmail);
-    }, [participants, userEmail]);
+        return participants.find(participant => participant.username !== activeProfileInStorage?.username);
+    }, [participants, activeProfileInStorage?.username]);
 
     const otherParticipantName = otherParticipant?.username || "";
     const fetchData = useCallback(async () => {
@@ -76,29 +79,27 @@ const ConversationView = React.memo(({conversationId}: Props) => {
                 console.error("Erreur dans fetchData:", err);
             }
         };
-        run();
+        void run();
     }, [fetchData]);
 
     useEffect(() => {
         const markUnreadMessagesAsRead = async () => {
-            const otherUserEmail = otherParticipant?.email;
-
-            if (!otherUserEmail || !messages.length) return;
+            if (!otherParticipant?.id || !messages.length) return;
 
             const unreadMessages = messages.filter(
-                (message) => message.sender_email === otherUserEmail && !message.isRead
+                (message) => message.sender_id === otherParticipant.id && !message.isRead
             );
 
             if (!unreadMessages.length) return;
 
             try {
-                const response = await fetchMarkMessagesAsRead(conversationId, otherUserEmail);
+                const response = await fetchMarkMessagesAsRead(conversationId, profileId);
 
                 if (response.response) {
                     setState(prev => ({
                         ...prev,
                         messages: prev.messages.map((message) =>
-                            message.sender_email === otherUserEmail && !message.isRead
+                            message.sender_id === otherParticipant.id && !message.isRead
                                 ? {...message, isRead: true}
                                 : message
                         ),
@@ -106,7 +107,7 @@ const ConversationView = React.memo(({conversationId}: Props) => {
 
                     socket?.emit('markAsRead', {
                         conversationId,
-                        userId: user?.userId,
+                        profileId: profileId,
                     });
                 } else {
                     console.error("Erreur lors de la mise à jour du message comme lu :", response);
@@ -116,17 +117,14 @@ const ConversationView = React.memo(({conversationId}: Props) => {
             }
         };
 
-        markUnreadMessagesAsRead()
-            .catch((err) => {
-                console.error("Erreur lors du marquage des messages comme lus :", err);
-            });
+        markUnreadMessagesAsRead().catch(console.error);
+    }, [socket, messages, conversationId, otherParticipant, profileId]);
 
-    }, [socket, messages, conversationId, otherParticipant, user?.userId]);
-    
     return (
         <div className="ml-80">
             <ConversationContainer>
-                <Header name={otherParticipantName} imageUrl={otherParticipant?.imageUrl} otherParticipantId={otherParticipant?.id as string}/>
+                <Header name={otherParticipantName} imageUrl={otherParticipant?.imageUrl}
+                        otherParticipantId={otherParticipant?.id as number}/>
                 {loading ? (
                     <div className="flex justify-center py-4">
                         <Loader2 className="h-5 w-5 animate-spin"/>
@@ -135,7 +133,7 @@ const ConversationView = React.memo(({conversationId}: Props) => {
                     <>
                         <div ref={messageContainerRef} className="flex-1 w-full overflow-y-auto flex flex-col-reverse">
                             <Body
-                                userEmail={userEmail}
+                                profileId={profileId}
                                 messages={state.messages}
                                 conversationId={conversationId}
                             />

@@ -5,7 +5,7 @@ import ConversationView from "@/app/(main)/(chat)/_components/conversation/Conve
 
 type Props = {
     params: {
-        conversationId: string;
+        conversationId: number;
     }
 };
 
