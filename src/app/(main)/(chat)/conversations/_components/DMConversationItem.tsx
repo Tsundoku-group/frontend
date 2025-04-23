@@ -30,7 +30,7 @@ import {ChatConversation} from "@/models/ChatConversation";
 import {useSocket} from "@/context/socketContext";
 
 type Props = {
-    id: string;
+    id: number;
     imageUrl: string;
     username: string;
     lastMessageContent: string;
@@ -43,7 +43,7 @@ type Props = {
         timezone_type: number;
     } | null;
     setConversations: React.Dispatch<React.SetStateAction<ChatConversation[]>>;
-    otherParticipantId?: string;
+    otherParticipantId?: number;
 };
 
 const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageContent, lastMessageSender, sentAt, isRead, isMutedUntil, setConversations, otherParticipantId}: Props) => {
@@ -130,8 +130,8 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
 
     useEffect(() => {
         if (socket) {
-            socket.on("user_status_update", ({ userId, status }) => {
-                if (otherParticipantId === userId) {
+            socket.on("user_status_update", ({ profileId, status }) => {
+                if (otherParticipantId === profileId) {
                     setIsOnline(status === "online");
                 }
             });
