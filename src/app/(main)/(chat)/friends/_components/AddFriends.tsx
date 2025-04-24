@@ -81,8 +81,8 @@ const AddFriends = () => {
                         </Button>
                     </DialogTrigger>
                 </TooltipTrigger>
-                <TooltipContent>
-                    <p>Ajouter un(e) ami(e)</p>
+                <TooltipContent className="bg-secondary-black border-tertiary-black">
+                    <div className="text-text-white text-sm">Ajouter un(e) ami(e)</div>
                 </TooltipContent>
             </Tooltip>
 

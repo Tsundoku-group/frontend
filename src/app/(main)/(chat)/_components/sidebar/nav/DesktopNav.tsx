@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import React from "react";
 
 const DesktopNav = () => {
     const paths = useNavigation();
@@ -26,8 +27,8 @@ const DesktopNav = () => {
                                         </Button>
                                     </Link>
                                 </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{path.name}</p>
+                                <TooltipContent className="bg-secondary-black border-tertiary-black">
+                                    <div className="text-text-white text-sm">{path.name}</div>
                                 </TooltipContent>
                             </Tooltip>
                         </li>

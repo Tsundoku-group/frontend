@@ -2,7 +2,7 @@
 
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Loader2} from 'lucide-react';
-import ArchivesConversationItem from '@/app/(main)/(chat)/archives/components/ArchivesConversationItem';
+import ArchivesConversationItem from '@/app/(main)/(chat)/archives/_components/ArchivesConversationItem';
 import ItemList from '@/app/(main)/(chat)/_components/item/ItemList';
 import {fetchArchivedConversations, handleUnarchiveAllConversations} from '@/server-actions/main/chat/archives/actions';
 import SearchBar from '@/app/(main)/(chat)/_components/item/ItemSearchBar';
@@ -11,8 +11,9 @@ import {CheckedState} from "@radix-ui/react-checkbox";
 import {ChatConversation, LastMessage} from "@/models/ChatConversation";
 import {ShowToast} from "@/components/ShowToast";
 import {useProfileContext} from "@/context/profileContext";
+import {truncateString} from "@/utils/string-utils";
 
-const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
+const ArchivesLayout = ({children}: { children: React.ReactNode }) => {
     const [archivesConversation, setArchivesConversation] = useState<ChatConversation[]>([]);
     const [filteredConversations, setFilteredConversations] = useState<ChatConversation[]>([]);
     const [selectedConversations, setSelectedConversations] = useState<Set<number>>(new Set());
@@ -51,7 +52,7 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
 
     const archivesConversationDetails = useMemo(() => {
         return archivesConversation.map(conversation => {
-            const lastMessage = conversation.lastMessage as LastMessage|| {};
+            const lastMessage = conversation.lastMessage as LastMessage || {};
             const otherMember = getOtherMember(conversation);
             return {
                 id: conversation.id,
@@ -112,21 +113,23 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
                     resetItems={resetSearchBarConversations}
                 />
                 <div className="grid grid-cols-3 items-center mt-2 text-xs">
-                    <div className="flex mr-5 items-center">
+                    <div className="flex mr-5 items-center gap-2">
                         <Checkbox
                             onCheckedChange={(isChecked) => toggleSelectAll(isChecked)}
                             checked={selectedConversations.size === filteredConversations.length && filteredConversations.length > 0}
                             className="mr-1"
                         />
-                        <span>Tout sélectionner</span>
+                        <span className="text-text-white text-xs whitespace-nowrap">
+                            {truncateString("Tout sélectionner", 15)}
+                        </span>
                     </div>
                     {selectedConversations.size > 0 && (
                         <a
                             href="#"
                             onClick={() => handleUnarchiveSelected(profileId)}
-                            className="text-blue-500 hover:underline ml-10 cursor-pointer col-start-3"
+                            className="text-purple-highlight hover:underline ml-10 cursor-pointer col-start-3"
                         >
-                            Désarchiver tout
+                            {truncateString("Désarchiver tout", 15)}
                         </a>
                     )}
                 </div>
@@ -139,7 +142,14 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
                         Pas de conversation trouvée
                     </p>
                 ) : (
-                    archivesConversationDetails.map(({id, username, imageUrl, lastMessageSender, lastMessageContent, archivedAt}) => {
+                    archivesConversationDetails.map(({
+                                                         id,
+                                                         username,
+                                                         imageUrl,
+                                                         lastMessageSender,
+                                                         lastMessageContent,
+                                                         archivedAt
+                                                     }) => {
                         return (
                             <ArchivesConversationItem
                                 key={id}

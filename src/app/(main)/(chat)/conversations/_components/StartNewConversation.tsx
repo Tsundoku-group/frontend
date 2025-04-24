@@ -116,12 +116,12 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({onNewConvers
                         </Button>
                     </DialogTrigger>
                 </TooltipTrigger>
-                <TooltipContent>
-                    <p>Commencer une nouvelle conversation</p>
+                <TooltipContent className="bg-secondary-black border-tertiary-black">
+                    <div className="text-text-white text-sm">Commencer une nouvelle conversation</div>
                 </TooltipContent>
             </Tooltip>
 
-            <DialogContent>
+            <DialogContent className="bg-tertiary-black border-secondary-black">
                 <DialogHeader>
                     <DialogTitle>Nouvelle conversation</DialogTitle>
                     <DialogDescription>Choisissez un(e) ami(e) pour démarrer une conversation</DialogDescription>
@@ -131,7 +131,7 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({onNewConvers
                     placeholder="Rechercher un(e) ami(e)..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="mb-4"
+                    className="mb-4 bg-primary-black border-none"
                 />
 
                 {loading ? (
@@ -145,8 +145,8 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({onNewConvers
                                 <div
                                     key={friend.friendId}
                                     onClick={() => toggleFriendSelection(friend)}
-                                    className={`flex items-center p-2 cursor-pointer rounded-md ${
-                                        selectedFriend?.friendId === friend.friendId ? "bg-blue-100" : ""
+                                    className={`flex items-center p-2 cursor-pointer rounded-md bg-primary-black ${
+                                        selectedFriend?.friendId === friend.friendId ? "bg-secondary-black border-none" : ""
                                     }`}
                                 >
                                     <Avatar className="w-8 h-8 mr-4">
@@ -170,7 +170,7 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({onNewConvers
                 )}
 
                 <DialogFooter>
-                    <Button onClick={handleStartConversation} disabled={loading}>
+                    <Button onClick={handleStartConversation} disabled={loading} className="bg-purple-highlight">
                         {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : "Commencer la conversations"}
                     </Button>
                 </DialogFooter>

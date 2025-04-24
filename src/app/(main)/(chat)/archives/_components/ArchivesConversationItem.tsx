@@ -56,7 +56,7 @@ const ArchivesConversationItem = React.memo(({id, imageUrl, username, lastMessag
 
     return (
         <div className="w-full">
-            <Card onClick={() => router.push(`/archives/${id}`)} className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition">
+            <Card onClick={() => router.push(`/archives/${id}`)} className="p-3 flex flex-row items-center gap-3 bg-tertiary-black hover:bg-primary-black transition border-none">
                 <Checkbox id={id.toString()} checked={isChecked} onChange={onChange}/>
                 <Avatar className="w-12 h-12">
                     <AvatarImage src={imageUrl}/>
@@ -65,7 +65,7 @@ const ArchivesConversationItem = React.memo(({id, imageUrl, username, lastMessag
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col flex-grow overflow-hidden">
-                    <h4 className="truncate font-semibold text-sm text-black">{username}</h4>
+                    <div className="truncate font-semibold text-sm text-text-white">{username}</div>
                     {lastMessageSender && lastMessageContent && (
                         <span className="text-xs text-gray-400 truncate overflow-hidden max-w-[200px]">
                             <span>{lastMessageSender}: </span>

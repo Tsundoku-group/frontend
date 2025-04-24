@@ -3,9 +3,9 @@
 import React, {useState, useEffect} from "react";
 import ItemList from "@/app/(main)/(chat)/_components/item/ItemList";
 import ConversationFallBack from "@/app/(main)/(chat)/_components/conversation/ConversationFallBack";
-import AddFriends from "./components/AddFriends";
+import AddFriends from "@/app/(main)/(chat)/friends/_components/AddFriends";
 import {Loader2} from "lucide-react";
-import FriendsList from "@/app/(main)/(chat)/friends/components/FriendsList";
+import FriendsList from "@/app/(main)/(chat)/friends/_components/FriendsList";
 import {fetchFriendsList} from "@/server-actions/main/chat/friends/actions";
 import SearchBar from "@/app/(main)/(chat)/_components/item/ItemSearchBar";
 import {useRouter} from "next/navigation";
