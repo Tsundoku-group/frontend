@@ -8,7 +8,7 @@ type Props = React.PropsWithChildren<{
 
 const ItemList = React.memo(({children, title, action: Action}: Props) => {
     return (
-        <Card className="fixed h-[calc(100vh-145px)] w-full lg:flex-none lg:w-[300px] p-2">
+        <Card className="fixed h-[calc(100vh-145px)] w-full lg:flex-none lg:w-[300px] p-2 bg-tertiary-black">
             <div className="mb-4 flex items-center justify-between">
                 <h1 className="text-2x1 font-semibold tracking-tight ml-3 mt-3">{title}</h1>
                 {Action ? Action : null}

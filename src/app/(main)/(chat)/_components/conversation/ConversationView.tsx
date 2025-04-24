@@ -11,7 +11,6 @@ import {
     fetchOneConversationById
 } from "@/server-actions/main/chat/conversations/actions";
 import Body from "@/app/(main)/(chat)/conversations/[conversationId]/components/body/Body";
-import {useAuthContext} from "@/context/authContext";
 import {useSocket} from "@/context/socketContext";
 import {ChatParticipant} from "@/models/ChatConversation";
 import {useProfileContext} from "@/context/profileContext";

@@ -7,7 +7,6 @@ import AddFriends from "./components/AddFriends";
 import {Loader2} from "lucide-react";
 import FriendsList from "@/app/(main)/(chat)/friends/components/FriendsList";
 import {fetchFriendsList} from "@/server-actions/main/chat/friends/actions";
-import {useAuthContext} from "@/context/authContext";
 import SearchBar from "@/app/(main)/(chat)/_components/item/ItemSearchBar";
 import {useRouter} from "next/navigation";
 import {startNewConversation} from "@/server-actions/main/chat/conversations/actions";

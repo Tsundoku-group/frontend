@@ -131,7 +131,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 otherParticipantId: otherMember?.id
             };
         });
-    }, [conversations, getOtherMember, profileId]);
+    }, [activeProfileInStorage?.username, conversations, getOtherMember]);
 
     const resetSearchBarConversations = useCallback(() => {
         setConversations(allConversations);
