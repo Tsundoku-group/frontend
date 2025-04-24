@@ -7,7 +7,7 @@ import { useSocket } from "@/context/socketContext";
 type Props = {
     imageUrl?: string;
     name: string;
-    otherParticipantId: string;
+    otherParticipantId: number;
 };
 
 const Header = ({ imageUrl, name, otherParticipantId }: Props) => {
@@ -39,13 +39,13 @@ const Header = ({ imageUrl, name, otherParticipantId }: Props) => {
                 </Avatar>
                 {isOnline && (
                     <span
-                        className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                        className="absolute bottom-0 right-0 w-3 h-3 bg-green-highlight border-2 border-white rounded-full"></span>
                 )}
             </div>
 
             <div className="flex flex-col">
-                <h1 className="font-semibold text-black">{name}</h1>
-                <span className={`text-sm ${isOnline ? 'text-green-500' : 'text-gray-500'}`}>
+                <h4 className="font-semibold text-text-white">{name}</h4>
+                <span className={`text-sm ${isOnline ? 'text-green-highlight' : 'text-gray-500'}`}>
                     {isOnline ? "En ligne" : "Hors ligne"}
                 </span>
             </div>

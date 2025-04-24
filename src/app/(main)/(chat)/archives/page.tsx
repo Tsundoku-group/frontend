@@ -3,7 +3,7 @@ import ConversationFallBack from "@/app/(main)/(chat)/_components/conversation/C
 
 const ArchivesPage = () => {
     return (
-        <div className="ml-80"><ConversationFallBack /></div>
+        <div className="ml-[calc(30svh)]"><ConversationFallBack /></div>
     )
 }
 

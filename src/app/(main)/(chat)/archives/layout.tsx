@@ -2,31 +2,32 @@
 
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Loader2} from 'lucide-react';
-import ArchivesConversationItem from '@/app/(main)/(chat)/archives/components/ArchivesConversationItem';
+import ArchivesConversationItem from '@/app/(main)/(chat)/archives/_components/ArchivesConversationItem';
 import ItemList from '@/app/(main)/(chat)/_components/item/ItemList';
 import {fetchArchivedConversations, handleUnarchiveAllConversations} from '@/server-actions/main/chat/archives/actions';
-import {useAuthContext} from '@/context/authContext';
 import SearchBar from '@/app/(main)/(chat)/_components/item/ItemSearchBar';
 import {Checkbox} from "@/components/ui/checkbox";
 import {CheckedState} from "@radix-ui/react-checkbox";
 import {ChatConversation, LastMessage} from "@/models/ChatConversation";
 import {ShowToast} from "@/components/ShowToast";
+import {useProfileContext} from "@/context/profileContext";
+import {truncateString} from "@/utils/string-utils";
 
-const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
+const ArchivesLayout = ({children}: { children: React.ReactNode }) => {
     const [archivesConversation, setArchivesConversation] = useState<ChatConversation[]>([]);
     const [filteredConversations, setFilteredConversations] = useState<ChatConversation[]>([]);
-    const [selectedConversations, setSelectedConversations] = useState<Set<string>>(new Set());
+    const [selectedConversations, setSelectedConversations] = useState<Set<number>>(new Set());
     const [loading, setLoading] = useState<boolean>(true);
 
-    const { user } = useAuthContext();
-    const userId = user?.userId;
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id as number;
 
     const fetchArchivedConversationsData = useCallback(async () => {
-        if (!userId) return;
+        if (!profileId) return;
 
         setLoading(true);
         try {
-            const data = await fetchArchivedConversations(userId);
+            const data = await fetchArchivedConversations(profileId);
             setArchivesConversation(data);
             setFilteredConversations(data);
         } catch (error) {
@@ -34,24 +35,24 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    }, [userId]);
+    }, [profileId]);
 
     useEffect(() => {
-        if (userId) {
+        if (profileId) {
             void fetchArchivedConversationsData();
         }
-    }, [fetchArchivedConversationsData, userId]);
+    }, [fetchArchivedConversationsData, profileId]);
 
     const getOtherMember = useCallback((conversation: ChatConversation) => {
         if (Array.isArray(conversation.participants)) {
-            return conversation.participants.find(participant => participant.id !== userId);
+            return conversation.participants.find(participant => participant.id !== profileId);
         }
         return undefined;
-    }, [userId]);
+    }, [profileId]);
 
     const archivesConversationDetails = useMemo(() => {
         return archivesConversation.map(conversation => {
-            const lastMessage = conversation.lastMessage as LastMessage|| {};
+            const lastMessage = conversation.lastMessage as LastMessage || {};
             const otherMember = getOtherMember(conversation);
             return {
                 id: conversation.id,
@@ -74,7 +75,7 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    const toggleSelectConversation = (conversationId: string) => {
+    const toggleSelectConversation = (conversationId: number) => {
         const updatedSelection = new Set(selectedConversations);
         if (updatedSelection.has(conversationId)) {
             updatedSelection.delete(conversationId);
@@ -84,9 +85,9 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
         setSelectedConversations(updatedSelection);
     };
 
-    const handleUnarchiveSelected = async (userId: string) => {
+    const handleUnarchiveSelected = async (profileId: number) => {
         try {
-            await handleUnarchiveAllConversations(userId);
+            await handleUnarchiveAllConversations(profileId);
             ShowToast('default', 'Toutes les conversations ont bien été désarchivées !');
         } catch (error) {
             const errorMessage = (error as Error).message || 'Il y a eu un problème avec votre demande.';
@@ -99,7 +100,7 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <div className="mt-16">
+        <div className="flex h-full">
             <ItemList title="Archives">
                 <SearchBar
                     placeholder="Rechercher une conversation..."
@@ -112,34 +113,43 @@ const ArchivesLayout = ({ children }: { children: React.ReactNode }) => {
                     resetItems={resetSearchBarConversations}
                 />
                 <div className="grid grid-cols-3 items-center mt-2 text-xs">
-                    <div className="flex mr-5 items-center">
+                    <div className="flex mr-5 items-center gap-2">
                         <Checkbox
                             onCheckedChange={(isChecked) => toggleSelectAll(isChecked)}
                             checked={selectedConversations.size === filteredConversations.length && filteredConversations.length > 0}
                             className="mr-1"
                         />
-                        <span>Tout sélectionner</span>
+                        <span className="text-text-white text-xs whitespace-nowrap">
+                            {truncateString("Tout sélectionner", 15)}
+                        </span>
                     </div>
                     {selectedConversations.size > 0 && (
                         <a
                             href="#"
-                            onClick={() => handleUnarchiveSelected(userId)}
-                            className="text-blue-500 hover:underline ml-10 cursor-pointer col-start-3"
+                            onClick={() => handleUnarchiveSelected(profileId)}
+                            className="text-purple-highlight hover:underline ml-10 cursor-pointer col-start-3"
                         >
-                            Désarchiver tout
+                            {truncateString("Désarchiver tout", 15)}
                         </a>
                     )}
                 </div>
                 {loading ? (
                     <div className="flex justify-center">
-                        <Loader2 className="h-8 w-8 animate-spin"/>
+                        <Loader2 className="h-8 w-8 animate-spin text-text-white"/>
                     </div>
                 ) : filteredConversations.length === 0 ? (
-                    <p className="w-full h-full flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center text-center mb-20 text-text-white text-sm">
                         Pas de conversation trouvée
-                    </p>
+                    </div>
                 ) : (
-                    archivesConversationDetails.map(({id, username, imageUrl, lastMessageSender, lastMessageContent, archivedAt}) => {
+                    archivesConversationDetails.map(({
+                                                         id,
+                                                         username,
+                                                         imageUrl,
+                                                         lastMessageSender,
+                                                         lastMessageContent,
+                                                         archivedAt
+                                                     }) => {
                         return (
                             <ArchivesConversationItem
                                 key={id}

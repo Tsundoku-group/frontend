@@ -1,5 +1,5 @@
 export type ChatConversation = {
-    id: string;
+    id: number;
     lastMessage?: LastMessage;
     participants: ChatParticipant[];
     isArchived: boolean;
@@ -12,10 +12,9 @@ export type ChatConversation = {
 };
 
 export type ChatParticipant = {
-    id: string;
+    id: number;
     username: string;
     imageUrl?: string;
-    email: string;
 };
 
 export type LastMessage = {

@@ -4,9 +4,9 @@ import {fetchWithAuth} from "@/services/fetchWithAuth";
 import {ChatConversation, ChatParticipant} from "@/models/ChatConversation";
 import { symfonyUrl } from "@/constants/symfonyUrl";
 
-export const fetchUserConversations = async (userId: unknown): Promise<ChatConversation[]> => {
+export const fetchUserConversations = async (profileId: number): Promise<ChatConversation[]> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${userId}/all`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${profileId}/all`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -26,40 +26,38 @@ export const fetchUserConversations = async (userId: unknown): Promise<ChatConve
     }
 };
 
-export const fetchOneConversationById = async (conversationId: string): Promise<ChatParticipant[]> => {
+export const fetchOneConversationById = async (
+    conversationId: number
+): Promise<ChatParticipant[]> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${conversationId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/v1/conversations/${conversationId}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
 
         const data = response.data;
-
-        if (data && data.participants && Array.isArray(data.participants)) {
-            return data.participants.map((participant: {
-                id: any;
-                username: any;
-                email: any;
-                imageUrl: any;
-            }) => ({
+        if (data?.conversation?.participants && Array.isArray(data.conversation.participants)) {
+            return data.conversation.participants.map((participant: any): ChatParticipant => ({
                 id: participant.id,
                 username: participant.username,
-                email: participant.email,
-                imageUrl: participant.imageUrl,
+                imageUrl: participant.imageUrl ?? null,
             }));
-        } else {
-            return [];
         }
+
+        return [];
     } catch (error) {
         return [];
     }
 };
 
-export const fetchMessagesFromConversationId = async (conversationId: string, page = 1, limit = 20) => {
+export const fetchMessagesFromConversationId = async (conversationId: number, profileId: number, page = 1, limit = 20) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/messages/${conversationId}?page=${page}&limit=${limit}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/messages/${conversationId}?profileId=${profileId}&page=${page}&limit=${limit}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -75,7 +73,7 @@ export const fetchMessagesFromConversationId = async (conversationId: string, pa
     }
 };
 
-export const sendMessage = async (payload: any, conversationId: string) => {
+export const sendMessage = async (payload: any, conversationId: number) => {
     try {
         return await fetchWithAuth(`${symfonyUrl}/api/v1/messages/${conversationId}/send`, {
             method: 'POST',
@@ -89,24 +87,24 @@ export const sendMessage = async (payload: any, conversationId: string) => {
     }
 };
 
-export const fetchMarkMessagesAsRead = async (conversationId: string, userEmail: string) => {
+export const fetchMarkMessagesAsRead = async (conversationId: number, profileId: number) => {
     try {
         return await fetchWithAuth(`${symfonyUrl}/api/v1/messages/${conversationId}/mark/read`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({userEmail}),
+            body: JSON.stringify({profileId: profileId}),
         });
     } catch (error) {
         throw error;
     }
 };
 
-export const startNewConversation = async (userEmail: string, friendId: string) => {
+export const startNewConversation = async (username: string, friendId: number) => {
     const body = {
         participants: [friendId],
-        email: userEmail
+        username: username
     };
 
     try {
@@ -137,7 +135,7 @@ export const startNewConversation = async (userEmail: string, friendId: string) 
     }
 };
 
-export const handleDeleteConversation = async (conversationId: string) => {
+export const handleDeleteConversation = async (conversationId: number) => {
     try {
         return await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${conversationId}`, {
             method: 'DELETE',
@@ -150,7 +148,7 @@ export const handleDeleteConversation = async (conversationId: string) => {
     }
 };
 
-export const handleArchiveConversation = async (conversationId: string) => {
+export const handleArchiveConversation = async (conversationId: number) => {
     try {
         return await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${conversationId}/archive`, {
             method: 'POST',
@@ -163,7 +161,7 @@ export const handleArchiveConversation = async (conversationId: string) => {
     }
 };
 
-export const handleMuteConversationDuration = async (conversationId: string, duration: any) => {
+export const handleMuteConversationDuration = async (conversationId: number, duration: any) => {
     try {
         return await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${conversationId}/mute`, {
             method: 'POST',
@@ -177,7 +175,7 @@ export const handleMuteConversationDuration = async (conversationId: string, dur
     }
 }
 
-export const handleUnmuteConversation = async (conversationId: string) => {
+export const handleUnmuteConversation = async (conversationId: number) => {
     try {
         return await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${conversationId}/unmute`, {
             method: 'POST',

@@ -10,9 +10,10 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {ShowToast} from "@/components/ShowToast";
 import {ChatConversation} from "@/models/ChatConversation";
 import {useRouter} from "next/navigation";
+import {formatDate} from "@/utils/dateUtils";
 
 type Props = {
-    id: string;
+    id: number;
     imageUrl: string;
     username: string;
     lastMessageContent: string;
@@ -24,11 +25,6 @@ type Props = {
 };
 
 const ArchivesConversationItem = React.memo(({id, imageUrl, username, lastMessageContent, lastMessageSender, archivedAt, isChecked, onChange, setArchivesConversation}: Props) => {
-    const formattedArchivedAt = new Date(archivedAt).toLocaleDateString("fr-FR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    });
     const router = useRouter();
 
     const handleDeleteClick = async () => {
@@ -56,16 +52,16 @@ const ArchivesConversationItem = React.memo(({id, imageUrl, username, lastMessag
 
     return (
         <div className="w-full">
-            <Card onClick={() => router.push(`/archives/${id}`)} className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition">
-                <Checkbox id={id} checked={isChecked} onChange={onChange}/>
-                <Avatar className="w-12 h-12">
+            <Card onClick={() => router.push(`/archives/${id}`)} className="p-3 flex flex-row items-center gap-3 bg-tertiary-black hover:bg-primary-black transition border-none">
+                <Checkbox id={id.toString()} checked={isChecked} onChange={onChange}/>
+                <Avatar>
                     <AvatarImage src={imageUrl}/>
                     <AvatarFallback>
                         <User/>
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col flex-grow overflow-hidden">
-                    <h4 className="truncate font-semibold text-sm text-black">{username}</h4>
+                    <div className="truncate font-semibold text-sm text-text-white">{username}</div>
                     {lastMessageSender && lastMessageContent && (
                         <span className="text-xs text-gray-400 truncate overflow-hidden max-w-[200px]">
                             <span>{lastMessageSender}: </span>
@@ -77,31 +73,36 @@ const ArchivesConversationItem = React.memo(({id, imageUrl, username, lastMessag
                     <div className="flex items-center space-x-1">
                         {archivedAt && (
                             <span className="text-xs text-gray-400">
-                                <Badge className="text-[10px] font-light p-0.5">{formattedArchivedAt}</Badge>
+                                <Badge className="text-[10px] font-light p-0.5">{formatDate(archivedAt)}</Badge>
                             </span>
                         )}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <span className="text-xs cursor-pointer"
                                       onClick={(event) => event.stopPropagation()} >
-                                    <EllipsisVertical className="h-4 w-4"/>
+                                    <EllipsisVertical className="h-4 w-4 text-text-white"/>
                                 </span>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                    onClick={(event) => {
-                                        event.stopPropagation();
-                                        void handleRestoreClick();
-                                    }}>
-                                    Restaurer<ArchiveRestore className="h-4 w-4 ml-8"/>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={(event) => {
-                                        event.stopPropagation();
-                                        void handleDeleteClick();
-                                    }}>
-                                    Supprimer<Trash2 className="h-4 w-4 ml-7"/>
-                                </DropdownMenuItem>
+                            <DropdownMenuContent align="end" className="bg-tertiary-black border-secondary-black">
+                                {[
+                                    { label: "Restaurer", icon: <ArchiveRestore className="h-4 w-4" />, onClick: handleRestoreClick },
+                                    { label: "Supprimer", icon: <Trash2 className="h-4 w-4" />, onClick: handleDeleteClick },
+                                ].map(({ label, icon, onClick }, index) => (
+                                    <DropdownMenuItem
+                                        key={index}
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            event.preventDefault();
+                                            void onClick();
+                                        }}
+                                        className="text-text-white hover:!bg-primary-black hover:!text-text-white"
+                                    >
+                                        <div className="flex items-center justify-between w-full">
+                                            <span>{label}</span>
+                                            <span>{icon}</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                ))}
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>

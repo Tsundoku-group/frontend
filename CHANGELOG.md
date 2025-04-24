@@ -96,4 +96,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-92] Corrections Majeures Frontend [#92](https://trello.com/c/AFJZHg4E/92-t-92-corrections-majeures-frontend)
 - [t-93] Ajout des groupes privés [#93](https://trello.com/c/EPo2nCdD/93-t-93-ajout-des-groupes-priv%C3%A9s)
 - [t-94] Correction majeure [#94](https://trello.com/c/EVAGwrr7/94-correction-majeure)
-- - [t-95] Corrections mineures [#95](https://trello.com/c/Vf8m8UJG/95-t-95-corrections-mineures)
+- [t-95] Corrections mineures [#95](https://trello.com/c/Vf8m8UJG/95-t-95-corrections-mineures)
+- [t-56] Correction :status doit être en ligne lors de la connexion [#56](https://trello.com/c/QIgFNQER/56-t-56-correction-status-doit-%C3%AAtre-en-ligne-lors-de-la-connexion)

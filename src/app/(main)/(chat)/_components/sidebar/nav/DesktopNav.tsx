@@ -5,11 +5,12 @@ import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import React from "react";
 
 const DesktopNav = () => {
     const paths = useNavigation();
     return (
-        <Card className=" fixed hidden lg:flex lg:flex-col lg:items-center h-[calc(90svh)] lg:w-16 lg:px-2 lg:py-4 mt-16 lg:justify-start">
+        <Card className="h-full w-16 px-2 py-4 flex flex-col items-center justify-start bg-secondary-black border-tertiary-black">
             <nav>
                 <ul className="flex flex-col items-center gap-4">
                     {paths.map((path, id) => (
@@ -20,13 +21,14 @@ const DesktopNav = () => {
                                         <Button
                                             size="icon"
                                             variant={path.active ? "default" : "outline"}
+                                            className="bg-primary-black border-none hover:bg-transparent hover:text-inherit hover:shadow-none"
                                         >
                                             {path.icon}
                                         </Button>
                                     </Link>
                                 </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{path.name}</p>
+                                <TooltipContent className="bg-secondary-black border-tertiary-black">
+                                    <div className="text-text-white text-sm">{path.name}</div>
                                 </TooltipContent>
                             </Tooltip>
                         </li>

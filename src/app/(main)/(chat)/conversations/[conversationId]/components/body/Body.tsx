@@ -1,28 +1,29 @@
+'use client';
+
 import React, {useState, useEffect, useRef, useCallback, useMemo} from "react";
 import Message from "@/app/(main)/(chat)/conversations/[conversationId]/components/message/Message";
 import {Loader2} from "lucide-react";
 import ScrollToBottomButton from "@/components/ScrollToBottomButton";
 import {useSocket} from "@/context/socketContext";
 import {fetchMessagesFromConversationId} from "@/server-actions/main/chat/conversations/actions";
-import {useAuthContext} from "@/context/authContext";
 
 type Props = {
     messages: MessageType[];
-    conversationId: string;
-    userEmail: string;
+    conversationId: number;
+    profileId: number;
 };
 
 type MessageType = {
-    id: string;
+    uuid: number;
     content: string;
     sent_by: string;
-    sender_id: string;
+    sender_id: number;
     sent_at: string;
     isCurrentUser: boolean;
     isRead?: boolean;
 };
 
-const Body = ({messages, conversationId, userEmail}: Props) => {
+const Body = ({profileId, messages, conversationId}: Props) => {
     const [localMessages, setLocalMessages] = useState<MessageType[]>(messages);
     const [loading, setLoading] = useState<boolean>(false);
     const [isAtBottom, setIsAtBottom] = useState<boolean>(true);
@@ -30,44 +31,39 @@ const Body = ({messages, conversationId, userEmail}: Props) => {
     const [page, setPage] = useState<number>(1);
     const {socket} = useSocket();
     const messageContainerRef = useRef<HTMLDivElement | null>(null);
-    const {user} = useAuthContext();
-    const userId = user?.userId;
 
     const lastMessageByUser = useMemo(() => {
-        const lastMessages: Record<string, number> = {};
-        if (Array.isArray(localMessages)) {
-            localMessages.forEach((message, index) => {
-                lastMessages[message.sender_id] = index;
-            });
-        }
+        const lastMessages: Record<number, number> = {};
+        localMessages.forEach((message, index) => {
+            lastMessages[message.sender_id] = index;
+        });
         return lastMessages;
     }, [localMessages]);
 
     const firstUnreadMessageIndex = useMemo(() => {
-        return localMessages.findIndex((message) => message.sender_id !== userEmail && !message.isRead);
-    }, [localMessages, userEmail]);
+        return localMessages.findIndex((message) => message.sender_id !== profileId && !message.isRead);
+    }, [localMessages, profileId]);
 
     useEffect(() => {
-        if (socket && conversationId && userId) {
-            socket.emit("joinRoom", {roomId: conversationId, userId});
+        if (socket && conversationId && profileId) {
+            socket.emit("joinRoom", {roomId: conversationId, profileId});
 
             socket.on('receive_msg', (data: any) => {
-                const {roomId, sender_email} = data;
-
+                const {roomId} = data;
                 if (roomId === conversationId) {
-                    const isCurrentUser = sender_email === userEmail;
+                    const isCurrentUser = data.profileId === profileId;
                     setLocalMessages((prevMessages) => [...prevMessages, {...data, isCurrentUser}]);
                 }
             });
 
-            socket.on('typing', ({userId}: { userId: string }) => {
-                if (userId !== userEmail) {
+            socket.on('typing', ({profileId: typingProfileId}) => {
+                if (typingProfileId !== profileId) {
                     setIsOtherUserTyping(true);
                 }
             });
 
-            socket.on('stopTyping', ({userId}: { userId: string }) => {
-                if (userId !== userEmail) {
+            socket.on('stopTyping', ({profileId: typingProfileId}) => {
+                if (typingProfileId !== profileId) {
                     setIsOtherUserTyping(false);
                 }
             });
@@ -78,14 +74,14 @@ const Body = ({messages, conversationId, userEmail}: Props) => {
                 socket.off('stopTyping');
             };
         }
-    }, [socket, conversationId, userId, userEmail]);
+    }, [socket, conversationId, profileId]);
 
     const loadMoreMessages = useCallback(async () => {
         if (loading) return;
 
         setLoading(true);
         try {
-            const newMessages = await fetchMessagesFromConversationId(conversationId, page + 1);
+            const newMessages = await fetchMessagesFromConversationId(conversationId, profileId, page + 1);
             if (newMessages.length > 0) {
                 setLocalMessages((prevMessages) => [...newMessages, ...prevMessages]);
                 setPage((prevPage) => prevPage + 1);
@@ -163,11 +159,11 @@ const Body = ({messages, conversationId, userEmail}: Props) => {
                 const isRead = message.isRead;
 
                 return (
-                    <div key={message.id}>
-                        {(index === firstUnreadMessageIndex && message.sender_id !== userEmail) && (
+                    <div key={`${message.uuid}-${new Date(message.sent_at).getTime()}`}>
+                        {(index === firstUnreadMessageIndex && message.sender_id !== profileId) && (
                             <div className="flex items-center py-2">
-                                <div className="flex-grow border-t border-red-500"></div>
-                                <div className="px-4 py-1 bg-red-500 text-white text-sm">
+                                <div className="flex-grow border-t border-red-highlight"></div>
+                                <div className="px-4 py-1 bg-red-highlight text-white text-sm">
                                     Nouveau message
                                 </div>
                                 <div className="flex-grow border-t border-red-500"></div>

@@ -4,12 +4,12 @@ import {ChatConversation, LastMessage} from "@/models/ChatConversation";
 import React, {useCallback, useEffect, useMemo, useState} from "react";
 import ItemList from "@/app/(main)/(chat)/_components/item/ItemList";
 import {Loader2} from "lucide-react";
-import DMConversationItem from "@/app/(main)/(chat)/conversations/components/DMConversationItem";
-import {useAuthContext} from "@/context/authContext";
+import DMConversationItem from "@/app/(main)/(chat)/conversations/_components/DMConversationItem";
 import {fetchUserConversations} from "@/server-actions/main/chat/conversations/actions";
-import StartNewConversation from "@/app/(main)/(chat)/conversations/components/StartNewConversation";
+import StartNewConversation from "@/app/(main)/(chat)/conversations/_components/StartNewConversation";
 import SearchBar from '@/app/(main)/(chat)/_components/item/ItemSearchBar';
 import {useSocket} from "@/context/socketContext";
+import {useProfileContext} from "@/context/profileContext";
 
 const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState<boolean>(true);
@@ -17,16 +17,16 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     const [allConversations, setAllConversations] = useState<ChatConversation[]>([]);
     const [activeConversations, setActiveConversations] = useState<Set<string>>(new Set());
 
-    const {user} = useAuthContext();
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id as number;
     const {socket} = useSocket();
-    const userId = user?.userId;
 
     const fetchConversationsData = useCallback(async () => {
-        if (!userId) return;
+        if (!profileId) return;
         setLoading(true);
 
         try {
-            const data: ChatConversation[] = await fetchUserConversations(userId);
+            const data: ChatConversation[] = await fetchUserConversations(profileId);
 
             setConversations(data);
             setAllConversations(data);
@@ -36,7 +36,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    }, [userId]);
+    }, [profileId]);
 
     useEffect(() => {
         void fetchConversationsData();
@@ -59,7 +59,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
             const moveConversationToTop = (roomId: any, lastMessage: any) => {
                 setConversations((prevConversations) => {
                     const updatedConversations = prevConversations.map((conv) =>
-                        String(conv.id) === String(roomId) ? { ...conv, lastMessage } : conv
+                        String(conv.id) === String(roomId) ? {...conv, lastMessage} : conv
                     );
 
                     const targetConvIndex = updatedConversations.findIndex(conv => String(conv.id) === String(roomId));
@@ -70,7 +70,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 });
             };
 
-            socket.on('messageAlert', ({ roomId, ...lastMessage }) => {
+            socket.on('messageAlert', ({roomId, ...lastMessage}) => {
                 moveConversationToTop(roomId, lastMessage);
             });
 
@@ -83,7 +83,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     }, [socket, activeConversations]);
 
     useEffect(() => {
-        if (socket && userId) {
+        if (socket && profileId) {
             socket.on('conversationRead', ({conversationId}) => {
 
                 setConversations((prevConversations) =>
@@ -106,18 +106,18 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 socket.off('conversationRead');
             };
         }
-    }, [socket, userId]);
+    }, [socket, profileId]);
 
     const getOtherMember = useCallback((conversation: ChatConversation) => {
-        return conversation.participants.find(participant => participant.id !== userId);
-    }, [userId]);
+        return conversation.participants.find(participant => participant.id !== profileId);
+    }, [profileId]);
 
     const lastMessageDetails = useMemo(() => {
         return conversations.map(conversation => {
             const lastMessage = conversation.lastMessage as LastMessage || {};
             const otherMember = getOtherMember(conversation);
 
-            const isReadForCurrentUser = lastMessage.sent_by === user?.email || lastMessage.isRead;
+            const isReadForCurrentUser = lastMessage.sent_by === activeProfileInStorage?.username || lastMessage.isRead;
 
             return {
                 id: conversation.id,
@@ -131,7 +131,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 otherParticipantId: otherMember?.id
             };
         });
-    }, [conversations, getOtherMember, user?.email]);
+    }, [activeProfileInStorage?.username, conversations, getOtherMember]);
 
     const resetSearchBarConversations = useCallback(() => {
         setConversations(allConversations);
@@ -146,47 +146,54 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     }, [setConversations]);
 
     return (
-        <div className="mt-16">
-            <ItemList title="Conversations" action={<StartNewConversation onNewConversation={addNewConversation} />}>
-                <div className="fixed w-[calc(48svh)] z-50">
-                    <SearchBar
-                        placeholder="Rechercher une conversation..."
-                        items={conversations}
-                        setFilteredItems={setConversations}
-                        getLabel={(conversation) => {
-                            const otherMember = getOtherMember(conversation);
-                            return otherMember?.username || '';
-                        }}
-                        resetItems={resetSearchBarConversations}
-                    />
-                </div>
-                <div className="mt-14 w-full">
-                    {loading ? (
-                        <div className="flex justify-center">
-                            <Loader2 className="h-8 w-8 animate-spin"/>
-                        </div>
-                    ) : lastMessageDetails.length === 0 ? (
-                        <p className="w-full h-full flex items-center justify-center">
-                            Pas de conversation trouvée
-                        </p>
-                    ) : (
-                        lastMessageDetails.map(({id, username, imageUrl, lastMessageSender, lastMessageContent, sentAt, isRead, isMutedUntil, otherParticipantId}) => (
-                            <DMConversationItem
-                                key={id}
-                                id={id}
-                                username={username}
-                                imageUrl={imageUrl}
-                                lastMessageContent={lastMessageContent}
-                                lastMessageSender={lastMessageSender}
-                                sentAt={sentAt}
-                                isRead={isRead}
-                                isMutedUntil={isMutedUntil}
-                                otherParticipantId={otherParticipantId}
-                                setConversations={updateConversations}
-                            />
-                        ))
-                    )}
-                </div>
+        <div className="flex h-full">
+            <ItemList title="Conversations" action={<StartNewConversation onNewConversation={addNewConversation}/>}>
+                <SearchBar
+                    placeholder="Rechercher une conversation..."
+                    items={conversations}
+                    setFilteredItems={setConversations}
+                    getLabel={(conversation) => {
+                        const otherMember = getOtherMember(conversation);
+                        return otherMember?.username || '';
+                    }}
+                    resetItems={resetSearchBarConversations}
+                />
+                {loading ? (
+                    <div className="flex justify-center">
+                        <Loader2 className="h-8 w-8 animate-spin text-text-white"/>
+                    </div>
+                ) : lastMessageDetails.length === 0 ? (
+                    <div
+                        className="w-full h-full flex items-center justify-center text-center mb-20 text-text-white text-sm">
+                        Pas de conversation trouvée
+                    </div>
+                ) : (
+                    lastMessageDetails.map(({
+                                                id,
+                                                username,
+                                                imageUrl,
+                                                lastMessageSender,
+                                                lastMessageContent,
+                                                sentAt,
+                                                isRead,
+                                                isMutedUntil,
+                                                otherParticipantId
+                                            }) => (
+                        <DMConversationItem
+                            key={id}
+                            id={id}
+                            username={username}
+                            imageUrl={imageUrl}
+                            lastMessageContent={lastMessageContent}
+                            lastMessageSender={lastMessageSender}
+                            sentAt={sentAt}
+                            isRead={isRead}
+                            isMutedUntil={isMutedUntil}
+                            otherParticipantId={otherParticipantId}
+                            setConversations={updateConversations}
+                        />
+                    ))
+                )}
             </ItemList>
             {children}
         </div>

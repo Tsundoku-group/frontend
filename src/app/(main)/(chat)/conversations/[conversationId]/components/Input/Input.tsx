@@ -8,20 +8,20 @@ import {FormControl, FormField, FormItem, FormMessage} from "@/components/ui/for
 import TextareaAutosize from "react-textarea-autosize";
 import {Button} from "@/components/ui/button";
 import {sendMessage} from "@/server-actions/main/chat/conversations/actions";
-import {useAuthContext} from "@/context/authContext";
 import EmojiPicker, {EmojiClickData} from 'emoji-picker-react';
 import {Smile} from "lucide-react";
 import {useSocket} from "@/context/socketContext";
 import {v4 as uuidv4} from 'uuid';
 import {ShowToast} from "@/components/ShowToast";
 import {ChatParticipant} from "@/models/ChatConversation";
+import {useProfileContext} from "@/context/profileContext";
 
 const chatMessageSchema = z.object({
     content: z.string().optional(),
 });
 
 type Props = {
-    conversationId: string;
+    conversationId: number;
     otherParticipant?: ChatParticipant;
 };
 
@@ -30,42 +30,42 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
     const [isTyping, setIsTyping] = useState(false);
     const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
 
-    const {user} = useAuthContext();
+    const {activeProfileInStorage} = useProfileContext();
     const {socket} = useSocket();
-    const userEmail = user?.email;
-    const userId = user?.userId;
+    const profileId = activeProfileInStorage?.id as number;
 
     const createMessage = async (payload: any) => {
         try {
             const uuid = uuidv4();
             if (socket) {
-                const isCurrentUser = payload.userEmail === userEmail;
-
+                const isCurrentUser = payload.username === activeProfileInStorage?.username;
+                console.log(payload)
                 socket.emit('send_msg', JSON.stringify({
                     roomId: conversationId,
                     id: uuid,
-                    userId: userId,
-                    content: payload.message,
-                    receiverData: otherParticipant,
-                    sender_email: userEmail,
-                    sent_by: payload.userEmail,
+                    profileId: profileId,
+                    content: payload.content,
+                    sent_by: payload.username,
                     sent_at: new Date().toISOString(),
                     isCurrentUser: isCurrentUser,
+                    receiverData: {
+                        id: otherParticipant?.id,
+                        username: otherParticipant?.username,
+                    }
                 }));
 
                 socket?.emit('lastMessageSend', {
                     lastMessage: {
                         roomId: conversationId,
-                        sender_email: userEmail,
                         content: payload.message,
-                        sent_by: userEmail,
+                        sent_by: payload.username,
                         sent_at: new Date().toISOString(),
                         isRead: false,
                         isCurrentUser: isCurrentUser,
                     },
                 });
             }
-          return await sendMessage({...payload, id: uuid}, conversationId);
+          return await sendMessage({...payload, uuid: uuid}, conversationId);
         } catch (error) {
             throw error;
         }
@@ -95,7 +95,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
         if (socket && conversationId && value.trim() !== "") {
 
             if (!isTyping) {
-                socket.emit("typing", {roomId: conversationId, userId});
+                socket.emit("typing", {roomId: conversationId, profileId});
                 setIsTyping(true);
             }
 
@@ -104,7 +104,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
             }
 
             const timeoutId = setTimeout(() => {
-                socket.emit("stopTyping", {roomId: conversationId, userId});
+                socket.emit("stopTyping", {roomId: conversationId, profileId});
                 setIsTyping(false);
             }, 3000);
 
@@ -115,8 +115,8 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
     const handleSubmit = async (values: z.infer<typeof chatMessageSchema>) => {
         try {
             await mutate({
-                message: values.content,
-                userEmail: userEmail,
+                content: values.content,
+                sender_id: activeProfileInStorage?.id as number,
             });
             form.reset();
         } catch (error) {
@@ -125,7 +125,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
     };
 
     return (
-        <Card className="w-full p-2 rounded-lg relative">
+        <Card className="w-full p-2 rounded-lg relative bg-tertiary-black border-none">
             <div className="flex gap-2 items-end w-full">
                 <FormProvider {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="flex gap-2 items-end w-full">
@@ -149,7 +149,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
                                                 onChange={handleInputChange}
                                                 onClick={handleInputChange}
                                                 placeholder="Écrire un message..."
-                                                className="min-h-full w-full resize-none border-0 outline-none bg-card text-card-foreground placeholder:text-muted-foreground p-1.5"
+                                                className="min-h-full w-full resize-none border-0 outline-none bg-card text-card-foreground placeholder:text-muted-foreground p-1.5 bg-tertiary-black border-none text-text-white"
                                             />
                                         </FormControl>
                                         <FormMessage/>
@@ -161,7 +161,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
                         <div className="relative flex items-center">
                             <Button type="button" variant="ghost" size="sm"
                                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-                                <Smile className="w-5 h-5"/>
+                                <Smile className="w-5 h-5 text-text-white"/>
                             </Button>
 
                             {showEmojiPicker && (
@@ -170,7 +170,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
                                 </div>
                             )}
                         </div>
-                        <Button disabled={pending} size="default" type="submit">
+                        <Button disabled={pending} size="default" type="submit" className="bg-purple-highlight">
                             Envoyer
                         </Button>
                     </form>

@@ -13,7 +13,6 @@ import {
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {Check, SquarePen} from "lucide-react";
-import {useAuthContext} from "@/context/authContext";
 import {fetchFriendsList} from "@/server-actions/main/chat/friends/actions";
 import {startNewConversation} from "@/server-actions/main/chat/conversations/actions";
 import {Loader2} from "lucide-react";
@@ -22,35 +21,31 @@ import {Input} from "@/components/ui/input";
 import {useRouter} from "next/navigation";
 import {ShowToast} from "@/components/ShowToast";
 import {ChatConversation} from "@/models/ChatConversation";
-
-type Friend = {
-    id: string;
-    username: string;
-    imageUrl?: string;
-    email: string;
-};
+import {Friend} from "@/models/Friend";
+import {useProfileContext} from "@/context/profileContext";
 
 type StartNewConversationProps = {
     onNewConversation: (newConversation: ChatConversation) => void;
 };
 
-const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConversation }) => {
+const StartNewConversation: React.FC<StartNewConversationProps> = ({onNewConversation}) => {
     const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-    const {user} = useAuthContext();
-    const userId = user?.userId;
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id as number;
+
     const router = useRouter();
 
     const loadFriends = async () => {
-        if (!userId) return;
+        if (!profileId) return;
 
         setLoading(true);
         try {
-            const fetchedFriends = await fetchFriendsList(userId);
+            const fetchedFriends = await fetchFriendsList(profileId);
             setFilteredFriends(fetchedFriends);
         } catch (error) {
             console.error("Erreur lors de la récupération des amis :", error);
@@ -65,15 +60,15 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
             return;
         }
 
-        const userEmail = user.email;
-        const friendId = selectedFriend.id;
+        const profileUsername = activeProfileInStorage?.username as string;
+        const friendId = selectedFriend.friendId;
 
         try {
-            const response = await startNewConversation(userEmail, friendId);
+            const response = await startNewConversation(profileUsername, friendId);
 
             const newConversation: ChatConversation = {
                 id: response.conversationId,
-                participants: [{ id: friendId, username: selectedFriend.username, email: selectedFriend.email }],
+                participants: [{id: friendId, username: selectedFriend.username}],
                 isArchived: false,
                 isMutedUntil: null,
             };
@@ -95,7 +90,7 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
     };
 
     const toggleFriendSelection = (friend: Friend) => {
-        if (selectedFriend?.id === friend.id) {
+        if (selectedFriend?.friendId === friend.friendId) {
             setSelectedFriend(null);
         } else {
             setSelectedFriend(friend);
@@ -115,17 +110,17 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
             <Tooltip>
                 <TooltipTrigger asChild>
                     <DialogTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                            <SquarePen/>
+                        <Button size="icon" variant="ghost" className="hover:bg-transparent hover:text-inherit hover:shadow-none">
+                            <SquarePen className="text-text-white"/>
                         </Button>
                     </DialogTrigger>
                 </TooltipTrigger>
-                <TooltipContent>
-                    <p>Commencer une nouvelle conversation</p>
+                <TooltipContent className="bg-secondary-black border-tertiary-black">
+                    <div className="text-text-white text-sm">Commencer une nouvelle conversation</div>
                 </TooltipContent>
             </Tooltip>
 
-            <DialogContent>
+            <DialogContent className="bg-tertiary-black border-secondary-black">
                 <DialogHeader>
                     <DialogTitle>Nouvelle conversation</DialogTitle>
                     <DialogDescription>Choisissez un(e) ami(e) pour démarrer une conversation</DialogDescription>
@@ -135,7 +130,7 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
                     placeholder="Rechercher un(e) ami(e)..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="mb-4"
+                    className="mb-4 bg-primary-black border-none"
                 />
 
                 {loading ? (
@@ -147,10 +142,10 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
                         {filteredFriends.length > 0 ? (
                             filteredFriends.map((friend) => (
                                 <div
-                                    key={friend.id}
+                                    key={friend.friendId}
                                     onClick={() => toggleFriendSelection(friend)}
-                                    className={`flex items-center p-2 cursor-pointer rounded-md ${
-                                        selectedFriend?.id === friend.id ? "bg-blue-100" : ""
+                                    className={`flex items-center p-2 cursor-pointer rounded-md bg-primary-black ${
+                                        selectedFriend?.friendId === friend.friendId ? "bg-secondary-black border-none" : ""
                                     }`}
                                 >
                                     <Avatar className="w-8 h-8 mr-4">
@@ -161,10 +156,9 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
 
                                     <div className="flex flex-col">
                                         <span className="text-sm font-medium">{friend.username}</span>
-                                        <span className="text-xs text-gray-500">{friend.email}</span>
                                     </div>
 
-                                    {selectedFriend?.id === friend.id &&
+                                    {selectedFriend?.friendId === friend.friendId &&
                                         <Check className="ml-auto w-4 h-4 text-blue-500"/>}
                                 </div>
                             ))
@@ -175,7 +169,7 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({ onNewConver
                 )}
 
                 <DialogFooter>
-                    <Button onClick={handleStartConversation} disabled={loading}>
+                    <Button onClick={handleStartConversation} disabled={loading} className="bg-purple-highlight">
                         {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : "Commencer la conversations"}
                     </Button>
                 </DialogFooter>

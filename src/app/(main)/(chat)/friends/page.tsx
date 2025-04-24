@@ -3,22 +3,16 @@
 import React, {useState, useEffect} from "react";
 import ItemList from "@/app/(main)/(chat)/_components/item/ItemList";
 import ConversationFallBack from "@/app/(main)/(chat)/_components/conversation/ConversationFallBack";
-import AddFriends from "./components/AddFriends";
+import AddFriends from "@/app/(main)/(chat)/friends/_components/AddFriends";
 import {Loader2} from "lucide-react";
-import FriendsList from "@/app/(main)/(chat)/friends/components/FriendsList";
+import FriendsList from "@/app/(main)/(chat)/friends/_components/FriendsList";
 import {fetchFriendsList} from "@/server-actions/main/chat/friends/actions";
-import {useAuthContext} from "@/context/authContext";
 import SearchBar from "@/app/(main)/(chat)/_components/item/ItemSearchBar";
 import {useRouter} from "next/navigation";
 import {startNewConversation} from "@/server-actions/main/chat/conversations/actions";
 import {ShowToast} from "@/components/ShowToast";
-
-type Friend = {
-    id: string;
-    username: string;
-    email: string;
-    imageUrl?: string;
-};
+import {useProfileContext} from "@/context/profileContext";
+import {Friend} from "@/models/Friend";
 
 const FriendsPage = React.memo(() => {
     const [friendList, setFriendList] = useState<Friend[]>([]);
@@ -27,16 +21,16 @@ const FriendsPage = React.memo(() => {
     const [loading, setLoading] = useState<boolean>(true);
 
     const router = useRouter();
-    const {user} = useAuthContext();
-    const userId = user?.userId as string;
+    const {activeProfileInStorage} = useProfileContext();
+    const profileId = activeProfileInStorage?.id as number;
 
     useEffect(() => {
         const fetchFriendsData = async () => {
-            if (!userId) return;
+            if (!profileId) return;
 
             setLoading(true);
             try {
-                const data = await fetchFriendsList(userId);
+                const data = await fetchFriendsList(profileId);
                 setFriendList(data);
                 setFilteredFriends(data);
                 setAllFriends(data);
@@ -48,14 +42,14 @@ const FriendsPage = React.memo(() => {
         };
 
         void fetchFriendsData();
-    }, [userId]);
+    }, [profileId]);
 
-    const onStartConversation = async (friendId: string) => {
-        const friend = friendList.find((f) => f.id === friendId);
+    const onStartConversation = async (friendId: number) => {
+        const friend = friendList.find((f) => f.friendId === friendId);
         if (!friend) return;
 
         try {
-            const response = await startNewConversation(user.email as string, friendId);
+            const response = await startNewConversation(friend.username, friendId);
 
             if (response.success) {
                 const newConversationId = response.conversationId;
@@ -75,28 +69,29 @@ const FriendsPage = React.memo(() => {
     };
 
     return (
-        <div className="flex mt-16 h-full">
-            <div className="w-1/3">
-                <ItemList title="Friends" action={<AddFriends/>}>
+        <div className="flex h-full">
+                <ItemList title="Mes amis" action={<AddFriends/>}>
                     <SearchBar
                         placeholder="Rechercher un(e) ami(e)..."
                         items={friendList}
                         setFilteredItems={setFilteredFriends}
-                        getLabel={(friend) => friend.username || friend.email}
+                        getLabel={(friend) => friend.username}
                         resetItems={resetSearchBarFriends}
                     />
                     {loading ? (
-                        <Loader2 className="h-8 w-8 animate-spin mx-auto"/>
+                        <Loader2 className="h-8 w-8 animate-spin mx-auto text-text-white"/>
                     ) : filteredFriends.length === 0 ? (
-                        <p className="w-full h-full flex items-center justify-center text-center mb-20">
+                        <div className="w-full h-full flex items-center justify-center text-center mb-20 text-text-white text-sm">
                             Ajoute des amis pour commencer à chatter
-                        </p>
+                        </div>
                     ) : (
-                        <FriendsList friends={filteredFriends} loading={loading} onStartConversation={onStartConversation}/>
+                        <FriendsList
+                            friends={filteredFriends}
+                            loading={loading}
+                            onStartConversation={onStartConversation}/>
                     )}
                 </ItemList>
-            </div>
-            <div className="ml-80 w-2/3">
+            <div className="ml-[calc(30svh)]">
                 <ConversationFallBack/>
             </div>
         </div>

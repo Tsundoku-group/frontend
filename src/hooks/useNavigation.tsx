@@ -9,19 +9,19 @@ export const useNavigation = () => {
         {
             name: "Conversations",
             href: "/conversations",
-            icon: <MessagesSquare/>,
+            icon: <MessagesSquare className="text-text-white"/>,
             active: pathname.startsWith("/conversations"),
         },
         {
-            name: "Friends",
+            name: "Mes amis",
             href: "/friends",
-            icon: <Users/>,
+            icon: <Users className="text-text-white"/>,
             active: pathname.startsWith("/friends"),
         },
         {
             name: "Archives",
             href: "/archives",
-            icon: <Archive/>,
+            icon: <Archive className="text-text-white"/>,
             active: pathname.startsWith("/archives"),
         }
     ], [pathname]);
