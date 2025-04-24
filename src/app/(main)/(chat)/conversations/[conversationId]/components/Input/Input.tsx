@@ -163,7 +163,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
                         <div className="relative flex items-center">
                             <Button type="button" variant="ghost" size="sm"
                                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-                                <Smile className="w-5 h-5"/>
+                                <Smile className="w-5 h-5 text-text-white"/>
                             </Button>
 
                             {showEmojiPicker && (
@@ -172,7 +172,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
                                 </div>
                             )}
                         </div>
-                        <Button disabled={pending} size="default" type="submit">
+                        <Button disabled={pending} size="default" type="submit" className="bg-purple-highlight">
                             Envoyer
                         </Button>
                     </form>
