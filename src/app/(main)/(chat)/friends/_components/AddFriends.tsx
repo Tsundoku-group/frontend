@@ -86,7 +86,7 @@ const AddFriends = () => {
                 </TooltipContent>
             </Tooltip>
 
-            <DialogContent>
+            <DialogContent className="bg-tertiary-black border-secondary-black">
                 <DialogHeader>
                     <DialogTitle>
                         Ajouter un(e) ami(e)
@@ -104,7 +104,7 @@ const AddFriends = () => {
                                 <FormItem>
                                     <FormLabel>Username de ton ami(e)</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Username de l'ami(e)..." {...field} />
+                                        <Input placeholder="Username de l'ami(e)..." {...field} className="bg-primary-black text-text-white"/>
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>
