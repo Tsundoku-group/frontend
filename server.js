@@ -76,15 +76,19 @@ app.prepare().then(() => {
 
         socket.on("send_msg", (data) => {
             const parsedData = JSON.parse(data);
+            console.log(parsedData);
             const { roomId, receiverData } = parsedData;
-
+            if (!receiverData || !receiverData.id) {
+                console.error("❌ receiverData est manquant ou invalide :", receiverData);
+                return;
+            }
             const receiverSocketId = profileSockets[receiverData.id];
             const isReceiverInRoom = roomUsers[roomId]?.has(receiverData.id);
 
             if (!isReceiverInRoom && receiverSocketId) {
                 io.to(receiverSocketId).emit("messageAlert", parsedData);
             }
-
+            console.log('ok');
             io.to(roomId).emit("receive_msg", parsedData);
         });
 

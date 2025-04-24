@@ -14,7 +14,7 @@ type Props = {
 };
 
 type MessageType = {
-    id: number;
+    uuid: number;
     content: string;
     sent_by: string;
     sender_id: number;
@@ -49,10 +49,9 @@ const Body = ({profileId, messages, conversationId}: Props) => {
             socket.emit("joinRoom", {roomId: conversationId, profileId});
 
             socket.on('receive_msg', (data: any) => {
-                const {roomId, sender_id} = data;
-
+                const {roomId} = data;
                 if (roomId === conversationId) {
-                    const isCurrentUser = sender_id === profileId;
+                    const isCurrentUser = data.profileId === profileId;
                     setLocalMessages((prevMessages) => [...prevMessages, {...data, isCurrentUser}]);
                 }
             });
@@ -82,7 +81,7 @@ const Body = ({profileId, messages, conversationId}: Props) => {
 
         setLoading(true);
         try {
-            const newMessages = await fetchMessagesFromConversationId(conversationId, page + 1);
+            const newMessages = await fetchMessagesFromConversationId(conversationId, profileId, page + 1);
             if (newMessages.length > 0) {
                 setLocalMessages((prevMessages) => [...newMessages, ...prevMessages]);
                 setPage((prevPage) => prevPage + 1);
@@ -160,11 +159,11 @@ const Body = ({profileId, messages, conversationId}: Props) => {
                 const isRead = message.isRead;
 
                 return (
-                    <div key={message.id}>
+                    <div key={`${message.uuid}-${new Date(message.sent_at).getTime()}`}>
                         {(index === firstUnreadMessageIndex && message.sender_id !== profileId) && (
                             <div className="flex items-center py-2">
-                                <div className="flex-grow border-t border-red-500"></div>
-                                <div className="px-4 py-1 bg-red-500 text-white text-sm">
+                                <div className="flex-grow border-t border-red-highlight"></div>
+                                <div className="px-4 py-1 bg-red-highlight text-white text-sm">
                                     Nouveau message
                                 </div>
                                 <div className="flex-grow border-t border-red-500"></div>

@@ -21,7 +21,7 @@ type Props = {
 };
 
 type Message = {
-    id: number;
+    uuid: number;
     content: string;
     sender_id: number;
     sent_by: string;
@@ -37,7 +37,6 @@ const ConversationView = React.memo(({conversationId}: Props) => {
         participants: [] as ChatParticipant[],
         loading: true,
     });
-
     const {messages, participants, loading} = state;
 
     const {socket} = useSocket();
@@ -56,9 +55,10 @@ const ConversationView = React.memo(({conversationId}: Props) => {
 
         try {
             const [messagesData, participantsData] = await Promise.all([
-                fetchMessagesFromConversationId(conversationId),
+                fetchMessagesFromConversationId(conversationId, profileId),
                 fetchOneConversationById(conversationId)
             ]);
+
             setState({
                 messages: Array.isArray(messagesData) ? messagesData : [],
                 participants: participantsData || [],

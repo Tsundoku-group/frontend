@@ -6,7 +6,7 @@ import { symfonyUrl } from "@/constants/symfonyUrl";
 
 export const fetchUserConversations = async (profileId: number): Promise<ChatConversation[]> => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${profileId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/conversations/${profileId}/all`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -41,9 +41,8 @@ export const fetchOneConversationById = async (
         );
 
         const data = response.data;
-
-        if (data?.participants && Array.isArray(data.participants)) {
-            return data.participants.map((participant: any): ChatParticipant => ({
+        if (data?.conversation?.participants && Array.isArray(data.conversation.participants)) {
+            return data.conversation.participants.map((participant: any): ChatParticipant => ({
                 id: participant.id,
                 username: participant.username,
                 imageUrl: participant.imageUrl ?? null,
@@ -56,9 +55,9 @@ export const fetchOneConversationById = async (
     }
 };
 
-export const fetchMessagesFromConversationId = async (conversationId: number, page = 1, limit = 20) => {
+export const fetchMessagesFromConversationId = async (conversationId: number, profileId: number, page = 1, limit = 20) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/messages/${conversationId}?page=${page}&limit=${limit}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/messages/${conversationId}?profileId=${profileId}&page=${page}&limit=${limit}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

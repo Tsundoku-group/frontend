@@ -8,7 +8,6 @@ import {FormControl, FormField, FormItem, FormMessage} from "@/components/ui/for
 import TextareaAutosize from "react-textarea-autosize";
 import {Button} from "@/components/ui/button";
 import {sendMessage} from "@/server-actions/main/chat/conversations/actions";
-import {useAuthContext} from "@/context/authContext";
 import EmojiPicker, {EmojiClickData} from 'emoji-picker-react';
 import {Smile} from "lucide-react";
 import {useSocket} from "@/context/socketContext";
@@ -31,43 +30,42 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
     const [isTyping, setIsTyping] = useState(false);
     const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
 
-    const {user} = useAuthContext();
     const {activeProfileInStorage} = useProfileContext();
     const {socket} = useSocket();
-    const userEmail = user?.email;
     const profileId = activeProfileInStorage?.id as number;
 
     const createMessage = async (payload: any) => {
         try {
             const uuid = uuidv4();
             if (socket) {
-                const isCurrentUser = payload.userEmail === userEmail;
-
+                const isCurrentUser = payload.username === activeProfileInStorage?.username;
+                console.log(payload)
                 socket.emit('send_msg', JSON.stringify({
                     roomId: conversationId,
                     id: uuid,
                     profileId: profileId,
-                    content: payload.message,
-                    receiverData: otherParticipant,
-                    sender_email: userEmail,
-                    sent_by: payload.userEmail,
+                    content: payload.content,
+                    sent_by: payload.username,
                     sent_at: new Date().toISOString(),
                     isCurrentUser: isCurrentUser,
+                    receiverData: {
+                        id: otherParticipant?.id,
+                        username: otherParticipant?.username,
+                    }
                 }));
 
                 socket?.emit('lastMessageSend', {
                     lastMessage: {
                         roomId: conversationId,
-                        sender_email: userEmail,
                         content: payload.message,
-                        sent_by: userEmail,
+                        sent_by: payload.username,
                         sent_at: new Date().toISOString(),
                         isRead: false,
                         isCurrentUser: isCurrentUser,
                     },
                 });
             }
-          return await sendMessage({...payload, id: uuid}, conversationId);
+          return await sendMessage({...payload, uuid: uuid}, conversationId);
         } catch (error) {
             throw error;
         }
@@ -117,8 +115,8 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
     const handleSubmit = async (values: z.infer<typeof chatMessageSchema>) => {
         try {
             await mutate({
-                message: values.content,
-                userEmail: userEmail,
+                content: values.content,
+                sender_id: activeProfileInStorage?.id as number,
             });
             form.reset();
         } catch (error) {
