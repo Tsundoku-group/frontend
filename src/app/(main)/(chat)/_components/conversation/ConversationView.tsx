@@ -41,7 +41,6 @@ const ConversationView = React.memo(({conversationId}: Props) => {
 
     const {messages, participants, loading} = state;
 
-    const {user} = useAuthContext();
     const {socket} = useSocket();
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id as number;
@@ -121,7 +120,7 @@ const ConversationView = React.memo(({conversationId}: Props) => {
     }, [socket, messages, conversationId, otherParticipant, profileId]);
 
     return (
-        <div className="ml-80">
+        <div className="ml-[calc(30svh)]">
             <ConversationContainer>
                 <Header name={otherParticipantName} imageUrl={otherParticipant?.imageUrl}
                         otherParticipantId={otherParticipant?.id as number}/>

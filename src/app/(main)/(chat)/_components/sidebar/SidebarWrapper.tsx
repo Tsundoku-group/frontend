@@ -3,11 +3,11 @@ import DesktopNav from "@/app/(main)/(chat)/_components/sidebar/nav/DesktopNav";
 
 type Props = React.PropsWithChildren<{}>;
 
-const SidebarWrapper = React.memo(({ children }: Props) => {
+const SidebarWrapper = React.memo(({children}: Props) => {
     return (
-        <div className="h-full w-full p-4 flex flex-col lg:flex-row gap-4 -ml-20">
-            <DesktopNav />
-            <main className="h-[calc(100%-80px)] lg:h-full w-full flex gap-4 ml-20">
+        <div className="fixed flex h-[calc(100vh-80px)] pt-16 gap-4 -ml-10">
+            <DesktopNav/>
+            <main className="flex-1 overflow-hidden">
                 {children}
             </main>
         </div>

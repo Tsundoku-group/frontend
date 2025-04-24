@@ -145,7 +145,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
     return (
         <div className="w-full">
             <Card onClick={() => router.push(`/conversations/${id}`)}
-                  className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition mb-2">
+                  className="p-2 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition mb-2">
                 <div className="relative">
                     <Avatar className="w-12 h-12">
                         <AvatarImage src={imageUrl} />

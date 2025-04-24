@@ -70,7 +70,7 @@ const FriendsPage = React.memo(() => {
     };
 
     return (
-        <div className="flex mt-16 h-full">
+        <div className="flex h-full">
             <div className="w-1/3">
                 <ItemList title="Friends" action={<AddFriends/>}>
                     <SearchBar
@@ -92,7 +92,7 @@ const FriendsPage = React.memo(() => {
                     )}
                 </ItemList>
             </div>
-            <div className="ml-80 w-2/3">
+            <div className="ml-[calc(30svh)]">
                 <ConversationFallBack/>
             </div>
         </div>

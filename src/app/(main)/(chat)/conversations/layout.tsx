@@ -21,7 +21,6 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     const profileId = activeProfileInStorage?.id as number;
     const {socket} = useSocket();
 
-
     const fetchConversationsData = useCallback(async () => {
         if (!profileId) return;
         setLoading(true);
@@ -60,7 +59,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
             const moveConversationToTop = (roomId: any, lastMessage: any) => {
                 setConversations((prevConversations) => {
                     const updatedConversations = prevConversations.map((conv) =>
-                        String(conv.id) === String(roomId) ? { ...conv, lastMessage } : conv
+                        String(conv.id) === String(roomId) ? {...conv, lastMessage} : conv
                     );
 
                     const targetConvIndex = updatedConversations.findIndex(conv => String(conv.id) === String(roomId));
@@ -71,7 +70,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 });
             };
 
-            socket.on('messageAlert', ({ roomId, ...lastMessage }) => {
+            socket.on('messageAlert', ({roomId, ...lastMessage}) => {
                 moveConversationToTop(roomId, lastMessage);
             });
 
@@ -132,7 +131,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 otherParticipantId: otherMember?.id
             };
         });
-    }, [conversations, getOtherMember,profileId]);
+    }, [conversations, getOtherMember, profileId]);
 
     const resetSearchBarConversations = useCallback(() => {
         setConversations(allConversations);
@@ -147,21 +146,19 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     }, [setConversations]);
 
     return (
-        <div className="mt-16">
-            <ItemList title="Conversations" action={<StartNewConversation onNewConversation={addNewConversation} />}>
-                <div className="fixed w-[calc(48svh)] z-50">
-                    <SearchBar
-                        placeholder="Rechercher une conversation..."
-                        items={conversations}
-                        setFilteredItems={setConversations}
-                        getLabel={(conversation) => {
-                            const otherMember = getOtherMember(conversation);
-                            return otherMember?.username || '';
-                        }}
-                        resetItems={resetSearchBarConversations}
-                    />
-                </div>
-                <div className="mt-14 w-full">
+        <>
+            <ItemList title="Conversations" action={<StartNewConversation onNewConversation={addNewConversation}/>}>
+                <SearchBar
+                    placeholder="Rechercher une conversation..."
+                    items={conversations}
+                    setFilteredItems={setConversations}
+                    getLabel={(conversation) => {
+                        const otherMember = getOtherMember(conversation);
+                        return otherMember?.username || '';
+                    }}
+                    resetItems={resetSearchBarConversations}
+                />
+                <div className="w-full">
                     {loading ? (
                         <div className="flex justify-center">
                             <Loader2 className="h-8 w-8 animate-spin"/>
@@ -171,7 +168,17 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                             Pas de conversation trouvée
                         </p>
                     ) : (
-                        lastMessageDetails.map(({id, username, imageUrl, lastMessageSender, lastMessageContent, sentAt, isRead, isMutedUntil, otherParticipantId}) => (
+                        lastMessageDetails.map(({
+                                                    id,
+                                                    username,
+                                                    imageUrl,
+                                                    lastMessageSender,
+                                                    lastMessageContent,
+                                                    sentAt,
+                                                    isRead,
+                                                    isMutedUntil,
+                                                    otherParticipantId
+                                                }) => (
                             <DMConversationItem
                                 key={id}
                                 id={id}
@@ -190,7 +197,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                 </div>
             </ItemList>
             {children}
-        </div>
+        </>
     );
 };
 

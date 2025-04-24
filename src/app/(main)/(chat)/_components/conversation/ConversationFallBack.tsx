@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 
 const ConversationFallBack = () => {
     return (
-        <Card className="fixed hidden lg:flex h-[calc(90svh)] w-[calc(120svh)] lg:ml-36 p-2 items-center justify-center bg-sky-100 text-secondary-foreground">
+        <Card className="flex flex-col w-[calc(100vh)] h-[calc(100vh-145px)] p-2 overflow-hidden  items-center justify-center bg-sky-100 text-secondary-foreground">
             Select a conversation to get started!
         </Card>
     );

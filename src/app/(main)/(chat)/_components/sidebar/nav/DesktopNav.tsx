@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 const DesktopNav = () => {
     const paths = useNavigation();
     return (
-        <Card className=" fixed hidden lg:flex lg:flex-col lg:items-center h-[calc(90svh)] lg:w-16 lg:px-2 lg:py-4 mt-16 lg:justify-start">
+        <Card className="h-full w-16 px-2 py-4 flex flex-col items-center justify-start">
             <nav>
                 <ul className="flex flex-col items-center gap-4">
                     {paths.map((path, id) => (
