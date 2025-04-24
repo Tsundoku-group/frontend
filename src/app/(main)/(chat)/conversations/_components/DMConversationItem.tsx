@@ -28,6 +28,7 @@ import {ShowToast} from "@/components/ShowToast";
 import {useRouter} from "next/navigation";
 import {ChatConversation} from "@/models/ChatConversation";
 import {useSocket} from "@/context/socketContext";
+import {truncateString} from "@/utils/string-utils";
 
 type Props = {
     id: number;
@@ -46,7 +47,18 @@ type Props = {
     otherParticipantId?: number;
 };
 
-const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageContent, lastMessageSender, sentAt, isRead, isMutedUntil, setConversations, otherParticipantId}: Props) => {
+const DMConversationItem = React.memo(({
+                                           id,
+                                           imageUrl,
+                                           username,
+                                           lastMessageContent,
+                                           lastMessageSender,
+                                           sentAt,
+                                           isRead,
+                                           isMutedUntil,
+                                           setConversations,
+                                           otherParticipantId
+                                       }: Props) => {
     const [openMuteDialog, setOpenMuteDialog] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
     const router = useRouter();
@@ -130,7 +142,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
 
     useEffect(() => {
         if (socket) {
-            socket.on("user_status_update", ({ profileId, status }) => {
+            socket.on("user_status_update", ({profileId, status}) => {
                 if (otherParticipantId === profileId) {
                     setIsOnline(status === "online");
                 }
@@ -145,10 +157,10 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
     return (
         <div className="w-full">
             <Card onClick={() => router.push(`/conversations/${id}`)}
-                  className="p-2 flex flex-row items-center gap-3 bg-tertiary-black border-none hover:bg-primary-black transition mb-2">
+                  className="p-3 flex flex-row items-center gap-3 bg-tertiary-black border-none hover:bg-primary-black transition mb-2">
                 <div className="relative">
-                    <Avatar className="w-12 h-12">
-                        <AvatarImage src={imageUrl} />
+                    <Avatar>
+                        <AvatarImage src={imageUrl}/>
                         <AvatarFallback>
                             <User/>
                         </AvatarFallback>
@@ -159,7 +171,8 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                     )}
                 </div>
                 <div className="flex flex-col flex-grow overflow-hidden">
-                    <div className={`truncate font-semibold text-sm ${isMuted ? 'text-black' : displayReadStatus ? 'text-black' : 'text-red-highlight'}`}>
+                    <div
+                        className={`truncate font-semibold text-sm ${isMuted ? 'text-text-white' : displayReadStatus ? 'text-text-white' : 'text-red-highlight'}`}>
                         {username}
                     </div>
                     <span className={`text-xs text-text-white truncate overflow-hidden max-w-[200px]`}>
@@ -192,8 +205,9 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                             </HoverCard>
                         )}
                         {lastMessageContent && (
-                            <span className="text-xs text-gray-400">
-                                <Badge className="text-[10px] font-light p-0.5">{timeAgo}</Badge>
+                            <span className="text-xs text-text-white">
+                                <Badge
+                                    className="text-[10px] font-light p-0.5 bg-primary-black">{truncateString(timeAgo, 10)}</Badge>
                             </span>
                         )}
                         {!isMuted && !displayReadStatus && (
@@ -203,55 +217,78 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                             <DropdownMenuTrigger asChild>
                                 <span className="text-xs cursor-pointer"
                                       onClick={(event) => event.stopPropagation()}>
-                                    <EllipsisVertical className="h-4 w-4"/>
+                                    <EllipsisVertical className="h-4 w-4 text-text-white"/>
                                 </span>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={(event) => {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                    handleMutedClick();
-                                }}>
-                                    Sourdine<BellOff className="h-4 w-4 ml-7"/>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={(event) => {
-                                    event.stopPropagation();
-                                    void handleArchiveClick();
-                                }}>
-                                    Archives<ArchiveRestore className="h-4 w-4 ml-8"/>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={(event) => {
-                                        event.stopPropagation();
-                                        void handleDeleteClick();
-                                    }}>
-                                    Supprimer<Trash2 className="h-4 w-4 ml-5"/>
-                                </DropdownMenuItem>
+                            <DropdownMenuContent align="end" className="bg-tertiary-black border-secondary-black">
+                                {[
+                                    { label: "Sourdine", icon: <BellOff className="h-4 w-4" />, onClick: handleMutedClick },
+                                    { label: "Archives", icon: <ArchiveRestore className="h-4 w-4" />, onClick: handleArchiveClick },
+                                    { label: "Supprimer", icon: <Trash2 className="h-4 w-4" />, onClick: handleDeleteClick },
+                                ].map(({ label, icon, onClick }, index) => (
+                                    <DropdownMenuItem
+                                        key={index}
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            event.preventDefault();
+                                            void onClick();
+                                        }}
+                                        className="text-text-white hover:!bg-primary-black hover:!text-text-white"
+                                    >
+                                        <div className="flex items-center justify-between w-full">
+                                            <span>{label}</span>
+                                            <span>{icon}</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                ))}
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
 
                     <Dialog open={openMuteDialog} onOpenChange={setOpenMuteDialog}>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Choisir la durée de la sourdine</DialogTitle>
-                                <DialogDescription>Cette action mettra la conversation en sourdine pour la durée
-                                    choisie.</DialogDescription>
+                        <DialogContent className="bg-tertiary-black border border-secondary-black rounded-xl shadow-lg">
+                            <DialogHeader className="mb-4">
+                                <DialogTitle className="text-white text-lg">Choisir la durée de la sourdine</DialogTitle>
+                                <DialogDescription className="text-gray-400 text-sm">
+                                    Cette action mettra la conversation en sourdine pour la durée choisie.
+                                </DialogDescription>
                             </DialogHeader>
-                            <div className="space-y-4">
-                                {[1, 3, 8, 24, 'eternal'].map((duration) => (
-                                    <Button key={duration} onClick={() => handleMuteDurationSelect(duration)}>
-                                        {duration === 'eternal' ? 'Jusqu’à ce que je le change' : `${duration} heure${typeof duration === 'number' && duration > 1 ? 's' : ''}`}
+
+                            <div className="grid grid-cols-2 gap-3 mb-4">
+                                {[1, 3, 8, 24].map((duration) => (
+                                    <Button
+                                        key={duration}
+                                        onClick={() => handleMuteDurationSelect(duration)}
+                                        className="bg-primary-black hover:bg-primary transition text-white border border-secondary-black rounded-md py-2 text-sm"
+                                    >
+                                        {duration} heure{duration > 1 && 's'}
                                     </Button>
                                 ))}
+                                <Button
+                                    onClick={() => handleMuteDurationSelect('eternal')}
+                                    className="col-span-2 bg-secondary-black hover:bg-secondary border border-secondary-black text-white rounded-md py-2 text-sm"
+                                >
+                                    Jusqu’à ce que je le change
+                                </Button>
                             </div>
+
                             {isMuted && (
-                                <Button onClick={handleUnmute} variant="secondary">
+                                <Button
+                                    onClick={handleUnmute}
+                                    variant="secondary"
+                                    className="w-full bg-red-highlight text-white hover:bg-red-600 transition"
+                                >
                                     Annuler la sourdine
                                 </Button>
                             )}
-                            <DialogFooter>
-                                <Button onClick={() => setOpenMuteDialog(false)}>Annuler</Button>
+
+                            <DialogFooter className="mt-4">
+                                <Button
+                                    onClick={() => setOpenMuteDialog(false)}
+                                    className="bg-gray-600 text-white hover:bg-gray-700"
+                                >
+                                    Annuler
+                                </Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>

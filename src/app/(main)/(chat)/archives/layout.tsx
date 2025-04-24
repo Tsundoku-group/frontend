@@ -135,12 +135,12 @@ const ArchivesLayout = ({children}: { children: React.ReactNode }) => {
                 </div>
                 {loading ? (
                     <div className="flex justify-center">
-                        <Loader2 className="h-8 w-8 animate-spin"/>
+                        <Loader2 className="h-8 w-8 animate-spin text-text-white"/>
                     </div>
                 ) : filteredConversations.length === 0 ? (
-                    <p className="w-full h-full flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center text-center mb-20 text-text-white text-sm">
                         Pas de conversation trouvée
-                    </p>
+                    </div>
                 ) : (
                     archivesConversationDetails.map(({
                                                          id,

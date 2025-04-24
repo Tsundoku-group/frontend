@@ -38,7 +38,7 @@ const SearchBar = <T extends {}>({ placeholder = "Rechercher...", items, setFilt
                 placeholder={placeholder}
                 value={searchTerm}
                 onChange={handleInputChange}
-                className="w-full pl-8 p-2 bg-tertiary-black border-none rounded text-sm"
+                className="w-full pl-8 p-2 bg-tertiary-black border-none rounded text-sm text-text-white"
             />
         </div>
     );

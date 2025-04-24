@@ -70,7 +70,6 @@ const FriendsPage = React.memo(() => {
 
     return (
         <div className="flex h-full">
-            <div className="w-1/3">
                 <ItemList title="Mes amis" action={<AddFriends/>}>
                     <SearchBar
                         placeholder="Rechercher un(e) ami(e)..."
@@ -80,17 +79,18 @@ const FriendsPage = React.memo(() => {
                         resetItems={resetSearchBarFriends}
                     />
                     {loading ? (
-                        <Loader2 className="h-8 w-8 animate-spin mx-auto"/>
+                        <Loader2 className="h-8 w-8 animate-spin mx-auto text-text-white"/>
                     ) : filteredFriends.length === 0 ? (
-                        <p className="w-full h-full flex items-center justify-center text-center mb-20">
+                        <div className="w-full h-full flex items-center justify-center text-center mb-20 text-text-white text-sm">
                             Ajoute des amis pour commencer à chatter
-                        </p>
+                        </div>
                     ) : (
-                        <FriendsList friends={filteredFriends} loading={loading}
-                                     onStartConversation={onStartConversation}/>
+                        <FriendsList
+                            friends={filteredFriends}
+                            loading={loading}
+                            onStartConversation={onStartConversation}/>
                     )}
                 </ItemList>
-            </div>
             <div className="ml-[calc(30svh)]">
                 <ConversationFallBack/>
             </div>

@@ -21,7 +21,7 @@ const FriendsList = ({ friends, loading, onStartConversation }: Props) => {
     return (
         <div className="flex flex-col gap-2 w-full">
             {friends.map((friend) => (
-                <Card key={friend.friendId} className="w-full p-2 flex flex-row items-center justify-between gap-2 bg-tertiary-black hover:bg-primary-black transition border-none">
+                <Card key={friend.friendId} className="w-full p-3 flex flex-row items-center justify-between gap-2 bg-tertiary-black hover:bg-primary-black transition border-none">
                     <div className="flex items-center gap-4 truncate">
                         <Avatar>
                             <AvatarImage src={friend.imageUrl} />
@@ -30,7 +30,7 @@ const FriendsList = ({ friends, loading, onStartConversation }: Props) => {
                             </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col truncate">
-                            <div className="truncate text-text-white">{friend.username}</div>
+                            <div className="truncate text-sm text-text-white">{friend.username}</div>
                         </div>
                     </div>
                     <div className="flex gap-2">

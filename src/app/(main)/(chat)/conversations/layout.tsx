@@ -146,7 +146,7 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
     }, [setConversations]);
 
     return (
-        <>
+        <div className="flex h-full">
             <ItemList title="Conversations" action={<StartNewConversation onNewConversation={addNewConversation}/>}>
                 <SearchBar
                     placeholder="Rechercher une conversation..."
@@ -158,46 +158,45 @@ const ConversationLayout = ({children}: { children: React.ReactNode }) => {
                     }}
                     resetItems={resetSearchBarConversations}
                 />
-                <div className="w-full">
-                    {loading ? (
-                        <div className="flex justify-center">
-                            <Loader2 className="h-8 w-8 animate-spin"/>
-                        </div>
-                    ) : lastMessageDetails.length === 0 ? (
-                        <p className="w-full h-full flex items-center justify-center">
-                            Pas de conversation trouvée
-                        </p>
-                    ) : (
-                        lastMessageDetails.map(({
-                                                    id,
-                                                    username,
-                                                    imageUrl,
-                                                    lastMessageSender,
-                                                    lastMessageContent,
-                                                    sentAt,
-                                                    isRead,
-                                                    isMutedUntil,
-                                                    otherParticipantId
-                                                }) => (
-                            <DMConversationItem
-                                key={id}
-                                id={id}
-                                username={username}
-                                imageUrl={imageUrl}
-                                lastMessageContent={lastMessageContent}
-                                lastMessageSender={lastMessageSender}
-                                sentAt={sentAt}
-                                isRead={isRead}
-                                isMutedUntil={isMutedUntil}
-                                otherParticipantId={otherParticipantId}
-                                setConversations={updateConversations}
-                            />
-                        ))
-                    )}
-                </div>
+                {loading ? (
+                    <div className="flex justify-center">
+                        <Loader2 className="h-8 w-8 animate-spin text-text-white"/>
+                    </div>
+                ) : lastMessageDetails.length === 0 ? (
+                    <div
+                        className="w-full h-full flex items-center justify-center text-center mb-20 text-text-white text-sm">
+                        Pas de conversation trouvée
+                    </div>
+                ) : (
+                    lastMessageDetails.map(({
+                                                id,
+                                                username,
+                                                imageUrl,
+                                                lastMessageSender,
+                                                lastMessageContent,
+                                                sentAt,
+                                                isRead,
+                                                isMutedUntil,
+                                                otherParticipantId
+                                            }) => (
+                        <DMConversationItem
+                            key={id}
+                            id={id}
+                            username={username}
+                            imageUrl={imageUrl}
+                            lastMessageContent={lastMessageContent}
+                            lastMessageSender={lastMessageSender}
+                            sentAt={sentAt}
+                            isRead={isRead}
+                            isMutedUntil={isMutedUntil}
+                            otherParticipantId={otherParticipantId}
+                            setConversations={updateConversations}
+                        />
+                    ))
+                )}
             </ItemList>
             {children}
-        </>
+        </div>
     );
 };
 
