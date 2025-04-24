@@ -71,7 +71,7 @@ const FriendsPage = React.memo(() => {
     return (
         <div className="flex h-full">
             <div className="w-1/3">
-                <ItemList title="Friends" action={<AddFriends/>}>
+                <ItemList title="Mes amis" action={<AddFriends/>}>
                     <SearchBar
                         placeholder="Rechercher un(e) ami(e)..."
                         items={friendList}

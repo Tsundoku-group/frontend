@@ -145,7 +145,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
     return (
         <div className="w-full">
             <Card onClick={() => router.push(`/conversations/${id}`)}
-                  className="p-2 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition mb-2">
+                  className="p-2 flex flex-row items-center gap-3 bg-tertiary-black border-none hover:bg-primary-black transition mb-2">
                 <div className="relative">
                     <Avatar className="w-12 h-12">
                         <AvatarImage src={imageUrl} />
@@ -159,10 +159,10 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                     )}
                 </div>
                 <div className="flex flex-col flex-grow overflow-hidden">
-                    <h4 className={`truncate font-semibold text-sm ${isMuted ? 'text-black' : displayReadStatus ? 'text-black' : 'text-red-500'}`}>
+                    <div className={`truncate font-semibold text-sm ${isMuted ? 'text-black' : displayReadStatus ? 'text-black' : 'text-red-highlight'}`}>
                         {username}
-                    </h4>
-                    <span className={`text-xs text-gray-400 truncate overflow-hidden max-w-[200px]`}>
+                    </div>
+                    <span className={`text-xs text-text-white truncate overflow-hidden max-w-[200px]`}>
                         {lastMessageContent ? (
                             <>
                                 {isLastMessageFromCurrentUser ? (
@@ -197,7 +197,7 @@ const DMConversationItem = React.memo(({id, imageUrl, username, lastMessageConte
                             </span>
                         )}
                         {!isMuted && !displayReadStatus && (
-                            <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                            <span className="w-2 h-2 bg-red-highlight rounded-full"></span>
                         )}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>

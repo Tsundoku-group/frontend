@@ -127,7 +127,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
     };
 
     return (
-        <Card className="w-full p-2 rounded-lg relative">
+        <Card className="w-full p-2 rounded-lg relative bg-tertiary-black border-none">
             <div className="flex gap-2 items-end w-full">
                 <FormProvider {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="flex gap-2 items-end w-full">
@@ -151,7 +151,7 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
                                                 onChange={handleInputChange}
                                                 onClick={handleInputChange}
                                                 placeholder="Écrire un message..."
-                                                className="min-h-full w-full resize-none border-0 outline-none bg-card text-card-foreground placeholder:text-muted-foreground p-1.5"
+                                                className="min-h-full w-full resize-none border-0 outline-none bg-card text-card-foreground placeholder:text-muted-foreground p-1.5 bg-tertiary-black border-none text-text-white"
                                             />
                                         </FormControl>
                                         <FormMessage/>

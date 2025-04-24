@@ -111,8 +111,8 @@ const StartNewConversation: React.FC<StartNewConversationProps> = ({onNewConvers
             <Tooltip>
                 <TooltipTrigger asChild>
                     <DialogTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                            <SquarePen/>
+                        <Button size="icon" variant="ghost" className="hover:bg-transparent hover:text-inherit hover:shadow-none">
+                            <SquarePen className="text-text-white"/>
                         </Button>
                     </DialogTrigger>
                 </TooltipTrigger>

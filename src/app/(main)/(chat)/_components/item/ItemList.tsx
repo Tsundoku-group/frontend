@@ -8,12 +8,14 @@ type Props = React.PropsWithChildren<{
 
 const ItemList = React.memo(({children, title, action: Action}: Props) => {
     return (
-        <Card className="fixed h-[calc(100vh-145px)] w-full lg:flex-none lg:w-[300px] p-2 bg-tertiary-black">
-            <div className="mb-4 flex items-center justify-between">
-                <h1 className="text-2x1 font-semibold tracking-tight ml-3 mt-3">{title}</h1>
-                {Action ? Action : null}
+        <Card className="fixed h-[calc(100vh-145px)] w-full lg:flex-none lg:w-[300px] p-2 bg-secondary-black border-none flex flex-col">
+            <div className="flex items-center justify-between px-2 py-2 min-h-[60px]">
+                <h3 className="text-2xl font-light tracking-tight text-text-white">{title}</h3>
+                {Action && <div>{Action}</div>}
             </div>
-            <div className="w-full h-full flex flex-col items-center justify-start gap-2">{children}</div>
+            <div className="flex-1 overflow-y-auto w-full flex flex-col items-center justify-start gap-2">
+                {children}
+            </div>
         </Card>
     );
 });

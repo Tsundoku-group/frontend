@@ -10,27 +10,27 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
-import { UserPlus } from "lucide-react";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useMutationState } from "@/hooks/useMutationState";
-import { createFriendRequest } from "@/server-actions/main/chat/friends/actions";
-import { useAuthContext } from "@/context/authContext";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {Button} from "@/components/ui/button";
+import {UserPlus} from "lucide-react";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
+import {z} from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {useMutationState} from "@/hooks/useMutationState";
+import {createFriendRequest} from "@/server-actions/main/chat/friends/actions";
+import {useAuthContext} from "@/context/authContext";
 import {ShowToast} from "@/components/ShowToast";
 import {useProfileContext} from "@/context/profileContext";
 
 const addFriendFormSchema = z.object({
     receiverUsername: z.string()
-        .min(1, { message: "Ce champ ne peut être vide" })
+        .min(1, {message: "Ce champ ne peut être vide"})
 });
 
 const AddFriends = () => {
-    const { user } = useAuthContext();
+    const {user} = useAuthContext();
     const {activeProfileInStorage} = useProfileContext();
 
     const form = useForm<z.infer<typeof addFriendFormSchema>>({
@@ -40,7 +40,9 @@ const AddFriends = () => {
         },
     });
 
-    const { mutate: createRequest, pending } = useMutationState(async ({ receiverUsername }: { receiverUsername: string }) => {
+    const {mutate: createRequest, pending} = useMutationState(async ({receiverUsername}: {
+        receiverUsername: string
+    }) => {
         if (!user || !activeProfileInStorage?.username) {
             ShowToast("destructive", "Erreur", "Impossible de récupérer l'email de l'utilisateur.");
             return;
@@ -70,8 +72,12 @@ const AddFriends = () => {
             <Tooltip>
                 <TooltipTrigger asChild>
                     <DialogTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                            <UserPlus />
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            className="hover:bg-transparent hover:text-inherit hover:shadow-none"
+                        >
+                            <UserPlus className="text-text-white"/>
                         </Button>
                     </DialogTrigger>
                 </TooltipTrigger>
@@ -94,13 +100,13 @@ const AddFriends = () => {
                         <FormField
                             control={form.control}
                             name="receiverUsername"
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormItem>
                                     <FormLabel>Username de ton ami(e)</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Username de l'ami(e)..." {...field} />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage/>
                                 </FormItem>
                             )}
                         />
