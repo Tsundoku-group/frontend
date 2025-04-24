@@ -12,7 +12,7 @@ import {ChatConversation} from "@/models/ChatConversation";
 import {useRouter} from "next/navigation";
 
 type Props = {
-    id: string;
+    id: number;
     imageUrl: string;
     username: string;
     lastMessageContent: string;
@@ -57,7 +57,7 @@ const ArchivesConversationItem = React.memo(({id, imageUrl, username, lastMessag
     return (
         <div className="w-full">
             <Card onClick={() => router.push(`/archives/${id}`)} className="p-3 flex flex-row items-center gap-3 bg-transparent hover:bg-neutral-800 transition">
-                <Checkbox id={id} checked={isChecked} onChange={onChange}/>
+                <Checkbox id={id.toString()} checked={isChecked} onChange={onChange}/>
                 <Avatar className="w-12 h-12">
                     <AvatarImage src={imageUrl}/>
                     <AvatarFallback>
