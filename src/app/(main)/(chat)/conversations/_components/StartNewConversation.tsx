@@ -13,7 +13,6 @@ import {
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {Check, SquarePen} from "lucide-react";
-import {useAuthContext} from "@/context/authContext";
 import {fetchFriendsList} from "@/server-actions/main/chat/friends/actions";
 import {startNewConversation} from "@/server-actions/main/chat/conversations/actions";
 import {Loader2} from "lucide-react";
