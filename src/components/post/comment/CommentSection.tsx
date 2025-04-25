@@ -76,12 +76,23 @@ export default function CommentSection({postId}: CommentSectionProps) {
             return {previousComments};
         },
         onSuccess: (response) => {
-            const savedComment = response.data;
+            const savedComment = response.data.comment;
+
+            const hydratedComment = {
+                ...savedComment,
+                author: {
+                    id: activeProfileInStorage?.id,
+                    firstname: activeProfileInStorage?.firstName,
+                    lastname: activeProfileInStorage?.lastName,
+                },
+                hasLiked: false,
+                replyCount: 0,
+            };
 
             ShowToast("default", "Commentaire ajouté !");
             setCommentContent("");
             queryClient.setQueryData(["comments", postId], (old: any) => ({
-                comments: [savedComment, ...(old?.comments || [])],
+                comments: [hydratedComment, ...(old?.comments || [])],
             }));
         },
         onError: () => {
