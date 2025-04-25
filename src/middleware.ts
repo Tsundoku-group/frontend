@@ -13,12 +13,16 @@ export default async function middleware(req: NextRequest) {
         '/accessibilitySettings',
         '/appearanceSettings',
         '/notificationSettings',
-        '/profile'
+        '/profile',
+        '/articles',
+        '/clubs'
     ]);
 
     const DYNAMIC_PROTECTED_PATTERNS = [
         /^\/conversations(\/.*)?$/,
         /^\/profile\/\d+$/,
+        /^\/clubs\/[a-zA-Z0-9-_]+$/,
+        /^\/articles\/\d+$/,
     ];
 
     function isProtectedRoute(path: string): boolean {
