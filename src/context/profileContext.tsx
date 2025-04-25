@@ -52,7 +52,6 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
             cover: localStorage.getItem(cacheKeys.cover),
         };
 
-        // Appliquer les images en cache
         setProfileImageUrls(prev => ({
             ...prev,
             ...(cachedImages.profile ? { [`${profileId}-profile`]: cachedImages.profile } : {}),
@@ -64,18 +63,24 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
 
             for (const type of ["profile", "cover"] as const) {
                 const url = urls[type];
+
+                if (!url) {
+                    continue;
+                }
+
                 const timestampedUrl = `${url}?t=${Date.now()}`;
-                setProfileImageUrls(prev => ({
+                setProfileImageUrls((prev) => ({
                     ...prev,
-                    [`${profileId}-${type}`]: timestampedUrl
+                    [`${profileId}-${type}`]: timestampedUrl,
                 }));
-                localStorage.setItem(cacheKeys[type], timestampedUrl);
+
+                localStorage.setItem(`profile-image-${profileId}-${type}`, timestampedUrl);
             }
         } catch (error) {
             setProfileImageUrls(prev => ({
                 ...prev,
                 [`${profileId}-profile`]: "",
-                [`${profileId}-cover`]: ""
+                [`${profileId}-cover`]: "",
             }));
         }
     }, []);
