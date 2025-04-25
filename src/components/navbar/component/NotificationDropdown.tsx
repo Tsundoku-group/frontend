@@ -90,7 +90,7 @@ export default function NotificationDropdown() {
 
     return (
         <DropdownMenu onOpenChange={(open) => {
-            if (open) handleMarkAsRead();
+            if (open) void handleMarkAsRead();
         }}>
             <DropdownMenuTrigger>
                 <div className="relative cursor-pointer">
