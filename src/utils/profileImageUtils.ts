@@ -8,11 +8,13 @@ type ImageUrls = {
     cover?: string;
 };
 
+const imageCache = new Map<number, ImageUrls>();
 
 export const getProfileImageUrl = async (profileId: number): Promise<ImageUrls> => {
+    if (imageCache.has(profileId)) return imageCache.get(profileId)!;
+
     try {
         const response = await fetchActiveProfilePictures(profileId);
-
         const urls: ImageUrls = {};
         const images: Record<string, ProfilePicture> = response.data;
 
@@ -22,17 +24,13 @@ export const getProfileImageUrl = async (profileId: number): Promise<ImageUrls> 
 
             if (firebasePath) {
                 const firebaseRef = ref(storage, firebasePath);
-                const firebaseUrl = await getDownloadURL(firebaseRef);
-                urls[type as keyof ImageUrls] = `${firebaseUrl}?t=${Date.now()}`;
+                urls[type as keyof ImageUrls] = await getDownloadURL(firebaseRef);
             }
         }
 
+        imageCache.set(profileId, urls);
         return urls;
     } catch (error: any) {
-        if (error?.response?.status === 404) {
-            return {};
-        }
-
         return {};
     }
 };

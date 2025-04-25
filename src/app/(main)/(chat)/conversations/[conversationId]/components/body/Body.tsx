@@ -94,27 +94,23 @@ const Body = ({profileId, messages, conversationId}: Props) => {
     }, [loading, conversationId, page]);
 
     useEffect(() => {
+        const containerRef = messageContainerRef.current;
+        if (!containerRef) return;
+
         const handleScroll = async () => {
-            if (messageContainerRef.current) {
-                const {scrollTop, scrollHeight, clientHeight} = messageContainerRef.current;
+            const { scrollTop, scrollHeight, clientHeight } = containerRef;
 
-                setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 10);
+            setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 10);
 
-                if (scrollTop === 0 && !loading) {
-                    await loadMoreMessages();
-                }
+            if (scrollTop === 0 && !loading) {
+                await loadMoreMessages();
             }
         };
 
-        const containerRef = messageContainerRef.current;
-        if (containerRef) {
-            containerRef.addEventListener("scroll", handleScroll);
-        }
+        containerRef.addEventListener("scroll", handleScroll);
 
         return () => {
-            if (containerRef) {
-                containerRef.removeEventListener("scroll", handleScroll);
-            }
+            containerRef.removeEventListener("scroll", handleScroll);
         };
     }, [loading, loadMoreMessages]);
 
