@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState, useCallback, useMemo, useEffect} from "react";
+import React, {useState, useCallback, useMemo} from "react";
 import {Card} from "@/components/ui/card";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {ArchiveRestore, BellOff, EllipsisVertical, Trash2, User} from "lucide-react";
