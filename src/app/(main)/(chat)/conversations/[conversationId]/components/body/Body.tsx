@@ -154,12 +154,16 @@ const Body = ({profileId, messages, conversationId}: Props) => {
             )}
 
             {localMessages.map((message, index) => {
+                const uniqueKey = message.uuid
+                    ? message.uuid
+                    : `${message.sender_id}-${new Date(message.sent_at).getTime()}-${index}`;
+
                 const isLastByUser = lastMessageByUser[message.sender_id] === index;
                 const isLastByMessages = index === localMessages.length - 1;
                 const isRead = message.isRead;
 
                 return (
-                    <div key={`${message.uuid}-${new Date(message.sent_at).getTime()}`}>
+                    <div key={uniqueKey}>
                         {(index === firstUnreadMessageIndex && message.sender_id !== profileId) && (
                             <div className="flex items-center py-2">
                                 <div className="flex-grow border-t border-red-highlight"></div>
