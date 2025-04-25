@@ -31,17 +31,35 @@ app.prepare().then(() => {
         // socket.use((packet, next) => { ... });
 
         socket.on("registerProfile", (profileId) => {
+            console.log(`🟢 [registerProfile] Tentative d'enregistrement du profil : ${profileId} via socket ${socket.id}`);
+
+            if (!profileId || typeof profileId !== "number") {
+                console.warn(`⚠️ [registerProfile] ID de profil invalide : ${profileId}`);
+                return;
+            }
+
             socket.profileId = profileId;
             socketToProfile[socket.id] = profileId;
 
             if (!Array.isArray(profileSockets[profileId])) {
                 profileSockets[profileId] = [];
+                console.log(`➕ [registerProfile] Création d'un tableau de sockets pour le profil ${profileId}`);
             }
 
-            profileSockets[profileId].push(socket.id);
-            io.emit("profile_status_update", { profileId, status: "online" });
-        });
+            if (!profileSockets[profileId].includes(socket.id)) {
+                profileSockets[profileId].push(socket.id);
+                console.log(`✅ [registerProfile] Socket ${socket.id} enregistré pour le profil ${profileId}`);
+            }
 
+            const connectedProfiles = Object.keys(profileSockets).map(id => Number(id));
+            io.emit("all_profiles_online", connectedProfiles);
+
+            console.log(`📢 [registerProfile] Émission du statut "online" pour le profil ${profileId}`);
+            io.emit("profile_status_update", {
+                profileId,
+                status: "online"
+            });
+        });
         socket.on("joinNotificationRoom", (profileId) => {
             socket.join(`notificationRoom:${profileId}`);
         });
@@ -53,7 +71,7 @@ app.prepare().then(() => {
 
         socket.on("joinRoom", ({ roomId, profileId }) => {
             socket.profileId = profileId;
-            profileSockets[profileId] = socket.id;
+            socketToProfile[socket.id] = profileId;
 
             for (const [currentRoomId, users] of Object.entries(roomUsers)) {
                 if (users.has(profileId) && currentRoomId !== roomId) {
@@ -76,7 +94,7 @@ app.prepare().then(() => {
 
         socket.on("send_msg", (data) => {
             const parsedData = JSON.parse(data);
-            console.log(parsedData);
+
             const { roomId, receiverData } = parsedData;
             if (!receiverData || !receiverData.id) {
                 console.error("❌ receiverData est manquant ou invalide :", receiverData);
@@ -88,7 +106,7 @@ app.prepare().then(() => {
             if (!isReceiverInRoom && receiverSocketId) {
                 io.to(receiverSocketId).emit("messageAlert", parsedData);
             }
-            console.log('ok');
+
             io.to(roomId).emit("receive_msg", parsedData);
         });
 
@@ -114,18 +132,31 @@ app.prepare().then(() => {
 
         socket.on("disconnect", () => {
             const profileId = socketToProfile[socket.id];
+            console.log(`🔌 [disconnect] Socket déconnecté : ${socket.id} (profil : ${profileId ?? 'inconnu'})`);
+
             if (profileId) {
                 profileSockets[profileId] = (profileSockets[profileId] || []).filter(id => id !== socket.id);
 
                 delete socketToProfile[socket.id];
 
-                if (profileSockets[profileId]?.length === 0) {
+                if (profileSockets[profileId].length === 0) {
                     delete profileSockets[profileId];
-                    io.emit("profile_status_update", { profileId, status: "offline" });
-                }
-            }
 
-            console.log(`❌ Déconnexion : ${socket.id}`);
+                    console.log(`📴 [disconnect] Plus aucun socket actif pour le profil ${profileId}, émission du statut "offline"`);
+
+                    const connectedProfiles = Object.keys(profileSockets).map(id => Number(id));
+                    io.emit("all_profiles_online", connectedProfiles);
+
+                    io.emit("profile_status_update", {
+                        profileId,
+                        status: "offline"
+                    });
+                } else {
+                    console.log(`ℹ️ [disconnect] ${profileSockets[profileId].length} socket(s) restants pour le profil ${profileId}`);
+                }
+            } else {
+                console.warn(`⚠️ [disconnect] Socket ${socket.id} déconnecté sans profil associé.`);
+            }
         });
     });
 

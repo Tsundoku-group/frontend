@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,35 +13,20 @@ type Props = {
 };
 
 const Header = ({ imageUrl, name, otherParticipantId }: Props) => {
-    const {socket} = useSocket();
-    const [isOnline, setIsOnline] = useState(false);
-
-    useEffect(() => {
-        if (socket && otherParticipantId) {
-            socket.on("user_status_update", ({ userId, status }) => {
-                if (otherParticipantId === userId) {
-                    setIsOnline(status === "online");
-                }
-            });
-
-            return () => {
-                socket.off("user_status_update");
-            };
-        }
-    }, [socket, otherParticipantId]);
+    const { onlineProfileIds } = useSocket();
+    const isOnline = onlineProfileIds.includes(otherParticipantId);
 
     return (
         <Card className="w-full flex items-center p-4 justify-start gap-3 bg-transparent border-none shadow-none">
             <div className="relative">
                 <Avatar className="w-10 h-10">
-                    <AvatarImage src={imageUrl} alt={name}/>
+                    <AvatarImage src={imageUrl} alt={name} />
                     <AvatarFallback>
-                        <User/>
+                        <User />
                     </AvatarFallback>
                 </Avatar>
                 {isOnline && (
-                    <span
-                        className="absolute bottom-0 right-0 w-3 h-3 bg-green-highlight border-2 border-white rounded-full"></span>
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-highlight rounded-full"></span>
                 )}
             </div>
 

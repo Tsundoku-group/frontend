@@ -5,5 +5,5 @@ export interface PostData {
     authorId?: number;
     groupId: number;
     visibility: "public" | "private";
-    type: string;
+    type?: string;
 }
