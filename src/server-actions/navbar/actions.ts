@@ -230,7 +230,7 @@ export const markAsReadNotifications = async (
                 'Content-Type': 'application/json',
             },
         });
-
+        console.log(response);
         if (!response.response || response.status !== 200) {
             return {
                 success: false,

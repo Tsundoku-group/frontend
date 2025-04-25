@@ -3,13 +3,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useProfileContext } from "@/context/profileContext";
-
-interface SocketContextType {
-    socket: Socket | null;
-    notifications: Notification[];
-    addNotification: (notification: Notification) => void;
-    onlineProfileIds: number[];
-}
+import { fetchNotifications } from "@/server-actions/navbar/actions";
 
 interface Notification {
     id: string;
@@ -19,11 +13,21 @@ interface Notification {
     resourceType: string;
     createdAt: string;
     isRead: boolean;
+    actorCount?: number;
+}
+
+interface SocketContextType {
+    socket: Socket | null;
+    notifications: Notification[];
+    setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
+    addNotification: (notification: Notification) => void;
+    onlineProfileIds: number[];
 }
 
 const SocketContext = createContext<SocketContextType>({
     socket: null,
     notifications: [],
+    setNotifications: () => {},
     addNotification: () => {},
     onlineProfileIds: [],
 });
@@ -62,7 +66,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         });
 
         socket.on("all_profiles_online", (profileIds: number[]) => {
-            console.log("🟢 Profils actuellement connectés :", profileIds);
+            console.log("🟢 Profils connectés :", profileIds);
             setOnlineProfileIds(profileIds);
         });
 
@@ -80,6 +84,19 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         };
     }, [profileId]);
 
+    useEffect(() => {
+        const loadNotifications = async () => {
+            if (!profileId) return;
+            const result = await fetchNotifications(profileId);
+            if (Array.isArray(result)) {
+                const unique = Array.from(new Map(result.map(n => [n.id, n])).values());
+                setNotifications(unique);
+            }
+        };
+
+        void loadNotifications();
+    }, [profileId]);
+
     const addNotification = (notification: Notification) => {
         setNotifications((prev) => [notification, ...prev]);
     };
@@ -88,8 +105,9 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         <SocketContext.Provider value={{
             socket: socketRef.current,
             notifications,
+            setNotifications,
             addNotification,
-            onlineProfileIds,
+            onlineProfileIds
         }}>
             {children}
         </SocketContext.Provider>
