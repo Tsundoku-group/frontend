@@ -9,7 +9,7 @@ import {fetchUserProfile} from "@/server-actions/main/profile/actions";
 import {getProfileImageUrl} from "@/utils/profileImageUtils";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useProfileContext} from "@/context/profileContext";
-import {notFound, useRouter} from "next/navigation";
+import {notFound} from "next/navigation";
 
 type Props = {
     params: {
@@ -22,7 +22,6 @@ const ProfilePage = React.memo(({params: {profileId}}: Props) => {
     const queryClient = useQueryClient();
     const {activeProfileInStorage, profileImageUrls} = useProfileContext();
     const [imagesOtherProfiles, setImagesOtherProfiles] = useState<{ profileImageUrl: string; coverImageUrl: string } | null>(null);
-    const router = useRouter();
 
     const isOwnProfile = activeProfileInStorage?.id === profileId;
 
