@@ -9,7 +9,7 @@ import {fetchUserProfile} from "@/server-actions/main/profile/actions";
 import {getProfileImageUrl} from "@/utils/profileImageUtils";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useProfileContext} from "@/context/profileContext";
-import {useRouter} from "next/navigation";
+import {notFound} from "next/navigation";
 
 type Props = {
     params: {
@@ -22,7 +22,6 @@ const ProfilePage = React.memo(({params: {profileId}}: Props) => {
     const queryClient = useQueryClient();
     const {activeProfileInStorage, profileImageUrls} = useProfileContext();
     const [imagesOtherProfiles, setImagesOtherProfiles] = useState<{ profileImageUrl: string; coverImageUrl: string } | null>(null);
-    const router = useRouter();
 
     const isOwnProfile = activeProfileInStorage?.id === profileId;
 
@@ -49,20 +48,7 @@ const ProfilePage = React.memo(({params: {profileId}}: Props) => {
     if (isLoading) return <div>Chargement du profil...</div>;
 
     if (result?.error) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center text-center">
-                <h1 className="text-4xl font-bold text-red-highlight mb-4">Profil introuvable</h1>
-                <p className="text-lg text-gray-600 mb-6">
-                    Le profil que vous cherchez n&apos;existe pas ou a été supprimé.
-                </p>
-                <button
-                    onClick={() => router.push('/')}
-                    className="px-6 py-3 bg-tertiary-black text-white rounded-lg shadow hover:bg-secondary-black"
-                >
-                    Retour à l&apos;accueil
-                </button>
-            </div>
-        );
+        notFound();
     }
     const profile = result?.data;
 

@@ -6,15 +6,19 @@ import PostCard from "@/components/post/post/PostCard";
 import InfiniteFeed from "./InfiniteFeed";
 import FeedSkeleton from "@/components/post/feed/FeedSkeleton";
 import { useProfileContext } from "@/context/profileContext";
+import {useEffect, useState} from "react";
+import {useSocket} from "@/context/socketContext";
 
 interface Props {
     groupId: number;
 }
 
 export default function Feed({ groupId }: Props) {
+    const [newPostIds, setNewPostIds] = useState<number[]>([]);
     const queryClient = useQueryClient();
     const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id as number;
+    const {socket} = useSocket();
 
     const { data, isLoading, error } = useQuery({
         queryKey: ["recentPosts", groupId, profileId],
@@ -22,6 +26,31 @@ export default function Feed({ groupId }: Props) {
         staleTime: 60000,
         enabled: !!profileId,
     });
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleNewPost = (post: any) => {
+            queryClient.setQueryData(["recentPosts", groupId, profileId], (old: any) => {
+                if (!old || !Array.isArray(old.posts)) return { posts: [post] };
+                setNewPostIds((prev) => [post.id, ...prev]);
+                setTimeout(() => {
+                    setNewPostIds((prev) => prev.filter((id) => id !== post.id));
+                }, 3000);
+
+                return {
+                    ...old,
+                    posts: [post, ...old.posts],
+                };
+            });
+        };
+
+        socket.on(`new_post_group_${groupId}`, handleNewPost);
+
+        return () => {
+            socket.off(`new_post_group_${groupId}`, handleNewPost);
+        };
+    }, [socket, groupId, profileId]);
 
     const handleDeletePost = (postId: number) => {
         queryClient.setQueryData(["recentPosts", groupId, profileId], (oldData: any) => {
@@ -46,7 +75,14 @@ export default function Feed({ groupId }: Props) {
             {Array.isArray(data.posts) && data.posts.length > 0 ? (
                 <>
                     {data.posts.map((post: any) => (
-                        <PostCard key={post.id} post={post} groupId={groupId} onDelete={handleDeletePost} />
+                        <div
+                            key={post.id}
+                            className={`transition-all duration-500 ease-in-out transform ${
+                                newPostIds.includes(post.id) ? 'opacity-0 translate-y-4 animate-fadeIn' : 'opacity-100'
+                            }`}
+                        >
+                            <PostCard post={post} groupId={groupId} onDelete={handleDeletePost} />
+                        </div>
                     ))}
                 </>
             ) : (

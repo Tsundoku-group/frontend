@@ -3,10 +3,10 @@
 import { symfonyUrl } from "@/constants/symfonyUrl";
 
 export const handleResendVerification = async (email: string) => {
-    const response = await fetch(`${symfonyUrl}/resend-confirmation`, {
+    const response = await fetch(`${symfonyUrl}/register/resend/confirmation`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({email}),
+        body: JSON.stringify({email: email}),
     });
 
     if (!response.ok) {

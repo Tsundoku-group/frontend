@@ -33,11 +33,18 @@ export function AuthProvider({children}: { children: React.ReactNode; }) {
         const checkAuthBySession = async () => {
             try {
                 const session = await getSession();
+
                 if (session && session.token) {
                     if (session.isVerified === false) {
+                        setUser({
+                            userId: session.userId,
+                            email: session.email,
+                            isVerified: session.isVerified,
+                        });
                         router.push('/error/unverified');
                         return;
                     }
+
                     setUser({ userId: session.userId, email: session.email, isVerified: session.isVerified });
                     setIsAuthenticated(true);
                     setToken(session.token as string);

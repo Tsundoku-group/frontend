@@ -13,7 +13,7 @@ import ReactionCommentButton from "@/components/post/ReactionCommentButton";
 
 interface RepliesSectionProps {
     postId: number;
-    commentId: number;
+    commentId: string;
     comment: {
         author: {
             id: number,
@@ -42,7 +42,7 @@ export default function RepliesSection({commentId, postId}: RepliesSectionProps)
     }, [data]);
 
     const {mutate: addReply} = useMutation({
-        mutationFn: async (replyData: { postId: number; parentId: number; authorId: number; content: string }) => {
+        mutationFn: async (replyData: { postId: number; parentId: string; authorId: number; content: string }) => {
             return replyToComment(replyData);
         },
         onSuccess: (savedReply) => {

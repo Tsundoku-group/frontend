@@ -9,12 +9,13 @@ import {PostData} from "@/models/PostData";
 import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useSocket} from "@/context/socketContext";
 
 export default function CreatePost({ groupId }: { groupId: number}) {
     const [content, setContent] = useState("");
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
-
+    const { socket } = useSocket();
 
     const queryClient = useQueryClient();
 
@@ -29,9 +30,29 @@ export default function CreatePost({ groupId }: { groupId: number}) {
                 return;
             }
 
-            setContent("");
-            await queryClient.invalidateQueries({ queryKey: ["recentPosts"] });
+            const hydratedPost = {
+                id: newPost.data.postId,
+                content,
+                createdAt: new Date().toISOString(),
+                author: {
+                    firstname: activeProfileInStorage?.firstName || '',
+                    lastname: activeProfileInStorage?.lastName || '',
+                    username: activeProfileInStorage?.username || '',
+                },
+                groupId,
+                replyCount: 0,
+                hasLiked: false,
+                type: "post",
+                visibility: groupId === 1 ? "public" : "private",
+            };
 
+            setContent("");
+
+            if (socket) {
+                socket.emit("new_post", { groupId, post: hydratedPost });
+            }
+
+            await queryClient.invalidateQueries({ queryKey: ["recentPosts"] });
             ShowToast("default", "Post ajouté avec succès !");
         },
         onError: () => {

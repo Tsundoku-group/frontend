@@ -105,10 +105,9 @@ export const fetchOlderPosts = async (pageParam: number, limit = 20, groupId: nu
 
 export const fetchLastCommentsFromPost = async (postId: number, profileId: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comments/post/${postId}`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comments/post/${postId}?profileId=${profileId}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({profileId})
         });
 
         if (!response || !response.data) {
@@ -185,7 +184,7 @@ export const deleteCommentOnPost = async (commentId: number, authorId: number) =
 
 export const replyToComment = async (replyData: {
     postId: number;
-    parentId: number;
+    parentId: string;
     authorId: number;
     content: string;
 }) => {
@@ -206,12 +205,11 @@ export const replyToComment = async (replyData: {
     }
 };
 
-export const fetchRepliesForComment = async (commentId: number, profileId: number) => {
+export const fetchRepliesForComment = async (commentId: string, profileId: number) => {
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comments/${commentId}/children`, {
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/comments/${commentId}/children?profileId=${profileId}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({profileId})
         });
 
         if (!response || !response.data) {

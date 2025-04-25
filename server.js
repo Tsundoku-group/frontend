@@ -130,6 +130,11 @@ app.prepare().then(() => {
             socket.to(roomId).emit("stopTyping", { profileId });
         });
 
+        socket.on("new_post", ({ groupId, post }) => {
+            console.log(`📬 Nouveau post dans le groupe #${groupId}, ${post}`);
+            io.emit(`new_post_group_${groupId}`, post);
+        });
+
         socket.on("disconnect", () => {
             const profileId = socketToProfile[socket.id];
             console.log(`🔌 [disconnect] Socket déconnecté : ${socket.id} (profil : ${profileId ?? 'inconnu'})`);
