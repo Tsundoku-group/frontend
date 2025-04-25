@@ -39,13 +39,13 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
             const uuid = uuidv4();
             if (socket) {
                 const isCurrentUser = payload.username === activeProfileInStorage?.username;
-                console.log(payload)
+
                 socket.emit('send_msg', JSON.stringify({
                     roomId: conversationId,
                     id: uuid,
                     profileId: profileId,
                     content: payload.content,
-                    sent_by: payload.username,
+                    sent_by: activeProfileInStorage?.username,
                     sent_at: new Date().toISOString(),
                     isCurrentUser: isCurrentUser,
                     receiverData: {
@@ -57,8 +57,8 @@ const ChatInput = ({conversationId, otherParticipant}: Props) => {
                 socket?.emit('lastMessageSend', {
                     lastMessage: {
                         roomId: conversationId,
-                        content: payload.message,
-                        sent_by: payload.username,
+                        content: payload.content,
+                        sent_by: activeProfileInStorage?.username,
                         sent_at: new Date().toISOString(),
                         isRead: false,
                         isCurrentUser: isCurrentUser,

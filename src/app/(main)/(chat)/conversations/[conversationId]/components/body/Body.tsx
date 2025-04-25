@@ -94,27 +94,23 @@ const Body = ({profileId, messages, conversationId}: Props) => {
     }, [loading, conversationId, page]);
 
     useEffect(() => {
+        const containerRef = messageContainerRef.current;
+        if (!containerRef) return;
+
         const handleScroll = async () => {
-            if (messageContainerRef.current) {
-                const {scrollTop, scrollHeight, clientHeight} = messageContainerRef.current;
+            const { scrollTop, scrollHeight, clientHeight } = containerRef;
 
-                setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 10);
+            setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 10);
 
-                if (scrollTop === 0 && !loading) {
-                    await loadMoreMessages();
-                }
+            if (scrollTop === 0 && !loading) {
+                await loadMoreMessages();
             }
         };
 
-        const containerRef = messageContainerRef.current;
-        if (containerRef) {
-            containerRef.addEventListener("scroll", handleScroll);
-        }
+        containerRef.addEventListener("scroll", handleScroll);
 
         return () => {
-            if (containerRef) {
-                containerRef.removeEventListener("scroll", handleScroll);
-            }
+            containerRef.removeEventListener("scroll", handleScroll);
         };
     }, [loading, loadMoreMessages]);
 
@@ -154,12 +150,16 @@ const Body = ({profileId, messages, conversationId}: Props) => {
             )}
 
             {localMessages.map((message, index) => {
+                const uniqueKey = message.uuid
+                    ? message.uuid
+                    : `${message.sender_id}-${new Date(message.sent_at).getTime()}-${index}`;
+
                 const isLastByUser = lastMessageByUser[message.sender_id] === index;
                 const isLastByMessages = index === localMessages.length - 1;
                 const isRead = message.isRead;
 
                 return (
-                    <div key={`${message.uuid}-${new Date(message.sent_at).getTime()}`}>
+                    <div key={uniqueKey}>
                         {(index === firstUnreadMessageIndex && message.sender_id !== profileId) && (
                             <div className="flex items-center py-2">
                                 <div className="flex-grow border-t border-red-highlight"></div>

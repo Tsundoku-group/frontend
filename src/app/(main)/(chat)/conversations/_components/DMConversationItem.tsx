@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState, useCallback, useMemo, useEffect} from "react";
+import React, {useState, useCallback, useMemo} from "react";
 import {Card} from "@/components/ui/card";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {ArchiveRestore, BellOff, EllipsisVertical, Trash2, User} from "lucide-react";
@@ -60,9 +60,9 @@ const DMConversationItem = React.memo(({
                                            otherParticipantId
                                        }: Props) => {
     const [openMuteDialog, setOpenMuteDialog] = useState(false);
-    const [isOnline, setIsOnline] = useState(false);
     const router = useRouter();
-    const {socket} = useSocket();
+    const { onlineProfileIds } = useSocket();
+    const isOnline = onlineProfileIds.includes(otherParticipantId as number);
 
     const parsedDate = useMemo(() => sentAt ? parseISO(sentAt) : null, [sentAt]);
     const timeAgo = useMemo(() => parsedDate ? formatDistanceToNow(parsedDate, {
@@ -140,20 +140,6 @@ const DMConversationItem = React.memo(({
         }
     }, [id, setConversations]);
 
-    useEffect(() => {
-        if (socket) {
-            socket.on("user_status_update", ({profileId, status}) => {
-                if (otherParticipantId === profileId) {
-                    setIsOnline(status === "online");
-                }
-            });
-
-            return () => {
-                socket.off("user_status_update");
-            };
-        }
-    }, [socket, otherParticipantId]);
-
     return (
         <div className="w-full">
             <Card onClick={() => router.push(`/conversations/${id}`)}
@@ -166,8 +152,7 @@ const DMConversationItem = React.memo(({
                         </AvatarFallback>
                     </Avatar>
                     {isOnline && (
-                        <span
-                            className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-highlight rounded-full"></span>
                     )}
                 </div>
                 <div className="flex flex-col flex-grow overflow-hidden">

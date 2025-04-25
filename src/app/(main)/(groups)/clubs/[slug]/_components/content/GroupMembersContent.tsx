@@ -11,6 +11,7 @@ import React, {useState} from "react";
 import {GroupMember} from "@/models/GroupMember";
 import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
+import {useSocket} from "@/context/socketContext";
 
 interface Props {
     groupId: number;
@@ -23,6 +24,56 @@ function formatJoinDate(date: string) {
         year: 'numeric'
     });
 }
+
+const GroupMemberItem = ({member, onClick}: { member: GroupMember; onClick: () => void }) => {
+    const {onlineProfileIds} = useSocket();
+    const isOnline = onlineProfileIds.includes(member.id);
+
+    return (
+        <div
+            key={member.id}
+            className="flex items-center gap-4 bg-secondary-black p-4 rounded-lg border border-gray-700 shadow-sm hover:shadow-md transition-shadow"
+        >
+            <div className="relative w-12 h-12 shrink-0">
+                <Avatar className="w-12 h-12">
+                    <AvatarImage src={member.avatarUrl || ""}/>
+                    <AvatarFallback>{member.username[0]}</AvatarFallback>
+                </Avatar>
+                <span
+                    className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-secondary-black rounded-full ${
+                        isOnline ? "bg-green-highlight" : "bg-gray-500"
+                    }`}
+                    title={isOnline ? "En ligne" : "Hors ligne"}
+                />
+            </div>
+
+            <div className="flex flex-col flex-grow min-w-0">
+                <div className="flex items-center gap-2 truncate">
+                    <span className="text-base font-semibold text-white truncate">
+                        {truncateString(`${member.firstName} ${member.lastName}`, 25)}
+                    </span>
+                    {isOnline && <span className="text-xs text-green-highlight ml-2">(en ligne)</span>}
+                </div>
+                <span className="text-xs text-gray-400">@{member.username}</span>
+                <Badge
+                    className="w-fit mt-1 text-xs font-medium bg-tertiary-black text-gray-300 border-gray-600"
+                    variant="secondary"
+                >
+                    {member.roleLabel}
+                </Badge>
+                <span className="text-xs text-gray-500 mt-0.5">
+                    Membre depuis le {formatJoinDate(member.joinAt.date)}
+                </span>
+            </div>
+
+            <div className="ml-auto">
+                <Button variant="secondary" size="sm" onClick={onClick}>
+                    Voir
+                </Button>
+            </div>
+        </div>
+    );
+};
 
 export default function GroupMembersContent({groupId}: Props) {
     const [searchTerm, setSearchTerm] = useState("");
@@ -81,28 +132,11 @@ export default function GroupMembersContent({groupId}: Props) {
 
             {currentMember && (
                 <div className="grid grid-cols-1 gap-4 mb-6">
-                    <div
+                    <GroupMemberItem
                         key={currentMember.id}
-                        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-secondary-black p-3 rounded-md border border-gray-700"
-                    >
-                        <Avatar className="w-10 h-10 shrink-0">
-                            <AvatarImage src={currentMember.avatarUrl || ""}/>
-                            <AvatarFallback>{currentMember.username[0]}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col">
-                            <div className="flex gap-1">
-                            <span className="text-sm font-medium text-white">
-                                {truncateString(`${currentMember.firstName} ${currentMember.lastName}`, 30)}
-                            </span>
-                            </div>
-                            <div className="text-xs text-gray-400">@{currentMember.username}</div>
-                            <Badge className="w-fit mt-1 text-xs font-medium">{currentMember.roleLabel}</Badge>
-                            <span className="text-xs text-gray-500">
-                            Membre depuis le {formatJoinDate(currentMember.joinAt.date)}
-                        </span>
-                            <Button className="w-fit mt-2" onClick={() => handleViewProfile(currentMember.id)}>Voir mon profil</Button>
-                        </div>
-                    </div>
+                        member={currentMember}
+                        onClick={() => handleViewProfile(currentMember.id)}
+                    />
                 </div>
             )}
 
@@ -111,28 +145,7 @@ export default function GroupMembersContent({groupId}: Props) {
 
             <div className="grid grid-cols-1 gap-4 mb-6">
                 {admins.length > 0 ? admins.map((member) => (
-                    <div
-                        key={member.id}
-                        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-secondary-black p-3 rounded-md border border-gray-700"
-                    >
-                        <Avatar className="w-10 h-10 shrink-0">
-                            <AvatarImage src={member.avatarUrl || ""}/>
-                            <AvatarFallback>{member.username[0]}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col">
-                            <div className="flex gap-1">
-                          <span className="text-sm font-medium text-white">
-                            {truncateString(`${member.firstName} ${member.lastName}`, 30)}
-                          </span>
-                            </div>
-                            <div className="text-xs text-gray-400">@{member.username}</div>
-                            <Badge className="w-fit mt-1 text-xs font-medium">{member.roleLabel}</Badge>
-                            <span className="text-xs text-gray-500">
-                            Membre depuis le {formatJoinDate(member.joinAt.date)}
-                        </span>
-                            <Button className="w-fit mt-2" onClick={() => handleViewProfile(member.id)}>Voir le profil</Button>
-                        </div>
-                    </div>
+                    <GroupMemberItem key={member.id} member={member} onClick={() => handleViewProfile(member.id)}/>
                 )) : (
                     <p className="text-sm text-gray-500 italic">Aucun administrateur trouvé.</p>
                 )}
@@ -143,28 +156,7 @@ export default function GroupMembersContent({groupId}: Props) {
 
             <div className="grid grid-cols-1 gap-4">
                 {regulars.length > 0 ? regulars.map((member) => (
-                    <div
-                        key={member.id}
-                        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-secondary-black p-3 rounded-md border border-gray-700"
-                    >
-                        <Avatar className="w-10 h-10 shrink-0">
-                            <AvatarImage src={member.avatarUrl || ""}/>
-                            <AvatarFallback>{member.username[0]}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col">
-                            <div className="flex gap-1">
-                          <span className="text-sm font-medium text-white">
-                            {truncateString(`${member.firstName} ${member.lastName}`, 30)}
-                          </span>
-                            </div>
-                            <div className="text-xs text-gray-400">@{member.username}</div>
-                            <Badge className="w-fit mt-1 text-xs font-medium">{member.roleLabel}</Badge>
-                            <span className="text-xs text-gray-500">
-                            Membre depuis le {formatJoinDate(member.joinAt.date)}
-                        </span>
-                            <Button className="w-fit mt-2" onClick={() => handleViewProfile(member.id)}>Voir le profil</Button>
-                        </div>
-                    </div>
+                    <GroupMemberItem key={member.id} member={member} onClick={() => handleViewProfile(member.id)}/>
                 )) : (
                     <p className="text-sm text-gray-500 italic">Aucun membre trouvé.</p>
                 )}

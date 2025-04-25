@@ -98,3 +98,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-94] Correction majeure [#94](https://trello.com/c/EVAGwrr7/94-correction-majeure)
 - [t-95] Corrections mineures [#95](https://trello.com/c/Vf8m8UJG/95-t-95-corrections-mineures)
 - [t-56] Correction :status doit être en ligne lors de la connexion [#56](https://trello.com/c/QIgFNQER/56-t-56-correction-status-doit-%C3%AAtre-en-ligne-lors-de-la-connexion)
+- [t-97] Correction du mode online et les status [#97](https://trello.com/c/IpZgVjSN/97-t-97-correction-du-mode-online-et-les-status)
