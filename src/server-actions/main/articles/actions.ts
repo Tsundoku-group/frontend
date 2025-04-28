@@ -31,7 +31,7 @@ export const fetchProfileArticles = async (
         });
 
         const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/posts/${profileId}/articles?${queryParams.toString()}`,
+            `${symfonyUrl}/api/v1/postss/${profileId}/articles?${queryParams.toString()}`,
             {
                 method: "GET",
                 headers: {"Content-Type": "application/json"},
@@ -100,7 +100,7 @@ export const submitArticle = async (
 
     try {
         const method = articleId ? "PUT" : "POST";
-        const url = articleId ? `${symfonyUrl}/api/v1/posts/${articleId}` : `${symfonyUrl}/api/v1/posts`;
+        const url = articleId ? `${symfonyUrl}/api/v1/posts/${articleId}` : `${symfonyUrl}/api/v1/post`;
 
         const modifiedPayload = {...payload, type: "article"};
         const response = await fetchWithAuth(url, {
