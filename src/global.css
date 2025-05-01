@@ -56,6 +56,10 @@ body {
     transition: background-color 0.4s ease;
 }
 
+.tertiary-btn:hover {
+    background-color: var(--bg-primary-dark);
+}
+
 .secondary-btn:hover {
     background-color: var(--hover-highlight-green);
 }

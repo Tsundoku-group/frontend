@@ -11,10 +11,10 @@ import ArchivedChallenges from './_components/ArchivedChallenges'
 export default function ChallengesPage() {
     return (
         <>
-            <div className='grid grid-cols-12 gap-4 mt-6 mb-6'>
+            <div className='grid grid-cols-12 gap-4 mt-[8em] mb-6'>
                 <BadgesHistory />
                 <ChallengesNotifications />
-                <div className='col-span-6 flex flex-col gap-4 w-full'>
+                <div className='col-span-5 flex flex-col gap-4 w-full'>
                     <BadgesShowcase />
                     <ChallengesStatistics />
                 </div>
