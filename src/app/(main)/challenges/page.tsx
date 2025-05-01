@@ -5,8 +5,7 @@ import BadgesHistory from './_components/BadgesHistory'
 import ChallengesNotifications from './_components/ChallengesNotifications'
 import BadgesShowcase from './_components/BadgesShowcase'
 import ChallengesStatistics from './_components/ChallengesStatistics'
-import CurrentChallenges from './_components/CurrentChallenges'
-import ArchivedChallenges from './_components/ArchivedChallenges'
+import ChallengesList from './_components/ChallengesList'
 
 export default function ChallengesPage() {
     return (
@@ -20,8 +19,17 @@ export default function ChallengesPage() {
                 </div>
             </div>
 
-            <CurrentChallenges />
-            <ArchivedChallenges />
+            <div className="grid gap-5">
+                <div className="grid gap-5">
+                    <h2>Défis en cours</h2>
+                    <ChallengesList />
+                </div>
+
+                <div className="grid gap-5">
+                    <h2>Défis archivés</h2>
+                    <ChallengesList />
+                </div>
+            </div>
         </>
     )
 }
