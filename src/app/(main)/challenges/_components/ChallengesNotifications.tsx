@@ -48,18 +48,9 @@ export default function ChallengesNotifications() {
 
             {
                 isChallengesCreationFormOpen && (
-                    <div className="fixed inset-0 bg-primary-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-secondary-black text-text-white p-6 rounded-lg relative w-full max-w-lg">
-                            <button
-                                onClick={() => setIsChallengesCreationFormOpen(false)}
-                                className="absolute top-4 right-4 p-1 hover:bg-tertiary-black rounded-full"
-                                aria-label="Fermer"
-                            >
-                                <X size={20} />
-                            </button>
-                            <ChallengesCreationForm />
-                        </div>
-                    </div>
+                    <ChallengesCreationForm 
+                        onClose={() => setIsChallengesCreationFormOpen(false)} 
+                    />
                 )
             }
         </>

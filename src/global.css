@@ -116,3 +116,19 @@ input::file-selector-button:hover {
 hr {
     border: 1px solid var(--bg-tertiary-dark);
 }
+
+.status-btn, .status-btn-list {
+    background-color: var(--bg-tertiary-dark);
+    transition: background-color 0.4s ease;
+}
+.status-btn:hover {
+    background-color: var(--bg-primary-dark);
+}
+
+.status-btn-list div {
+    transition: background-color 0.4s ease;
+}
+
+.status-btn-list div:hover {
+    background-color: var(--bg-primary-dark);
+}

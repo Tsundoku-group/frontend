@@ -70,7 +70,7 @@ export default function CustomSelect({
 
     const dropdown = (
         <div
-            className="status-btn-list rounded-md shadow-lg"
+            className="custom-select rounded-md shadow-lg"
             style={{
                 position: "absolute",
                 top: dropdownStyle.top,
