@@ -1,5 +1,6 @@
 # Nom des services Docker Compose
-COMPOSE=docker compose                   # Commande pour exécuter Docker Compose
+COMPOSE_FILE_PATH=../infrastructure/docker-compose.yaml
+COMPOSE=docker compose -f $(COMPOSE_FILE_PATH)               # Commande pour exécuter Docker Compose
 NEXTJS_SERVICE=nextjs                    # Service Docker pour Next.js
 
 # Commandes Docker Compose
