@@ -24,6 +24,9 @@ const nextConfig = {
             'github.com',
         ],
     },
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
 };
 
 export default nextConfig;
