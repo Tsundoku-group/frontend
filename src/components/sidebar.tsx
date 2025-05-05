@@ -58,7 +58,8 @@ export default function Sidebar() {
     const goTo = (path: string) => router.push(path);
 
     return (
-        <div className="fixed min-h-screen w-60 bg-gradient-to-b from-[#281f39] via-[#1D2330] to-secondary-black text-text-white flex flex-col px-5 py-6">
+        <div
+            className="fixed min-h-screen w-60 bg-gradient-to-b from-[#281f39] via-[#1D2330] to-secondary-black text-text-white flex flex-col px-5 py-6">
             <div className="flex items-center justify-center h-16">
                 <div className="text-2xl font-extralight text-white">tsundoku</div>
             </div>
@@ -73,9 +74,12 @@ export default function Sidebar() {
                         onChange={(e) => setSearch(e.target.value)}
                     />
 
-                    <Link href={{pathname: '/search', query: {term: search}}} onClick={() => setSearch('')}>
+                    <button onClick={() => {
+                        goTo('/search?term=' + search)
+                        setSearch('')
+                    }}>
                         <Search className="text-text-white"/>
-                    </Link>
+                    </button>
                 </div>
 
                 <div className="flex gap-4 justify-center items-center mt-8">

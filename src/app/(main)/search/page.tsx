@@ -1,11 +1,27 @@
 'use client';
 
-import React from "react";
+import React, {Suspense, useState} from "react";
+import {useSearchParams} from "next/navigation";
+import SearchBar from "@/app/(main)/search/_components/searchBar/SearchBar";
+import SearchResult from "@/app/(main)/search/_components/searchResult/SearchResult";
 
-export default function Search({ searchParams }) {
+const SearchPage = () => {
+    const searchParams = useSearchParams()
+    const [search, setSearch] = useState<string>(searchParams.get('term') ?? '');
+
     return (
-        <>
-            <p>{ searchParams.term }</p>
-        </>
+        <div className="min-h-screen grid grid-cols-12 grid-rows-[auto,1fr] gap-8 pt-8">
+            <div className="col-span-full">
+                <SearchBar search={search} setSearch={setSearch}/>
+            </div>
+
+            <Suspense fallback={<div>Chargement des résultats...</div>}>
+                <div className="col-span-full">
+                    <SearchResult search={search}/>
+                </div>
+            </Suspense>
+        </div>
     )
 }
+
+export default SearchPage;
