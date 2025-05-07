@@ -10,13 +10,13 @@ const SearchPage = () => {
     const [search, setSearch] = useState<string>(searchParams.get('term') ?? '');
 
     return (
-        <div className="min-h-screen grid grid-cols-12 grid-rows-[auto,1fr] gap-8 pt-8">
+        <div className="grid grid-cols-12 grid-rows-[auto,1fr] gap-8 pt-8">
             <div className="col-span-full">
                 <SearchBar search={search} setSearch={setSearch}/>
             </div>
 
             <Suspense fallback={<div>Chargement des résultats...</div>}>
-                <div className="col-span-full">
+                <div className="col-span-full overflow-y-scroll">
                     <SearchResult search={search}/>
                 </div>
             </Suspense>

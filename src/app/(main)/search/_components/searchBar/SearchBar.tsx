@@ -11,9 +11,15 @@ const SearchBar = ({search, setSearch}: Props): ReactElement => {
     const router = useRouter();
     const [text, setText] = useState<string>(search);
 
+    const handleSearch = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        router.push('/search?term=' + text)
+        setSearch(text)
+    }
+
     return (
         <>
-            <div className="flex items-center bg-gray-800 rounded-lg p-2">
+            <form className="flex items-center bg-gray-800 rounded-lg p-2">
                 <input
                     type="text"
                     placeholder="Explorer"
@@ -22,13 +28,10 @@ const SearchBar = ({search, setSearch}: Props): ReactElement => {
                     onChange={(event) => setText(event.target.value)}
                 />
 
-                <button onClick={() => {
-                    router.push('/search?term=' + text)
-                    setSearch(text)
-                }}>
+                <button onClick={(event) => handleSearch(event)} type='submit'>
                     <Search className="text-text-white"/>
                 </button>
-            </div>
+            </form>
         </>
     )
 }
