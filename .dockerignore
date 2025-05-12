@@ -1,0 +1,16 @@
+.git
+.gitignore
+.env
+.env.local
+node_modules
+.vscode
+.idea
+.next
+coverage/
+Makefile
+Dockerfile
+docker-compose*
+tsconfig.tsbuildinfo
+*.log
+__tests__/
+test/
