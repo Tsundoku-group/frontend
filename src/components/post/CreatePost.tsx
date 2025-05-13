@@ -11,15 +11,15 @@ import {ShowToast} from "@/components/ShowToast";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useSocket} from "@/context/socketContext";
 
-export default function CreatePost({ groupId, profileImageUrl }: { groupId: number, profileImageUrl: string }) {
+export default function CreatePost({groupId, profileImageUrl}: { groupId: number, profileImageUrl: string }) {
     const [content, setContent] = useState("");
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
-    const { socket } = useSocket();
+    const {socket} = useSocket();
 
     const queryClient = useQueryClient();
 
-    const { mutate: addPost } = useMutation({
+    const {mutate: addPost} = useMutation({
         mutationFn: async (postData: PostData) => {
             return createNewPost(postData);
         },
@@ -49,10 +49,10 @@ export default function CreatePost({ groupId, profileImageUrl }: { groupId: numb
             setContent("");
 
             if (socket) {
-                socket.emit("new_post", { groupId, post: hydratedPost });
+                socket.emit("new_post", {groupId, post: hydratedPost});
             }
 
-            await queryClient.invalidateQueries({ queryKey: ["recentPosts"] });
+            await queryClient.invalidateQueries({queryKey: ["recentPosts"]});
             ShowToast("default", "Post ajouté avec succès !");
         },
         onError: () => {
@@ -82,7 +82,7 @@ export default function CreatePost({ groupId, profileImageUrl }: { groupId: numb
     return (
         <div className="p-6 rounded-2xl shadow-lg w-full mb-6 border-secondary-black border"
              style={{
-                 background: "linear-gradient(to right, #372048 1%, #1a1a2e 25%)",
+                 background: "linear-gradient(to right, #281f39 1%, #171C26 55%)",
              }}
         >
             <div className="flex items-center gap-6 w-full mb-4">
@@ -108,17 +108,26 @@ export default function CreatePost({ groupId, profileImageUrl }: { groupId: numb
                 <div className="flex gap-3">
                     <Button
                         className="flex items-center gap-2 text-green-400 bg-transparent border-2 border-tertiary-black px-6  rounded-full transition duration-300 hover:bg-green-400 hover:text-black">
-                        <FileImage  className="w-5 h-5 font-extralight"/> Médias
+                        <FileImage className="w-5 h-5 font-extralight"/>
+                        <div className="text-text-white">
+                            Médias
+                        </div>
                     </Button>
 
                     <Button
                         className="flex items-center gap-2 text-purple-400 bg-transparent border-2 border-tertiary-black px-6 rounded-full transition duration-300 hover:bg-purple-400 hover:text-black">
-                        <FileImage className="w-5 h-5"/> GIF
+                        <FileImage className="w-5 h-5 font-extralight"/>
+                        <div className="text-text-white">
+                            GIF
+                        </div>
                     </Button>
 
                     <Button
                         className="flex items-center gap-2 text-yellow-400 bg-transparent border-2 border-tertiary-black px-6 rounded-full transition duration-300 hover:bg-yellow-400 hover:text-black">
-                        <Smile className="w-5 h-5"/> Émojis
+                        <Smile className="w-5 h-5 font-extralight"/>
+                        <div className="text-text-white">
+                            Émojis
+                        </div>
                     </Button>
                 </div>
 
