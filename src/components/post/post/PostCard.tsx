@@ -84,9 +84,9 @@ export default function PostCard({post, groupId, onDelete}: { post: Post, groupI
 
     return (
         <>
-            <div className="bg-tertiary-black p-4 rounded-lg shadow-md w-full mb-6">
+            <div className="bg-secondary-black border-tertiary-black border p-4 py-8 rounded-2xl shadow-md w-full mb-6">
                 <div className="flex items-center justify-between w-full px-4">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 mb-4">
                         <Avatar className="w-16 h-16">
                             <AvatarImage src=""/>
                             <AvatarFallback><User/></AvatarFallback>
@@ -113,7 +113,6 @@ export default function PostCard({post, groupId, onDelete}: { post: Post, groupI
                                                           setIsEditing(true);
                                                           setIsDropdownOpen(false);
                                                       }}>
-
                                         Modifier <Pencil className="h-4 w-4 ml-7"/>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem className="text-red-highlight"
