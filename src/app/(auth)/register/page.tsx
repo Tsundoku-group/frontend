@@ -96,11 +96,13 @@ export default function RegisterPage() {
                             <Command className="w-6 h-6 text-pink-100"/>
                             <h4 className="text-lg font-bold text-pink-100">Tsundoku</h4>
                         </div>
-                        <div className="absolute inset-0 opacity-30">
+                        <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
                             <Image
-                                src=""
-                                alt=""
-                                className="object-cover w-full h-full"
+                                src="/illustration-tsundoku-auth.png"
+                                alt="image login"
+                                width={600}
+                                height={400}
+                                className="object-contain w-auto h-auto"
                             />
                         </div>
 
