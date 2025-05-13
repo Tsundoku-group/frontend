@@ -332,7 +332,7 @@ export default function Navbar() {
                         <span className="text-green-highlight">{activeProfileInStorage?.firstName && activeProfileInStorage?.lastName ? `${activeProfileInStorage.firstName} ${activeProfileInStorage.lastName}` : activeProfileInStorage?.username}</span> !
                     </div>
                     <div className="flex items-center">
-                        <div className="flex mr-6">
+                        <div className="flex mr-4">
                             <NotificationDropdown/>
                         </div>
                         <CustomDropDown
