@@ -50,7 +50,7 @@ function CustomDropDown(props: {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger onClick={toggleDropdown}>
-                <div className="flex items-center bg-tertiary-black p-2 rounded-lg cursor-pointer relative">
+                <div className="flex items-center bg-secondary-black border-tertiary-black border-2 p-2 rounded-2xl cursor-pointer relative mr-4">
                     <div className="relative">
                         <Avatar>
                             <AvatarImage
@@ -71,7 +71,8 @@ function CustomDropDown(props: {
                                        height={20}/>
                             )}
                             {status === ProfileStatus.Away && (
-                                <div className="bg-tertiary-black rounded-full w-5 h-5 flex items-center justify-center overflow-hidden">
+                                <div
+                                    className="bg-tertiary-black rounded-full w-5 h-5 flex items-center justify-center overflow-hidden">
                                     <Image
                                         src="/icons/status/yellow-moon.svg"
                                         alt="Away"
@@ -108,6 +109,8 @@ export default function Navbar() {
     const {user} = useAuthContext();
     const userId = user?.userId as number;
     const {activeProfileInStorage, setActiveProfileInStorage, profileImageUrls} = useProfileContext();
+    const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+    const [hasScrolled, setHasScrolled] = useState(false);
 
     useEffect(() => {
         const active = userProfiles.find((profile) => profile.activeProfile);
@@ -294,26 +297,55 @@ export default function Navbar() {
         </DropdownMenuContent>
     );
 
+    useEffect(() => {
+        const handleScroll = () => {
+            const nearTop = window.scrollY <= 100;
+            setHasScrolled(!nearTop);
+            if (nearTop) {
+                setIsNavbarVisible(true);
+            } else {
+                setIsNavbarVisible(false);
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <div className="h-16 flex justify-between items-center">
-            <div className="text-text-white text-lg">
-                Bienvenue,
-                <span
-                    className="text-green-highlight">{activeProfileInStorage?.firstName && activeProfileInStorage?.lastName ? `${activeProfileInStorage.firstName} ${activeProfileInStorage.lastName}` : activeProfileInStorage?.username}</span> !
-            </div>
-            <div className="flex items-center">
-                <div className="flex mr-6">
-                    <NotificationDropdown/>
-                </div>
-                <CustomDropDown
-                    dropdownContent={dropdownContent}
-                    firstName={activeProfileInStorage?.firstName || activeProfileInStorage?.username}
-                    lastName={activeProfileInStorage?.lastName || ''}
-                    isDropdownOpen={isDropdownOpen}
-                    setIsDropdownOpen={setIsDropdownOpen}
-                    status={activeStatus}
+        <>
+            {hasScrolled && (
+                <div
+                    onMouseEnter={() => setIsNavbarVisible(true)}
+                    className="fixed top-0 right-0 w-[calc(100%-16.66%)] h-4 z-50"
                 />
+            )}
+
+            <div
+                className={`fixed top-0 right-0 w-[calc(100%-14%)] transition-transform duration-300 z-40 px-12 ${
+                    isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
+                } ${hasScrolled ? 'bg-tertiary-black/90 backdrop-blur-sm shadow-md' : 'bg-transparent'}`}
+                onMouseLeave={() => hasScrolled && setIsNavbarVisible(false)}
+            >
+                <div className="h-28 flex justify-between items-center">
+                    <div className="text-text-white text-xl font-extralight ml-12">
+                        Bienvenue, {' '}
+                        <span className="text-green-highlight">{activeProfileInStorage?.firstName && activeProfileInStorage?.lastName ? `${activeProfileInStorage.firstName} ${activeProfileInStorage.lastName}` : activeProfileInStorage?.username}</span> !
+                    </div>
+                    <div className="flex items-center">
+                        <div className="flex mr-6">
+                            <NotificationDropdown/>
+                        </div>
+                        <CustomDropDown
+                            dropdownContent={dropdownContent}
+                            firstName={activeProfileInStorage?.firstName || activeProfileInStorage?.username}
+                            lastName={activeProfileInStorage?.lastName || ''}
+                            isDropdownOpen={isDropdownOpen}
+                            setIsDropdownOpen={setIsDropdownOpen}
+                            status={activeStatus}
+                        />
+                    </div>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
