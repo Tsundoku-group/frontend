@@ -5,6 +5,7 @@ import {CircleCheckBig, CircleX, Command, Lock, User} from "lucide-react";
 import {useRouter} from "next/navigation";
 import {HandleRegister} from "@/server-actions/auth/register/actions";
 import Image from "next/image";
+import {Alert, AlertDescription} from "@/components/ui/alert";
 
 const EMAIL_REGEX: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const PWD_REGEX = /^(?=.{8,24}$)(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
@@ -158,16 +159,19 @@ export default function RegisterPage() {
                                           <CircleX size={20}/>
                                         </span>
                                     </div>
-                                    <p
+                                    <Alert
                                         id="uidnote"
                                         className={
-                                            emailFocus && email && !validEmail
+                                            !validEmail && email
                                                 ? "text-red-500 text-sm mt-2"
                                                 : "hidden"
                                         }
+                                        variant="destructive"
                                     >
-                                        L&apos;adresse électronique doit être au format : example@domain.com.
-                                    </p>
+                                        <AlertDescription>
+                                            L&apos;adresse électronique doit être au format : example@domain.com.
+                                        </AlertDescription>
+                                    </Alert>
                                 </div>
 
                                 <div className="relative">
@@ -194,17 +198,21 @@ export default function RegisterPage() {
                                           <CircleX size={20}/>
                                         </span>
                                     </div>
-                                    <p
+                                    <Alert
                                         id="pwdnote"
                                         className={
-                                            pwdFocus && pwd && !validPwd
+                                            !validPwd && pwd
                                                 ? "text-red-500 text-sm mt-2"
                                                 : "hidden"
                                         }
+                                        variant="destructive"
                                     >
-                                        Le mot de passe doit inclure au moins 8 caractères, une majuscule, un chiffre et
-                                        un caractère spécial.
-                                    </p>
+                                        <AlertDescription>
+                                            Le mot de passe doit inclure au moins 8 caractères, une majuscule, un
+                                            chiffre et
+                                            un caractère spécial.
+                                        </AlertDescription>
+                                    </Alert>
                                 </div>
 
                                 <div className="relative mt-4">
@@ -224,23 +232,27 @@ export default function RegisterPage() {
                                             onBlur={() => setMatchFocus(false)}
                                             className="flex-1 px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
                                         />
-                                        <span className={validMatch && matchPwd ? "text-green-highlight ml-2" : "hidden"}>
+                                        <span
+                                            className={validMatch && matchPwd ? "text-green-highlight ml-2" : "hidden"}>
                                           <CircleCheckBig size={20}/>
                                         </span>
                                         <span className={validMatch || !matchPwd ? "hidden" : "text-red-500 ml-2"}>
                                           <CircleX size={20}/>
                                         </span>
                                     </div>
-                                    <p
+                                    <Alert
                                         id="matchnote"
                                         className={
-                                            matchFocus && matchPwd && !validMatch
+                                            !validMatch && matchPwd
                                                 ? "text-red-500 text-sm mt-2"
                                                 : "hidden"
                                         }
+                                        variant="destructive"
                                     >
-                                        Les mots de passe ne correspondent pas.
-                                    </p>
+                                        <AlertDescription>
+                                            Les mots de passe ne correspondent pas.
+                                        </AlertDescription>
+                                    </Alert>
                                 </div>
 
                                 <button
@@ -276,5 +288,6 @@ export default function RegisterPage() {
                 </section>
             )}
         </>
-    );
+    )
+        ;
 }
