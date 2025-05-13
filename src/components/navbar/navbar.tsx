@@ -50,7 +50,9 @@ function CustomDropDown(props: {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger onClick={toggleDropdown}>
-                <div className="flex items-center bg-secondary-black border-tertiary-black border-2 px-5 py-2 rounded-2xl cursor-pointer relative mr-4">
+                <div className="flex items-center bg-secondary-black border-tertiary-black border-2 px-5 py-2 rounded-2xl cursor-pointer relative mr-4
+                hover:bg-tertiary-black
+                transition-colors duration-300 ease-in-out">
                     <div className="relative">
                         <Avatar>
                             <AvatarImage
