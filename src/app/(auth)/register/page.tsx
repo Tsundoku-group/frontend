@@ -16,15 +16,12 @@ export default function RegisterPage() {
 
     const [email, setEmail] = useState<string>('');
     const [validEmail, setValidEmail] = useState<boolean>(false);
-    const [emailFocus, setEmailFocus] = useState<boolean>(false);
 
     const [pwd, setPwd] = useState<string>('');
     const [validPwd, setValidPwd] = useState<boolean>(false);
-    const [pwdFocus, setPwdFocus] = useState<boolean>(false);
 
     const [matchPwd, setMatchPwd] = useState<string>('');
     const [validMatch, setValidMatch] = useState<boolean>(false);
-    const [matchFocus, setMatchFocus] = useState<boolean>(false);
 
     const [errMsg, setErrMsg] = useState<string | null>('');
     const [success, setSuccess] = useState<boolean>(false);
@@ -148,8 +145,6 @@ export default function RegisterPage() {
                                             required
                                             aria-invalid={validEmail ? "false" : "true"}
                                             aria-describedby="uidnote"
-                                            onFocus={() => setEmailFocus(true)}
-                                            onBlur={() => setEmailFocus(false)}
                                             className="flex-1 px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
                                         />
                                         <span className={validEmail ? "text-green-highlight ml-2" : "hidden"}>
@@ -187,8 +182,6 @@ export default function RegisterPage() {
                                             required
                                             aria-invalid={validPwd ? "false" : "true"}
                                             aria-describedby="pwdnote"
-                                            onFocus={() => setPwdFocus(true)}
-                                            onBlur={() => setPwdFocus(false)}
                                             className="flex-1 px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
                                         />
                                         <span className={validPwd ? "text-green-highlight ml-2" : "hidden"}>
@@ -228,8 +221,6 @@ export default function RegisterPage() {
                                             required
                                             aria-invalid={validMatch ? "false" : "true"}
                                             aria-describedby="matchnote"
-                                            onFocus={() => setMatchFocus(true)}
-                                            onBlur={() => setMatchFocus(false)}
                                             className="flex-1 px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
                                         />
                                         <span
