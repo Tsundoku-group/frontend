@@ -230,7 +230,7 @@ export default function Navbar() {
     const items = isSwitching === 'profiles' ? profileItems : statusItems;
 
     const dropdownContent = (
-        <DropdownMenuContent className="overflow-hidden w-64 mt-2 bg-tertiary-black border-tertiary-black mr-6">
+        <DropdownMenuContent className="overflow-hidden w-64 mt-2 bg-secondary-black border-tertiary-black shadow-xl mr-6">
             <div
                 className="flex transition-transform duration-200 ease-in-out"
                 style={{
@@ -242,7 +242,7 @@ export default function Navbar() {
                     <ProfileButton profileId={activeProfileInStorage?.id!} email={user?.email}
                                    onClose={() => setIsDropdownOpen(false)}/>
                     <Button onClick={() => setIsSwitching('profiles')}
-                            className="flex justify-between w-full text-white hover:bg-gray-700">
+                            className="flex justify-between w-full text-white bg-tertiary-black hover:bg-gray-700">
                         <div className="flex items-center">
                             <UserPen className="mr-2 w-4"/>
                             Changer de profil
@@ -250,7 +250,7 @@ export default function Navbar() {
                         <ChevronRight className="w-4"/>
                     </Button>
                     <Button onClick={() => setIsSwitching('status')}
-                            className="flex justify-between w-full text-white hover:bg-gray-700">
+                            className="flex justify-between w-full text-white  bg-tertiary-black hover:bg-gray-700">
                         <div className="flex items-center space-x-2">
                           <span>
                             {{
@@ -325,7 +325,7 @@ export default function Navbar() {
             <div
                 className={`fixed top-0 right-0 w-[calc(100%-14%)] transition-transform duration-300 z-40 px-12 ${
                     isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
-                } ${hasScrolled ? 'bg-tertiary-black/90 backdrop-blur-sm shadow-md' : 'bg-transparent'}`}
+                } ${hasScrolled ? 'bg-secondary-black/90 backdrop-blur-sm shadow-md' : 'bg-transparent'}`}
                 onMouseLeave={() => hasScrolled && setIsNavbarVisible(false)}
             >
                 <div className="h-28 flex justify-between items-center">
