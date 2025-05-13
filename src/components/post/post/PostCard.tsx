@@ -1,7 +1,7 @@
-import {Heart, Send, User, EllipsisVertical, Pencil, Trash} from "lucide-react";
+import {Heart, Send, User, EllipsisVertical, Pencil, Trash, MessageSquareMore} from "lucide-react";
 import PostDate from "@/components/post/post/PostDate";
 import CommentSection from "@/components/post/comment/CommentSection";
-import {useState} from "react";
+import React, {useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {useProfileContext} from "@/context/profileContext";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
@@ -34,7 +34,11 @@ interface Post {
     hasLiked: boolean;
 }
 
-export default function PostCard({post, groupId, onDelete}: { post: Post, groupId: number, onDelete: (id: number) => void }) {
+export default function PostCard({post, groupId, onDelete}: {
+    post: Post,
+    groupId: number,
+    onDelete: (id: number) => void
+}) {
     const [showComments, setShowComments] = useState(false);
     const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
@@ -84,23 +88,31 @@ export default function PostCard({post, groupId, onDelete}: { post: Post, groupI
 
     return (
         <>
-            <div className="bg-secondary-black border-tertiary-black border p-4 py-8 rounded-2xl shadow-md w-full mb-6">
+            <div
+                className="bg-secondary-black border-tertiary-black border p-4 pb-5 py-8 rounded-2xl shadow-md w-full mb-6">
                 <div className="flex items-center justify-between w-full px-4">
-                    <div className="flex items-center gap-4 mb-4">
-                        <Avatar className="w-16 h-16">
+                    <div className="flex items-start gap-4 mb-4 ml-5">
+                        <Avatar className="w-14 h-14">
                             <AvatarImage src=""/>
-                            <AvatarFallback><User/></AvatarFallback>
+                            <AvatarFallback>
+                                <User className="w-6 h-6 text-gray-400"/>
+                            </AvatarFallback>
                         </Avatar>
-                        <div>
-                            <div className="text-white text-sm">
+
+                        <div className="flex flex-col mt-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-text-white font-semibold text-sm">
                                 {post.author.firstname} {post.author.lastname}
+                              </span>
+                                <span className="text-text-white text-xs font-extralight">@{post.author.username}</span>
                             </div>
-                            <div className="text-gray-400 text-xs">@{post.author.username}</div>
-                            <PostDate date={post.createdAt}/>
+                            <span className="text-green-highlight text-sm">
+                              <PostDate date={post.createdAt}/>
+                            </span>
                         </div>
                     </div>
                     <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-                        <DropdownMenuTrigger className="text-gray-400 hover:text-white">
+                        <DropdownMenuTrigger className="text-gray-400 hover:text-white mb-10">
                         <span className="text-xs cursor-pointer">
                             <EllipsisVertical className="w-4 h-4"/>
                         </span>
@@ -136,7 +148,7 @@ export default function PostCard({post, groupId, onDelete}: { post: Post, groupI
                             value={editedContent}
                             onChange={(e) => setEditedContent(e.target.value)}/>
                     ) : (
-                        <div className="text-white">{editedContent}</div>
+                        <div className="text-white text-xs ml-4">{editedContent}</div>
                     )}
                 </div>
 
@@ -173,7 +185,7 @@ export default function PostCard({post, groupId, onDelete}: { post: Post, groupI
                     </div>
                 )}
 
-                <div className="flex justify-between items-center mt-3 px-12 text-xs">
+                <div className="flex justify-between items-center mt-3 px-16 text-xs">
                     <div className="flex items-center gap-1 text-gray-400">
                         <Heart className="w-4 h-4 text-red-400"/>
                         <span className="font-semibold">4</span>
@@ -183,7 +195,9 @@ export default function PostCard({post, groupId, onDelete}: { post: Post, groupI
                     </div>
                 </div>
 
-                <div className="flex justify-center items-center border-t border-gray-800 mt-3 pt-3 space-x-16 text-sm">
+                <div className="my-3 w-[90%] mx-auto border-t border-gray-800" />
+
+                <div className="flex justify-center items-center space-x-40 pt-3 text-sm">
                     <ReactionButton
                         postId={post.id}
                         profileId={profileId}
@@ -196,11 +210,10 @@ export default function PostCard({post, groupId, onDelete}: { post: Post, groupI
                         className="flex items-center gap-1 text-gray-400 hover:text-white"
                         onClick={() => setShowComments(!showComments)}
                     >
-                        Commenter
+                        <MessageSquareMore className="w-5 h-5 fill-current"/>Commenter
                     </button>
-
                     <button className="flex items-center gap-1 text-gray-400 hover:text-white">
-                        <Send className="w-5 h-5"/> Partager
+                        <Send className="w-5 h-5 fill-current"/> Partager
                     </button>
                 </div>
 

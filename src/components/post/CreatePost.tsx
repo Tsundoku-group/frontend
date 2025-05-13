@@ -80,7 +80,7 @@ export default function CreatePost({ groupId, profileImageUrl }: { groupId: numb
     };
 
     return (
-        <div className="p-6 rounded-2xl shadow-lg w-full mb-6 border-secondary-black border-2"
+        <div className="p-6 rounded-2xl shadow-lg w-full mb-6 border-secondary-black border"
              style={{
                  background: "linear-gradient(to right, #372048 1%, #1a1a2e 25%)",
              }}
@@ -97,7 +97,7 @@ export default function CreatePost({ groupId, profileImageUrl }: { groupId: numb
                     </AvatarFallback>
                 </Avatar>
                 <textarea
-                    className="flex-1 h-14 bg-tertiary-black text-text-white placeholder-gray-400 px-4 py-4 rounded-2xl resize-none border-none focus:outline-none"
+                    className="flex-1 h-14 bg-tertiary-black text-text-white placeholder-text-white px-4 py-4 rounded-2xl resize-none border-none focus:outline-none"
                     placeholder="Partage-nous tes dernières lectures !"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
