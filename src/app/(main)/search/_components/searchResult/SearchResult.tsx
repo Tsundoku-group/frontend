@@ -15,8 +15,6 @@ const SearchBar = ({search}: Props) => {
             try {
                 const responseProfile = await fetchProfiles(search);
                 const responseGroup = await fetchGroups(search)
-                console.log(responseProfile);
-                console.log(responseGroup);
             } catch (error) {
                 console.error(error);
             }
