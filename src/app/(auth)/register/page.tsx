@@ -137,7 +137,7 @@ export default function RegisterPage() {
                                         Email
                                     </label>
                                     <input
-                                        type="text"
+                                        type="email"
                                         id="email"
                                         ref={emailRef}
                                         autoComplete="off"
