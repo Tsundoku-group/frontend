@@ -264,6 +264,7 @@ export default function Navbar() {
                         <ChevronRight className="w-4"/>
                     </Button>
                     <SettingsButton onClose={() => setIsDropdownOpen(false)}/>
+                    <div className="my-2 border-t border-text-white opacity-30" />
                     <LogoutButton onClose={() => setIsDropdownOpen(false)}/>
                 </div>
                 <div className="w-1/2 p-2 flex flex-col">
