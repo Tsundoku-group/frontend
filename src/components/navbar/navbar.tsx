@@ -327,7 +327,7 @@ export default function Navbar() {
                 onMouseLeave={() => hasScrolled && setIsNavbarVisible(false)}
             >
                 <div className="h-28 flex justify-between items-center">
-                    <div className="text-text-white text-xl font-extralight ml-12">
+                    <div className="cursor-default text-text-white text-xl font-extralight ml-12">
                         Bienvenue, {' '}
                         <span className="text-green-highlight">{activeProfileInStorage?.firstName && activeProfileInStorage?.lastName ? `${activeProfileInStorage.firstName} ${activeProfileInStorage.lastName}` : activeProfileInStorage?.username}</span> !
                     </div>
