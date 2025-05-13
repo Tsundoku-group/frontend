@@ -54,10 +54,10 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const v1 = EMAIL_REGEX.test(email);
-        const v2 = PWD_REGEX.test(pwd);
+        const validation1 = EMAIL_REGEX.test(email);
+        const validation2 = PWD_REGEX.test(pwd);
 
-        if (!v1 || !v2) {
+        if (!validation1 || !validation2) {
             setErrMsg("Entrée invalide");
             if (errRef.current) {
                 errRef.current.focus();
