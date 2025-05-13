@@ -7,7 +7,7 @@ import {HandleRegister} from "@/server-actions/auth/register/actions";
 import Image from "next/image";
 
 const EMAIL_REGEX: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const PWD_REGEX: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const PWD_REGEX = /^(?=.{8,24}$)(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
 export default function RegisterPage() {
     const errRef = useRef<HTMLParagraphElement | null>(null);
