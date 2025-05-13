@@ -228,7 +228,7 @@ export default function Navbar() {
     const items = isSwitching === 'profiles' ? profileItems : statusItems;
 
     const dropdownContent = (
-        <DropdownMenuContent className="overflow-hidden w-64 mt-2 bg-tertiary-black border-tertiary-black">
+        <DropdownMenuContent className="overflow-hidden w-64 mt-2 bg-tertiary-black border-tertiary-black mr-6">
             <div
                 className="flex transition-transform duration-200 ease-in-out"
                 style={{
