@@ -49,7 +49,7 @@ export default function ClubsPage() {
     const pinnedGroups = groups.filter((group) => group.isPinned);
 
     return (
-        <div className="w-full max-w-5xl mx-auto py-6">
+        <div className="w-full py-6 mx-auto">
             <SearchComponent
                 search={search}
                 setSearch={setSearch}
