@@ -49,7 +49,7 @@ export default function ClubsPage() {
     const pinnedGroups = groups.filter((group) => group.isPinned);
 
     return (
-        <div className="w-full max-w-5xl mx-auto py-6">
+        <div className="w-full py-6 mx-auto">
             <SearchComponent
                 search={search}
                 setSearch={setSearch}
@@ -60,11 +60,11 @@ export default function ClubsPage() {
             />
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList>
-                    <TabsTrigger value="all">Tous les groupes</TabsTrigger>
-                    <TabsTrigger value="mygroups">Mes groupes</TabsTrigger>
-                    <TabsTrigger value="favorites">Favoris</TabsTrigger>
-                    <TabsTrigger value="pinned">Épinglés</TabsTrigger>
+                <TabsList className="flex justify-start space-x-4 bg-primary-black pb-2 mb-6">
+                    <TabsTrigger value="all" className="text-gray-600 px-4 py-2 rounded-md focus:bg-tertiary-black data-[state=active]:bg-tertiary-black focus:text-white data-[state=active]:text-white">Tous les groupes</TabsTrigger>
+                    <TabsTrigger value="mygroups" className="text-gray-600 px-4 py-2 rounded-md focus:bg-tertiary-black data-[state=active]:bg-tertiary-black focus:text-white data-[state=active]:text-white">Mes groupes</TabsTrigger>
+                    <TabsTrigger value="favorites" className="text-gray-600 px-4 py-2 rounded-md focus:bg-tertiary-black data-[state=active]:bg-tertiary-black focus:text-white data-[state=active]:text-white">Favoris</TabsTrigger>
+                    <TabsTrigger value="pinned" className="text-gray-600 px-4 py-2 rounded-md focus:bg-tertiary-black data-[state=active]:bg-tertiary-black focus:text-white data-[state=active]:text-white">Épinglés</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="all">
@@ -75,7 +75,7 @@ export default function ClubsPage() {
                             ))}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {allGroups.length > 0 ? (
                                 allGroups.map((group) => (
                                     <GroupCard key={group.id}

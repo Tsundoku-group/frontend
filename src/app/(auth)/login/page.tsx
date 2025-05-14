@@ -75,7 +75,7 @@ export default function LoginPage() {
                         alt="image login"
                         width={600}
                         height={400}
-                        className="object-contain"
+                        className="object-contain w-auto h-auto"
                     />
                 </div>
 

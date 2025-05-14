@@ -1,8 +1,9 @@
-import {useState} from "react";
-import {Heart} from "lucide-react";
-import {ShowToast} from "@/components/ShowToast";
-import {likePost} from "@/server-actions/main/home/actions";
-import {useSocket} from "@/context/socketContext";
+import {useRef, useState} from "react";
+import { Heart } from "lucide-react";
+import { ShowToast } from "@/components/ShowToast";
+import { likePost } from "@/server-actions/main/home/actions";
+import { useSocket } from "@/context/socketContext";
+import clsx from "clsx";
 
 interface ReactionButtonProps {
     postId: number;
@@ -19,30 +20,39 @@ export default function ReactionButton({
                                            actorFirstName,
                                            receiverId,
                                            resourceType,
-                                           initialHasLiked
+                                           initialHasLiked,
                                        }: ReactionButtonProps) {
     const [hasLiked, setHasLiked] = useState(initialHasLiked);
-    const {socket} = useSocket();
+    const [isAnimating, setIsAnimating] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const { socket } = useSocket();
 
     const handleLikeToggle = async () => {
         if (!profileId) return;
 
         const newHasLiked = !hasLiked;
         setHasLiked(newHasLiked);
-        if (socket && newHasLiked) {
-            const notificationData = {
-                    receiverId,
-                    actorId: profileId,
-                    actorFirstName,
-                    notificationType: "like",
-                    resourceType,
-                    resourceId:
-                    postId,
-                    createdAt: new Date().toISOString()
-            };
+        setIsAnimating(true);
 
-            socket.emit("sendNotification", notificationData);
+        if (audioRef.current && newHasLiked) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch(() => {});
         }
+
+        setTimeout(() => setIsAnimating(false), 500);
+
+        if (socket && newHasLiked) {
+            socket.emit("sendNotification", {
+                receiverId,
+                actorId: profileId,
+                actorFirstName,
+                notificationType: "like",
+                resourceType,
+                resourceId: postId,
+                createdAt: new Date().toISOString(),
+            });
+        }
+
         try {
             await likePost(profileId, receiverId, resourceType, postId, "LIKE");
         } catch (error) {
@@ -52,12 +62,29 @@ export default function ReactionButton({
     };
 
     return (
-        <button className="flex items-center gap-1 text-red-400 hover:text-red-500" onClick={handleLikeToggle}>
+        <button
+            onClick={handleLikeToggle}
+            className="relative flex items-center gap-1 text-red-400 hover:text-red-500"
+        >
+            {isAnimating && (
+                <span className="absolute inset-0 flex items-center justify-center z-[-1]">
+                    <span className="animate-ping-pulse w-6 h-6 rounded-full bg-red-400 opacity-50" />
+                </span>
+            )}
+
+            <audio ref={audioRef} src="/sounds/like-pop.mp3" preload="auto" />
             <Heart
-                className="w-5 h-5 transition-all duration-300"
-                fill={hasLiked ? "currentColor" : "none"}
+                className={clsx(
+                    "w-5 h-5 transition-transform duration-300 mr-1",
+                    {
+                        "scale-125": isAnimating,
+                        "fill-current": hasLiked,
+                        "fill-none": !hasLiked,
+                    }
+                )}
                 stroke="currentColor"
-            /> J’aime
+            />
+            J’aime
         </button>
     );
 }

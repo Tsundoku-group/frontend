@@ -16,7 +16,8 @@ import {ShowToast} from '@/components/ShowToast';
 import AddProfileButton from '@/components/AddProfileButton';
 import {useProfileContext} from '@/context/profileContext';
 import NotificationDropdown from '@/components/navbar/component/NotificationDropdown';
-import Image from 'next/image';
+import MinusRedCircle from "@/assets/status/MinusRedCircle";
+import YellowMoon from "@/assets/status/YellowMoon";
 
 type UserProfile = {
     id: number;
@@ -50,7 +51,9 @@ function CustomDropDown(props: {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger onClick={toggleDropdown}>
-                <div className="flex items-center bg-tertiary-black p-2 rounded-lg cursor-pointer relative">
+                <div className="flex items-center bg-secondary-black border-tertiary-black border-2 px-5 py-2 rounded-2xl cursor-pointer relative mr-4
+                hover:bg-tertiary-black
+                transition-colors duration-300 ease-in-out">
                     <div className="relative">
                         <Avatar>
                             <AvatarImage
@@ -67,18 +70,12 @@ function CustomDropDown(props: {
                             {status === ProfileStatus.Online &&
                                 <div className="w-full h-full rounded-full bg-green-highlight"/>}
                             {status === ProfileStatus.DoNotDisturb && (
-                                <Image src="/icons/status/minus-red-circle.svg" alt="Do not disturb" width={20}
-                                       height={20}/>
+                                <MinusRedCircle />
                             )}
                             {status === ProfileStatus.Away && (
-                                <div className="bg-tertiary-black rounded-full w-5 h-5 flex items-center justify-center overflow-hidden">
-                                    <Image
-                                        src="/icons/status/yellow-moon.svg"
-                                        alt="Away"
-                                        width={20}
-                                        height={20}
-                                        className="w-full h-full object-contain"
-                                    />
+                                <div
+                                    className="bg-tertiary-black rounded-full w-5 h-5 flex items-center justify-center overflow-hidden">
+                                    <YellowMoon />
                                 </div>
                             )}
                             {status === ProfileStatus.Offline && (
@@ -89,7 +86,7 @@ function CustomDropDown(props: {
                             )}
                         </div>
                     </div>
-                    <span className="ml-2 text-text-white">{truncateString(`${firstName} ${lastName}`, 15)}</span>
+                    <span className="ml-2 text-text-white text-sm">{truncateString(`${firstName} ${lastName}`, 15)}</span>
                     <ChevronDown className="text-text-white ml-2"/>
                 </div>
             </DropdownMenuTrigger>
@@ -108,6 +105,8 @@ export default function Navbar() {
     const {user} = useAuthContext();
     const userId = user?.userId as number;
     const {activeProfileInStorage, setActiveProfileInStorage, profileImageUrls} = useProfileContext();
+    const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+    const [hasScrolled, setHasScrolled] = useState(false);
 
     useEffect(() => {
         const active = userProfiles.find((profile) => profile.activeProfile);
@@ -175,7 +174,9 @@ export default function Navbar() {
                 <div className="relative">
                     <Avatar className="w-12 h-12">
                         <AvatarImage src={getProfileImageUrl(profile.id, profileImageUrls)} alt={profile.username}/>
-                        <AvatarFallback><User className="w-6 h-6 text-gray-500"/></AvatarFallback>
+                        <AvatarFallback>
+                            <User className="w-6 h-6 text-gray-500"/>
+                        </AvatarFallback>
                     </Avatar>
                     {profile.activeProfile && <div
                         className="absolute top-9 -right-1 w-3.5 h-3.5 bg-green-highlight rounded-full border-2 border-gray-800"></div>}
@@ -201,11 +202,10 @@ export default function Navbar() {
                     <div className="w-4 h-4 rounded-full flex items-center justify-center">
                         {status === ProfileStatus.Online && <div className="w-full h-full bg-green-500 rounded-full"/>}
                         {status === ProfileStatus.DoNotDisturb && (
-                            <Image src="/icons/status/minus-red-circle.svg" alt="Do not disturb" width={20}
-                                   height={20}/>
+                            <MinusRedCircle />
                         )}
                         {status === ProfileStatus.Away && (
-                            <Image src="/icons/status/yellow-moon.svg" alt="Away" width={20} height={20}/>
+                            <YellowMoon />
                         )}
                         {status === ProfileStatus.Offline && (
                             <div className="w-full h-full bg-gray-400 rounded-full flex items-center justify-center">
@@ -225,7 +225,7 @@ export default function Navbar() {
     const items = isSwitching === 'profiles' ? profileItems : statusItems;
 
     const dropdownContent = (
-        <DropdownMenuContent className="overflow-hidden w-64 mt-2 bg-tertiary-black border-tertiary-black">
+        <DropdownMenuContent className="overflow-hidden w-64 mt-2 bg-secondary-black border-tertiary-black shadow-xl mr-6">
             <div
                 className="flex transition-transform duration-200 ease-in-out"
                 style={{
@@ -237,7 +237,7 @@ export default function Navbar() {
                     <ProfileButton profileId={activeProfileInStorage?.id!} email={user?.email}
                                    onClose={() => setIsDropdownOpen(false)}/>
                     <Button onClick={() => setIsSwitching('profiles')}
-                            className="flex justify-between w-full text-white hover:bg-gray-700">
+                            className="flex justify-between w-full text-white bg-tertiary-black hover:bg-gray-700">
                         <div className="flex items-center">
                             <UserPen className="mr-2 w-4"/>
                             Changer de profil
@@ -245,7 +245,7 @@ export default function Navbar() {
                         <ChevronRight className="w-4"/>
                     </Button>
                     <Button onClick={() => setIsSwitching('status')}
-                            className="flex justify-between w-full text-white hover:bg-gray-700">
+                            className="flex justify-between w-full text-white  bg-tertiary-black hover:bg-gray-700">
                         <div className="flex items-center space-x-2">
                           <span>
                             {{
@@ -259,6 +259,7 @@ export default function Navbar() {
                         <ChevronRight className="w-4"/>
                     </Button>
                     <SettingsButton onClose={() => setIsDropdownOpen(false)}/>
+                    <div className="my-2 border-t border-text-white opacity-30" />
                     <LogoutButton onClose={() => setIsDropdownOpen(false)}/>
                 </div>
                 <div className="w-1/2 p-2 flex flex-col">
@@ -294,26 +295,55 @@ export default function Navbar() {
         </DropdownMenuContent>
     );
 
+    useEffect(() => {
+        const handleScroll = () => {
+            const nearTop = window.scrollY <= 100;
+            setHasScrolled(!nearTop);
+            if (nearTop) {
+                setIsNavbarVisible(true);
+            } else {
+                setIsNavbarVisible(false);
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <div className="h-16 flex justify-between items-center">
-            <div className="text-text-white text-lg">
-                Bienvenue,
-                <span
-                    className="text-green-highlight">{activeProfileInStorage?.firstName && activeProfileInStorage?.lastName ? `${activeProfileInStorage.firstName} ${activeProfileInStorage.lastName}` : activeProfileInStorage?.username}</span> !
-            </div>
-            <div className="flex items-center">
-                <div className="flex mr-6">
-                    <NotificationDropdown/>
-                </div>
-                <CustomDropDown
-                    dropdownContent={dropdownContent}
-                    firstName={activeProfileInStorage?.firstName || activeProfileInStorage?.username}
-                    lastName={activeProfileInStorage?.lastName || ''}
-                    isDropdownOpen={isDropdownOpen}
-                    setIsDropdownOpen={setIsDropdownOpen}
-                    status={activeStatus}
+        <>
+            {hasScrolled && (
+                <div
+                    onMouseEnter={() => setIsNavbarVisible(true)}
+                    className="fixed top-0 right-0 w-[calc(100%-16.66%)] h-4 z-50"
                 />
+            )}
+
+            <div
+                className={`fixed top-0 right-0 w-[calc(100%-14%)] transition-transform duration-300 z-40 px-12 ${
+                    isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
+                } ${hasScrolled ? 'bg-secondary-black/90 backdrop-blur-sm shadow-md' : 'bg-transparent'}`}
+                onMouseLeave={() => hasScrolled && setIsNavbarVisible(false)}
+            >
+                <div className="h-28 flex justify-between items-center">
+                    <div className="cursor-default text-text-white text-xl font-extralight ml-12">
+                        Bienvenue, {' '}
+                        <span className="text-green-highlight">{activeProfileInStorage?.firstName && activeProfileInStorage?.lastName ? `${activeProfileInStorage.firstName} ${activeProfileInStorage.lastName}` : activeProfileInStorage?.username}</span> !
+                    </div>
+                    <div className="flex items-center">
+                        <div className="flex mr-4">
+                            <NotificationDropdown/>
+                        </div>
+                        <CustomDropDown
+                            dropdownContent={dropdownContent}
+                            firstName={activeProfileInStorage?.firstName || activeProfileInStorage?.username}
+                            lastName={activeProfileInStorage?.lastName || ''}
+                            isDropdownOpen={isDropdownOpen}
+                            setIsDropdownOpen={setIsDropdownOpen}
+                            status={activeStatus}
+                        />
+                    </div>
+                </div>
             </div>
-        </div>
+        </>
     );
 }

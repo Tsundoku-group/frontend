@@ -91,7 +91,7 @@ export const deleteArticle = async (articleId: string, editorId: number): Promis
 
 export const submitArticle = async (
     articleId: string | null,
-    payload: { title: string; content: string; status: string; authorId: number, type: 'article' },
+    payload: { title: string; content: string; status: string; authorId: number; type: string },
     profileId: number | undefined
 ): Promise<{ success: boolean; message: string; data?: any }> => {
     if (!profileId) {

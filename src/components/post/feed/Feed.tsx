@@ -72,6 +72,7 @@ export default function Feed({ groupId }: Props) {
 
     return (
         <div className="w-full mx-auto">
+            <div className="text-text-white mb-4 mt-9">Fil d&apos;actualité</div>
             {Array.isArray(data.posts) && data.posts.length > 0 ? (
                 <>
                     {data.posts.map((post: any) => (

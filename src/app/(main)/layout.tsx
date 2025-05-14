@@ -7,6 +7,7 @@ import React, {Suspense, useEffect} from "react";
 import {Toaster} from "@/components/ui/toaster";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import GlobalLoader from "@/components/loader/GlobalLoader";
+import InactivityDetector from "@/components/InactivityDetector";
 
 export default function MainLayout({children}: { children: React.ReactNode }) {
     const queryClient = new QueryClient();
@@ -40,10 +41,13 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
                             <div className="col-span-2">
                                 <Sidebar/>
                             </div>
-                            <div className="col-span-10 ml-[3em] mr-[4em] ">
-                                <Navbar/>
+                            <div className="col-span-10 ml-[3em] mr-[4em]">
+                                <div className="mb-32">
+                                    <Navbar />
+                                </div>
                                 <main style={{fontSize: 'var(--text-size)'}}>
                                     {children}
+                                <InactivityDetector timeout={30000} />
                                 </main>
                             </div>
                         </div>

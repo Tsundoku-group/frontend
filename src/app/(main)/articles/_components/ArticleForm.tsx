@@ -79,6 +79,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onClose, onDelete })
             content,
             status: newStatus,
             authorId: profileId,
+            type: "article"
         };
 
         try {
