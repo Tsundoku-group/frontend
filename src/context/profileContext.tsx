@@ -96,11 +96,10 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         setInitialLoading(false);
     }, [loadProfileImages]);
 
-    const setActiveProfileInStorage = (profileData: Partial<Profile>, triggerLoading: boolean = true) => {
-        if (triggerLoading) {
-            setIsLoading(true);
-        }
-
+    const setActiveProfileInStorage = (
+        profileData: Partial<Profile>,
+        triggerLoading: boolean = true
+    ) => {
         if (typeof profileData.id !== "number") {
             console.error("Le profil actif doit avoir un ID défini.");
             return;
@@ -118,13 +117,14 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         localStorage.setItem("activeProfile", JSON.stringify(completeProfile));
         setActiveProfileInStorageState(completeProfile);
 
-        if (profileData.id) {
-            void loadProfileImages(profileData.id);
-        }
-
         if (triggerLoading) {
-            router.refresh();
-            setTimeout(() => setIsLoading(false), 3000);
+            setIsLoading(true);
+            void loadProfileImages(profileData.id).finally(() => {
+                router.refresh();
+                setTimeout(() => setIsLoading(false), 2000);
+            });
+        } else {
+            void loadProfileImages(profileData.id);
         }
     };
 
@@ -154,7 +154,7 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
                 refreshProfileImage,
             }}
         >
-            {children}
+            {isLoading ? <LoadingSkeleton /> : children}
         </ProfileContext.Provider>
     );
 };
