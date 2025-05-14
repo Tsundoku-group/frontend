@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useRef, useState} from "react";
 import { Heart } from "lucide-react";
 import { ShowToast } from "@/components/ShowToast";
 import { likePost } from "@/server-actions/main/home/actions";
@@ -24,6 +24,7 @@ export default function ReactionButton({
                                        }: ReactionButtonProps) {
     const [hasLiked, setHasLiked] = useState(initialHasLiked);
     const [isAnimating, setIsAnimating] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
     const { socket } = useSocket();
 
     const handleLikeToggle = async () => {
@@ -32,6 +33,11 @@ export default function ReactionButton({
         const newHasLiked = !hasLiked;
         setHasLiked(newHasLiked);
         setIsAnimating(true);
+
+        if (audioRef.current && newHasLiked) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch(() => {});
+        }
 
         setTimeout(() => setIsAnimating(false), 500);
 
@@ -65,6 +71,8 @@ export default function ReactionButton({
                     <span className="animate-ping-pulse w-6 h-6 rounded-full bg-red-400 opacity-50" />
                 </span>
             )}
+
+            <audio ref={audioRef} src="/sounds/like-pop.mp3" preload="auto" />
             <Heart
                 className={clsx(
                     "w-5 h-5 transition-transform duration-300 mr-1",
