@@ -7,7 +7,7 @@ import {
     updateCommentOnPost,
     deleteCommentOnPost
 } from "@/server-actions/main/home/actions";
-import {CornerDownRight, Send, User, EllipsisVertical, Pencil, Trash} from "lucide-react";
+import {CornerDownRight, User, EllipsisVertical, Pencil, Trash} from "lucide-react";
 import {useEffect, useState} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
@@ -23,6 +23,7 @@ import {
 import {useSocket} from "@/context/socketContext";
 import PostDate from "@/components/post/post/PostDate";
 import ReactionCommentButton from "@/components/post/ReactionCommentButton";
+import SendFilled from "@/assets/icons/SendFilled";
 
 interface CommentSectionProps {
     postId: number;
@@ -170,7 +171,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
                                 addComment({postId, authorId: profileId as number, content: commentContent});
                             }
                         }}>
-                    <Send className="w-4 h-4"/>
+                    <SendFilled className="w-5 h-5"/>
                 </Button>
             </div>
 

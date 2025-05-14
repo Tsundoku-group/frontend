@@ -1,24 +1,34 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, {useEffect, useState} from 'react';
+import {useRouter} from 'next/navigation';
 import {
-    Home,
-    User,
-    BookOpen,
-    Trophy,
-    MessageCircle,
-    Users,
-    PenTool, Search
+    Search,
+    Pencil,
+    Activity,
+    MessageSquareText,
+    Heart,
+    Star, ChevronRight
 } from 'lucide-react';
-import { useSocket } from "@/context/socketContext";
-import { useProfileContext } from "@/context/profileContext";
+import {useSocket} from "@/context/socketContext";
+import {useProfileContext} from "@/context/profileContext";
+import {Card} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import ReshotIllustration from "@/assets/images/ReshotIllustration";
+import IcBaselineWechat from "@/assets/icons/IcBaselineWechat";
+import UsersFilled from "@/assets/icons/UsersFilled";
+import TrophyFilled from "@/assets/icons/TrophyFilled";
+import PencilFilled from "@/assets/icons/PencilFilled";
+import LibraryFilled from "@/assets/icons/LibraryFilled";
+import HomeRoundedFilled from "@/assets/icons/HomeRoundedFilled";
+import UserFilled from "@/assets/icons/UserFilled";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 
 export default function Sidebar() {
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [isClient, setIsClient] = useState(false);
-    const { socket } = useSocket();
-    const { activeProfileInStorage } = useProfileContext();
+    const {socket} = useSocket();
+    const {activeProfileInStorage} = useProfileContext();
     const profileId = activeProfileInStorage?.id;
     const router = useRouter();
 
@@ -56,81 +66,122 @@ export default function Sidebar() {
     const goTo = (path: string) => router.push(path);
 
     return (
-        <div className="fixed min-h-screen w-60 bg-gradient-to-b from-[#281f39] via-[#1D2330] to-secondary-black text-text-white flex flex-col px-5 py-6">
+        <div className="fixed min-h-screen w-60 text-text-white flex flex-col px-5 py-6"
+             style={{
+                 background: 'linear-gradient(to bottom, #281f39 1%, #171C26 40%)'
+             }}>
             <div className="flex items-center justify-center h-16">
-                <div className="text-2xl font-extralight text-white">tsundoku</div>
+                <div className="text-[20px] tracking-wide font-extralight text-[#e1e1ec]">tsundoku</div>
             </div>
 
             <div className="px-4">
-                <div className="flex items-center bg-gray-800 rounded-lg p-2">
+                <div className="flex items-center bg-secondary-black border border-secondary-black rounded-2xl px-3 py-2">
                     <input
                         type="text"
                         placeholder="Explorer"
-                        className="bg-transparent focus:outline-none text-text-white w-full placeholder:text-text-white"
+                        className="bg-transparent focus:outline-none text-text-white w-full placeholder:text-[#cfcfe1] text-sm"
                     />
-                    <Search className="text-text-white"/>
+                    <Search className="text-[#cfcfe1] w-4 h-4 ml-2"/>
                 </div>
 
-                <div className="flex gap-4 justify-center items-center mt-8">
-                    <button
-                        onClick={() => goTo('/home')}
-                        className="w-11 h-11 bg-[#1C1F2B] rounded-xl flex items-center justify-center shadow-[0_2px_4px_rgba(0,0,0,0.25)] transition"
-                    >
-                        <Home className="text-[#e1e1ec] w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() => goTo(`/profile/${profileId}`)}
-                        className="w-11 h-11 bg-[#1C1F2B] rounded-xl flex items-center justify-center shadow-[0_2px_4px_rgba(0,0,0,0.25)] transition"
-                    >
-                        <User className="text-[#e1e1ec] w-5 h-5" />
-                    </button>
+                <div className="flex gap-4 justify-center items-center mt-12">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    onClick={() => goTo('/home')}
+                                    className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
+                                >
+                                    <HomeRoundedFilled className="text-text-white w-5 h-5" />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="bg-tertiary-black border border-secondary-black px-3 py-2 rounded-lg text-text-white text-xs">
+                                Accueil
+                            </TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    onClick={() => goTo(`/profile/${profileId}`)}
+                                    className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
+                                >
+                                    <UserFilled className="text-text-white w-5 h-5" />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="bg-tertiary-black border border-secondary-black px-3 py-2 rounded-lg text-text-white text-xs">
+                                Profil
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
             </div>
 
-            <nav className="flex-grow px-6 mt-10">
-                <ul className="flex flex-col gap-y-8">
-                    <li
-                        onClick={() => goTo('/shelves')}
-                        className="cursor-pointer flex items-center hover:text-white transition"
-                    >
-                        <BookOpen className="mr-3" />
-                        <span className="text-[#D8D8E0] font-medium">Étagères</span>
-                    </li>
-                    <li
-                        onClick={() => goTo('/challenges')}
-                        className="cursor-pointer flex items-center hover:text-white transition"
-                    >
-                        <Trophy className="mr-3" />
-                        <span className="text-[#D8D8E0] font-medium">Défis</span>
-                    </li>
-                    <li
-                        onClick={() => goTo('/conversations')}
-                        className="cursor-pointer flex items-center hover:text-white transition relative"
-                    >
-                        <MessageCircle className="mr-3" />
-                        <span className="text-[#D8D8E0] font-medium">Messages</span>
-                        {unreadMessages > 0 && (
-                            <span className="ml-2 bg-red-500 text-xs rounded-full h-4 w-4 flex items-center justify-center text-white">
-                    {unreadMessages}
-                </span>
-                        )}
-                    </li>
-                    <li
-                        onClick={() => goTo('/clubs')}
-                        className="cursor-pointer flex items-center hover:text-white transition"
-                    >
-                        <Users className="mr-3" />
-                        <span className="text-[#D8D8E0] font-medium">Clubs</span>
-                    </li>
-                    <li
-                        onClick={() => goTo('/articles')}
-                        className="cursor-pointer flex items-center hover:text-white transition"
-                    >
-                        <PenTool className="mr-3" />
-                        <span className="text-[#D8D8E0] font-medium">Articles</span>
-                    </li>
+            <nav className="flex flex-col mt-12 mb-16 w-full">
+                <ul className="flex flex-col gap-y-2 pl-[6px]">
+                    {[{
+                        path: '/shelves', icon: LibraryFilled, label: 'Étagères'
+                    }, {
+                        path: '/challenges', icon: TrophyFilled, label: 'Défis'
+                    }, {
+                        path: '/conversations', icon: IcBaselineWechat, label: 'Messages'
+                    }, {
+                        path: '/clubs', icon: UsersFilled, label: 'Clubs'
+                    }, {
+                        path: '/articles', icon: PencilFilled, label: 'Articles'
+                    }].map(({ path, icon: Icon, label }) => (
+                        <li key={path} onClick={() => goTo(path)}>
+                            <Button className="group w-full flex items-center justify-between bg-transparent hover:bg-tertiary-black px-3 py-2 rounded-2xl transition-all">
+                                <div className="flex items-center gap-3">
+                                    <Icon className="w-5 h-5 text-text-white"/>
+                                    <span className="text-text-white text-[13px] font-medium">{label}</span>
+                                    {label === 'Messages' && unreadMessages > 0 && (
+                                        <span className="ml-1 bg-red-500 text-[10px] rounded-full h-4 w-4 flex items-center justify-center text-white font-semibold">
+                                            {unreadMessages}
+                                        </span>
+                                    )}
+                                </div>
+                                <ChevronRight
+                                    className="w-4 h-4 text-[#e1e1ec] opacity-0 translate-x-[-4px] transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
+                                />
+                            </Button>
+                        </li>
+                    ))}
                 </ul>
             </nav>
+
+            <div className="flex items-center mb-3 text-xs font-medium text-[#e1e1ec] justify-center">
+                <Activity className="w-4 h-4 mr-2"/>
+                Activité
+            </div>
+
+            <Card className="bg-tertiary-black p-3 space-y-2 rounded-2xl border border-secondary-black">
+                {[{
+                    icon: MessageSquareText, text: "Vous avez commenté la publication de", highlight: "Chat Potelé"
+                }, {
+                    icon: Heart, text: "Vous avez aimé la publication de", highlight: "Alex Ception"
+                }, {
+                    icon: Pencil, text: "Vous avez publié l’article", highlight: "Mes 10 auteurs préférés..."
+                }, {
+                    icon: Star, text: "Vous avez laissé un avis sur", highlight: "La Cité Diaphane"
+                }].map(({ icon: Icon, text, highlight }, index) => (
+                    <div key={index} className="flex items-center text-[10px] text-[#cfcfe1]">
+                        <Icon className="w-3 h-3 mr-2 mt-0.5 shrink-0"/>
+                        <div>
+                            {text}&nbsp;
+                            <span className="text-green-highlight">{highlight}</span>
+                        </div>
+                    </div>
+                ))}
+
+                <div className="flex justify-center">
+                   <ReshotIllustration />
+                </div>
+
+                <div className="pt-3 text-center text-gray-500 text-[10px] italic">
+                    Plus rien à signaler !
+                </div>
+            </Card>
         </div>
     );
 }

@@ -4,12 +4,13 @@ import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
 import {replyToComment, fetchRepliesForComment} from "@/server-actions/main/home/actions";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
-import {User, Send} from "lucide-react";
+import {User} from "lucide-react";
 import {useState, useEffect} from "react";
 import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";
 import PostDate from "@/components/post/post/PostDate";
 import ReactionCommentButton from "@/components/post/ReactionCommentButton";
+import SendFilled from "@/assets/icons/SendFilled";
 
 interface RepliesSectionProps {
     postId: number;
@@ -96,7 +97,7 @@ export default function RepliesSection({commentId, postId}: RepliesSectionProps)
                         }
                     }}
                 >
-                    <Send className="w-4 h-4"/>
+                    <SendFilled className="w-5 h-5"/>
                 </Button>
             </div>
 

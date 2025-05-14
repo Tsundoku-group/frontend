@@ -17,6 +17,7 @@ import {
 } from "date-fns";
 import { useMemo, useState } from "react";
 import { markAsReadNotifications } from "@/server-actions/navbar/actions";
+import {Button} from "@/components/ui/button";
 
 export default function NotificationDropdown() {
     const { activeProfileInStorage } = useProfileContext();
@@ -92,13 +93,13 @@ export default function NotificationDropdown() {
         <DropdownMenu onOpenChange={(open) => {
             if (open) void handleMarkAsRead();
         }}>
-            <DropdownMenuTrigger>
-                <div className="relative cursor-pointer">
-                    <Bell className="text-text-white w-6 h-6"/>
+            <DropdownMenuTrigger asChild>
+                <Button className="relative cursor-pointer bg-transparent hover:bg-tertiary-black hover:border-secondary-black rounded-xl">
+                    <Bell className="text-text-white w-6 h-6 fill-current hover:animate-shake transition-transform origin-top" />
                     {hasUnread && (
-                        <div className="absolute top-0 right-0 w-2 h-2 bg-red-highlight rounded-full"/>
+                        <div className="absolute top-0 right-0 w-3 h-3 bg-red-highlight rounded-full"/>
                     )}
-                </div>
+                </Button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent

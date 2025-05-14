@@ -100,3 +100,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-56] Correction :status doit être en ligne lors de la connexion [#56](https://trello.com/c/QIgFNQER/56-t-56-correction-status-doit-%C3%AAtre-en-ligne-lors-de-la-connexion)
 - [t-97] Correction du mode online et les status [#97](https://trello.com/c/IpZgVjSN/97-t-97-correction-du-mode-online-et-les-status)
 - [t-98] Corrections + ajout de fichier routables nextjs [#98](https://trello.com/c/nqA8QoR0/98-t-98-corrections-ajout-de-fichier-routables-nextjs)
+- [t-99] Ajout de fonctionnalités + css [#99](https://trello.com/c/bhk62m3I/99-t-99-ajout-de-fonctionnalit%C3%A9s-css)

@@ -5,9 +5,10 @@ import {CircleCheckBig, CircleX, Command, Lock, User} from "lucide-react";
 import {useRouter} from "next/navigation";
 import {HandleRegister} from "@/server-actions/auth/register/actions";
 import Image from "next/image";
+import {Alert, AlertDescription} from "@/components/ui/alert";
 
 const EMAIL_REGEX: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const PWD_REGEX: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const PWD_REGEX = /^(?=.{8,24}$)(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
 export default function RegisterPage() {
     const errRef = useRef<HTMLParagraphElement | null>(null);
@@ -15,15 +16,12 @@ export default function RegisterPage() {
 
     const [email, setEmail] = useState<string>('');
     const [validEmail, setValidEmail] = useState<boolean>(false);
-    const [emailFocus, setEmailFocus] = useState<boolean>(false);
 
     const [pwd, setPwd] = useState<string>('');
     const [validPwd, setValidPwd] = useState<boolean>(false);
-    const [pwdFocus, setPwdFocus] = useState<boolean>(false);
 
     const [matchPwd, setMatchPwd] = useState<string>('');
     const [validMatch, setValidMatch] = useState<boolean>(false);
-    const [matchFocus, setMatchFocus] = useState<boolean>(false);
 
     const [errMsg, setErrMsg] = useState<string | null>('');
     const [success, setSuccess] = useState<boolean>(false);
@@ -54,10 +52,10 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const v1 = EMAIL_REGEX.test(email);
-        const v2 = PWD_REGEX.test(pwd);
+        const validation1 = EMAIL_REGEX.test(email);
+        const validation2 = PWD_REGEX.test(pwd);
 
-        if (!v1 || !v2) {
+        if (!validation1 || !validation2) {
             setErrMsg("Entrée invalide");
             if (errRef.current) {
                 errRef.current.focus();
@@ -96,11 +94,14 @@ export default function RegisterPage() {
                             <Command className="w-6 h-6 text-pink-100"/>
                             <h4 className="text-lg font-bold text-pink-100">Tsundoku</h4>
                         </div>
-                        <div className="absolute inset-0 opacity-30">
+                        <div
+                            className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
                             <Image
-                                src=""
-                                alt=""
-                                className="object-cover w-full h-full"
+                                src="/illustration-tsundoku-auth.png"
+                                alt="image login"
+                                width={600}
+                                height={400}
+                                className="object-contain w-auto h-auto"
                             />
                         </div>
 
@@ -134,33 +135,38 @@ export default function RegisterPage() {
                                         <User className="inline-block mr-2 mb-1"/>
                                         Email
                                     </label>
-                                    <input
-                                        type="text"
-                                        id="email"
-                                        ref={emailRef}
-                                        autoComplete="off"
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                        aria-invalid={validEmail ? "false" : "true"}
-                                        aria-describedby="uidnote"
-                                        onFocus={() => setEmailFocus(true)}
-                                        onBlur={() => setEmailFocus(false)}
-                                        className="w-full px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
-                                    />
-                                    <div className="absolute inset-y-0 mb-12 right-2 flex items-center space-x-2">
-                                        <span className={validEmail ? "text-green-highlight" : "hidden"}>
-                                            <CircleCheckBig size={20}/>
+                                    <div className="flex items-center w-full relative">
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            ref={emailRef}
+                                            autoComplete="off"
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            aria-invalid={validEmail ? "false" : "true"}
+                                            aria-describedby="uidnote"
+                                            className="flex-1 px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
+                                        />
+                                        <span className={validEmail ? "text-green-highlight ml-2" : "hidden"}>
+                                          <CircleCheckBig size={20}/>
                                         </span>
-                                        <span className={validEmail || !email ? "hidden" : "text-red-500"}>
-                                            <CircleX size={20}/>
+                                        <span className={validEmail || !email ? "hidden" : "text-red-500 ml-2"}>
+                                          <CircleX size={20}/>
                                         </span>
                                     </div>
-                                    <p
+                                    <Alert
                                         id="uidnote"
-                                        className={emailFocus && email && !validEmail ? "text-red-500 text-sm mt-2" : "hidden"}
+                                        className={
+                                            !validEmail && email
+                                                ? "text-red-500 text-sm mt-2"
+                                                : "hidden"
+                                        }
+                                        variant="destructive"
                                     >
-                                        L&apos;adresse électronique doit être au format : example@domain.com.
-                                    </p>
+                                        <AlertDescription>
+                                            L&apos;adresse électronique doit être au format : example@domain.com.
+                                        </AlertDescription>
+                                    </Alert>
                                 </div>
 
                                 <div className="relative">
@@ -168,63 +174,76 @@ export default function RegisterPage() {
                                         <Lock className="inline-block mr-2 mb-1"/>
                                         Mot de passe
                                     </label>
-                                    <input
-                                        type="password"
-                                        id="pwd"
-                                        onChange={(e) => setPwd(e.target.value)}
-                                        required
-                                        aria-invalid={validPwd ? "false" : "true"}
-                                        aria-describedby="pwdnote"
-                                        onFocus={() => setPwdFocus(true)}
-                                        onBlur={() => setPwdFocus(false)}
-                                        className="w-full px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
-                                    />
-                                    <div className="absolute inset-y-0 right-2 flex items-center space-x-2 mb-12">
-                                        <span className={validPwd ? "text-green-highlight" : "hidden"}>
-                                            <CircleCheckBig size={20}/>
+                                    <div className="flex items-center w-full">
+                                        <input
+                                            type="password"
+                                            id="pwd"
+                                            onChange={(e) => setPwd(e.target.value)}
+                                            required
+                                            aria-invalid={validPwd ? "false" : "true"}
+                                            aria-describedby="pwdnote"
+                                            className="flex-1 px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
+                                        />
+                                        <span className={validPwd ? "text-green-highlight ml-2" : "hidden"}>
+                                          <CircleCheckBig size={20}/>
                                         </span>
-                                        <span className={validPwd || !pwd ? "hidden" : "text-red-500"}>
-                                            <CircleX size={20}/>
+                                        <span className={validPwd || !pwd ? "hidden" : "text-red-500 ml-2"}>
+                                          <CircleX size={20}/>
                                         </span>
                                     </div>
-                                    <p
+                                    <Alert
                                         id="pwdnote"
-                                        className={pwdFocus && pwd && !validPwd ? "text-red-500 text-sm mt-2" : "hidden"}
+                                        className={
+                                            !validPwd && pwd
+                                                ? "text-red-500 text-sm mt-2"
+                                                : "hidden"
+                                        }
+                                        variant="destructive"
                                     >
-                                        Le mot de passe doit inclure au moins 8 caractères, une majuscule, un chiffre et
-                                        un caractère spécial.
-                                    </p>
+                                        <AlertDescription>
+                                            Le mot de passe doit inclure au moins 8 caractères, une majuscule, un
+                                            chiffre et
+                                            un caractère spécial.
+                                        </AlertDescription>
+                                    </Alert>
                                 </div>
-                                <div className="relative">
+
+                                <div className="relative mt-4">
                                     <label htmlFor="matchPwd" className="block text-gray-300 mb-2">
                                         <Lock className="inline-block mr-2 mb-1"/>
                                         Confirmation du mot de passe
                                     </label>
-                                    <input
-                                        type="password"
-                                        id="matchPwd"
-                                        onChange={(e) => setMatchPwd(e.target.value)}
-                                        required
-                                        aria-invalid={validMatch ? "false" : "true"}
-                                        aria-describedby="matchnote"
-                                        onFocus={() => setMatchFocus(true)}
-                                        onBlur={() => setMatchFocus(false)}
-                                        className="w-full px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
-                                    />
-                                    <div className="absolute inset-y-0 right-2 flex items-center space-x-2 mb-12">
-                                        <span className={validMatch && matchPwd ? "text-green-highlight" : "hidden"}>
-                                            <CircleCheckBig size={20}/>
+                                    <div className="flex items-center w-full">
+                                        <input
+                                            type="password"
+                                            id="matchPwd"
+                                            onChange={(e) => setMatchPwd(e.target.value)}
+                                            required
+                                            aria-invalid={validMatch ? "false" : "true"}
+                                            aria-describedby="matchnote"
+                                            className="flex-1 px-4 py-2 bg-transparent border border-secondary rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-highlight"
+                                        />
+                                        <span
+                                            className={validMatch && matchPwd ? "text-green-highlight ml-2" : "hidden"}>
+                                          <CircleCheckBig size={20}/>
                                         </span>
-                                        <span className={validMatch || !matchPwd ? "hidden" : "text-red-500"}>
-                                            <CircleX size={20}/>
+                                        <span className={validMatch || !matchPwd ? "hidden" : "text-red-500 ml-2"}>
+                                          <CircleX size={20}/>
                                         </span>
                                     </div>
-                                    <p
+                                    <Alert
                                         id="matchnote"
-                                        className={matchFocus && matchPwd && !validMatch ? "text-red-500 text-sm mt-2" : "hidden"}
+                                        className={
+                                            !validMatch && matchPwd
+                                                ? "text-red-500 text-sm mt-2"
+                                                : "hidden"
+                                        }
+                                        variant="destructive"
                                     >
-                                        Les mots de passe ne correspondent pas.
-                                    </p>
+                                        <AlertDescription>
+                                            Les mots de passe ne correspondent pas.
+                                        </AlertDescription>
+                                    </Alert>
                                 </div>
 
                                 <button
@@ -260,5 +279,6 @@ export default function RegisterPage() {
                 </section>
             )}
         </>
-    );
+    )
+        ;
 }
