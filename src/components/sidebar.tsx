@@ -14,12 +14,13 @@ import {
     Activity,
     MessageSquareText,
     Heart,
-    Star
+    Star, ChevronRight
 } from 'lucide-react';
 import {useSocket} from "@/context/socketContext";
 import {useProfileContext} from "@/context/profileContext";
 import {Card} from "@/components/ui/card";
 import Image from "next/image";
+import {Button} from "@/components/ui/button";
 
 export default function Sidebar() {
     const [unreadMessages, setUnreadMessages] = useState(0);
@@ -68,117 +69,92 @@ export default function Sidebar() {
                  background: 'linear-gradient(to bottom, #281f39 1%, #171C26 40%)'
              }}>
             <div className="flex items-center justify-center h-16">
-                <div className="text-2xl font-extralight text-white">tsundoku</div>
+                <div className="text-[20px] tracking-wide font-extralight text-[#e1e1ec]">tsundoku</div>
             </div>
 
             <div className="px-4">
-                <div className="flex items-center bg-secondary-black border-secondary-black border rounded-xl p-2">
+                <div className="flex items-center bg-secondary-black border border-secondary-black rounded-2xl px-3 py-2">
                     <input
                         type="text"
                         placeholder="Explorer"
-                        className="bg-transparent focus:outline-none text-text-white w-full placeholder:text-text-white"
+                        className="bg-transparent focus:outline-none text-text-white w-full placeholder:text-[#cfcfe1] text-sm"
                     />
-                    <Search className="text-text-white"/>
+                    <Search className="text-[#cfcfe1] w-4 h-4 ml-2"/>
                 </div>
 
                 <div className="flex gap-4 justify-center items-center mt-12">
                     <button
                         onClick={() => goTo('/home')}
-                        className="w-11 h-11 bg-secondary-black rounded-xl flex items-center justify-center shadow-[0_2px_4px_rgba(0,0,0,0.25)] transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-90 active:shadow-inner"
+                        className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
                     >
-                        <Home className="text-text-white w-5 h-5"/>
+                        <Home className="text-[#e1e1ec] w-5 h-5"/>
                     </button>
 
                     <button
                         onClick={() => goTo(`/profile/${profileId}`)}
-                        className="w-11 h-11 bg-secondary-black rounded-xl flex items-center justify-center shadow-[0_2px_4px_rgba(0,0,0,0.25)] transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-90 active:shadow-inner"
+                        className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
                     >
-                        <User className="text-text-white w-5 h-5"/>
+                        <User className="text-[#e1e1ec] w-5 h-5"/>
                     </button>
                 </div>
             </div>
 
-            <nav className="flex px-5 mt-12 mb-16">
-                <ul className="flex flex-col gap-y-8">
-                    <li
-                        onClick={() => goTo('/shelves')}
-                        className="cursor-pointer flex items-center hover:text-white transition"
-                    >
-                        <LibraryBig className="mr-3 w-5 h-5"/>
-                        <span className="text-text-white text-sm font-medium">Étagères</span>
-                    </li>
-                    <li
-                        onClick={() => goTo('/challenges')}
-                        className="cursor-pointer flex items-center hover:text-white transition"
-                    >
-                        <Trophy className="mr-3 w-5 h-5"/>
-                        <span className="text-text-white text-sm font-medium">Défis</span>
-                    </li>
-                    <li
-                        onClick={() => goTo('/conversations')}
-                        className="cursor-pointer flex items-center hover:text-white transition relative"
-                    >
-                        <MessageCircle className="mr-3 w-5 h-5"/>
-                        <span className="text-text-white text-sm font-medium">Messages</span>
-                        {unreadMessages > 0 && (
-                            <span
-                                className="ml-2 bg-red-500 text-xs rounded-full h-4 w-4 flex items-center justify-center text-white">
-                                {unreadMessages}
-                            </span>
-                        )}
-                    </li>
-                    <li
-                        onClick={() => goTo('/clubs')}
-                        className="cursor-pointer flex items-center hover:text-white transition"
-                    >
-                        <Users className="mr-3 w-5 h-5"/>
-                        <span className="text-text-white text-sm font-medium">Clubs</span>
-                    </li>
-                    <li
-                        onClick={() => goTo('/articles')}
-                        className="cursor-pointer flex items-center hover:text-white transition"
-                    >
-                        <Pencil className="mr-3 w-5 h-5"/>
-                        <span className="text-text-white text-sm font-medium">Articles</span>
-                    </li>
+            <nav className="flex flex-col mt-12 mb-16 w-full">
+                <ul className="flex flex-col gap-y-2 pl-[6px]">
+                    {[{
+                        path: '/shelves', icon: LibraryBig, label: 'Étagères'
+                    }, {
+                        path: '/challenges', icon: Trophy, label: 'Défis'
+                    }, {
+                        path: '/conversations', icon: MessageCircle, label: 'Messages'
+                    }, {
+                        path: '/clubs', icon: Users, label: 'Clubs'
+                    }, {
+                        path: '/articles', icon: Pencil, label: 'Articles'
+                    }].map(({ path, icon: Icon, label }) => (
+                        <li key={path} onClick={() => goTo(path)}>
+                            <Button className="group w-full flex items-center justify-between bg-transparent hover:bg-tertiary-black px-3 py-2 rounded-2xl transition-all">
+                                <div className="flex items-center gap-3">
+                                    <Icon className="w-5 h-5 text-[#e1e1ec]"/>
+                                    <span className="text-[#e1e1ec] text-[13px] font-medium">{label}</span>
+                                    {label === 'Messages' && unreadMessages > 0 && (
+                                        <span className="ml-1 bg-red-500 text-[10px] rounded-full h-4 w-4 flex items-center justify-center text-white font-semibold">
+                                            {unreadMessages}
+                                        </span>
+                                    )}
+                                </div>
+                                <ChevronRight
+                                    className="w-4 h-4 text-[#e1e1ec] opacity-0 translate-x-[-4px] transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
+                                />
+                            </Button>
+                        </li>
+                    ))}
                 </ul>
             </nav>
-            <div className="flex items-center mb-3 text-sm font-medium text-text-white justify-center">
+
+            <div className="flex items-center mb-3 text-xs font-medium text-[#e1e1ec] justify-center">
                 <Activity className="w-4 h-4 mr-2"/>
                 Activité
             </div>
-            <Card className="bg-tertiary-black p-4 space-y-2 rounded-3xl border border-secondary-black">
-                <div className="flex items-center text-[10px] text-gray-300">
-                    <MessageSquareText className="w-3 h-3 mr-2 mt-0.5 shrink-0" />
-                    <div>
-                        Vous avez commenté la publication de&nbsp;
-                        <span className="text-green-highlight">Chat Potelé</span>
-                    </div>
-                </div>
 
-                <div className="flex items-center text-[10px] text-gray-300">
-                    <Heart className="w-3 h-3 mr-2 mt-0.5 shrink-0" />
-                    <div>
-                        Vous avez aimé la publication de&nbsp;
-                        <span className="text-green-highlight">Alex Ception</span>
+            <Card className="bg-tertiary-black p-3 space-y-2 rounded-2xl border border-secondary-black">
+                {[{
+                    icon: MessageSquareText, text: "Vous avez commenté la publication de", highlight: "Chat Potelé"
+                }, {
+                    icon: Heart, text: "Vous avez aimé la publication de", highlight: "Alex Ception"
+                }, {
+                    icon: Pencil, text: "Vous avez publié l’article", highlight: "Mes 10 auteurs préférés..."
+                }, {
+                    icon: Star, text: "Vous avez laissé un avis sur", highlight: "La Cité Diaphane"
+                }].map(({ icon: Icon, text, highlight }, index) => (
+                    <div key={index} className="flex items-center text-[10px] text-[#cfcfe1]">
+                        <Icon className="w-3 h-3 mr-2 mt-0.5 shrink-0"/>
+                        <div>
+                            {text}&nbsp;
+                            <span className="text-green-highlight">{highlight}</span>
+                        </div>
                     </div>
-                </div>
-
-                <div className="flex items-center text-[10px] text-gray-300">
-                    <Pencil className="w-3 h-3 mr-2 mt-0.5 shrink-0" />
-                    <div>
-                        Vous avez publié l’article&nbsp;
-                        <span className="text-green-highlight">Mes 10 auteurs préférés...</span>
-                    </div>
-                </div>
-
-                <div className="flex items-center text-[10px] text-gray-300">
-                    <Star className="w-3 h-3 mr-2 mt-0.5 shrink-0" />
-                    <div>
-                        Vous avez laissé un avis sur&nbsp;
-                        <span className="text-green-highlight">La Cité Diaphane</span>
-                    </div>
-                </div>
+                ))}
 
                 <div className="flex justify-center">
                     <Image
