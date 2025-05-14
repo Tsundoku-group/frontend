@@ -1,4 +1,4 @@
-import {Heart, Send, User, EllipsisVertical, Pencil, Trash, MessageSquareMore} from "lucide-react";
+import {Heart, User, EllipsisVertical, Pencil, Trash} from "lucide-react";
 import PostDate from "@/components/post/post/PostDate";
 import CommentSection from "@/components/post/comment/CommentSection";
 import React, {useState} from "react";
