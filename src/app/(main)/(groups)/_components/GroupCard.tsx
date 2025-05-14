@@ -81,7 +81,7 @@ export default function GroupCard({group}: GroupCardProps) {
 
     return (
         <Card
-            className="rounded-xl bg-secondary-black border border-gray-700 hover:border-purple-highlight transition-colors duration-300 shadow-md">
+            className="rounded-xl bg-secondary-black border border-gray-700 shadow-md">
             <div className="flex items-start gap-4 p-4">
                 <Avatar className="w-12 h-12">
                     <AvatarImage src={group?.imageUrl}/>

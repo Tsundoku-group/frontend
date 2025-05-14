@@ -67,10 +67,10 @@ export default function SearchComponent({
                                     <SelectValue placeholder="📁 Catégorie"/>
                                 </SelectTrigger>
                                 <SelectContent
-                                    className="bg-tertiary-black text-white border border-secondary-black rounded-xl shadow-xl">
-                                    <SelectItem value="all">📂 Toutes les catégories</SelectItem>
+                                    className="bg-primary-black text-white border border-secondary-black rounded-xl shadow-xl">
+                                    <SelectItem value="all" className="data-[highlighted]:bg-tertiary-black data-[highlighted]:text-white transition-colors duration-200">📂 Toutes les catégories</SelectItem>
                                     {!tagsLoading && tagsResponse?.tags?.map((tag) => (
-                                        <SelectItem key={tag.slug} value={tag.slug}>
+                                        <SelectItem key={tag.slug} value={tag.slug} className="data-[highlighted]:bg-tertiary-black data-[highlighted]:text-white transition-colors duration-200">
                                             {tag.name}
                                         </SelectItem>
                                     ))}
@@ -82,11 +82,28 @@ export default function SearchComponent({
                                     <SelectValue placeholder="📅 Trier par"/>
                                 </SelectTrigger>
                                 <SelectContent
-                                    className="bg-tertiary-black text-white border border-secondary-black rounded-xl shadow-xl">
-                                    <SelectItem value="newest">📅 Plus récents</SelectItem>
-                                    <SelectItem value="oldest">📅 Plus anciens</SelectItem>
-                                    <SelectItem value="members">👥 Membres</SelectItem>
-                                    <SelectItem value="active">🔥 Actifs</SelectItem>
+                                    className="bg-primary-black text-white border border-tertiary-black rounded-xl shadow-xl">
+                                    <SelectItem
+                                        value="newest"
+                                        className="data-[highlighted]:bg-tertiary-black data-[highlighted]:text-white transition-colors duration-200"
+                                    >
+                                        📅 Plus récents
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="oldest"
+                                        className="data-[highlighted]:bg-tertiary-black data-[highlighted]:text-white transition-colors duration-200">📅
+                                        Plus anciens
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="members"
+                                        className="data-[highlighted]:bg-tertiary-black data-[highlighted]:text-white transition-colors duration-200">👥
+                                        Membres
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="active"
+                                        className="data-[highlighted]:bg-tertiary-black data-[highlighted]:text-white transition-colors duration-200">🔥
+                                        Actifs
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
