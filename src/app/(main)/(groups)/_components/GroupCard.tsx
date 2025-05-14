@@ -1,4 +1,4 @@
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Card, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import React, {useState} from "react";
 import {joinPrivateGroup, toggleFavoriteGroup, togglePinnedGroup} from "@/server-actions/main/groups/clubs/actions";
@@ -7,7 +7,7 @@ import {ShowToast} from "@/components/ShowToast";
 import MarkActions from "@/components/MarkActions";
 import {GroupData} from "@/models/GroupData";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {UsersRound, Lock, LockOpen, ContactRound} from "lucide-react";
+import {UsersRound, Lock, LockOpen} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
 import {Tag} from "@/models/Tag";
 import {useRouter} from "next/navigation";
