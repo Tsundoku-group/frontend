@@ -16,7 +16,6 @@ import {ShowToast} from '@/components/ShowToast';
 import AddProfileButton from '@/components/AddProfileButton';
 import {useProfileContext} from '@/context/profileContext';
 import NotificationDropdown from '@/components/navbar/component/NotificationDropdown';
-import Image from 'next/image';
 import MinusRedCircle from "@/assets/status/MinusRedCircle";
 import YellowMoon from "@/assets/status/YellowMoon";
 

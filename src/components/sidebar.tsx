@@ -3,11 +3,7 @@
 import React, {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {
-    Home,
-    User,
-    Trophy,
     Search,
-    LibraryBig,
     Pencil,
     Activity,
     MessageSquareText,
@@ -22,7 +18,6 @@ import ReshotIllustration from "@/assets/images/ReshotIllustration";
 import IcBaselineWechat from "@/assets/icons/IcBaselineWechat";
 import UsersFilled from "@/assets/icons/UsersFilled";
 import TrophyFilled from "@/assets/icons/TrophyFilled";
-import FamiconsLibrary from "@/assets/icons/LibraryFilled";
 import PencilFilled from "@/assets/icons/PencilFilled";
 import LibraryFilled from "@/assets/icons/LibraryFilled";
 import HomeRoundedFilled from "@/assets/icons/HomeRoundedFilled";
