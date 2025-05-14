@@ -19,7 +19,6 @@ import {
 import {useSocket} from "@/context/socketContext";
 import {useProfileContext} from "@/context/profileContext";
 import {Card} from "@/components/ui/card";
-import Image from "next/image";
 import {Button} from "@/components/ui/button";
 import ReshotIllustration from "@/assets/icons/ReshotIllustration";
 
