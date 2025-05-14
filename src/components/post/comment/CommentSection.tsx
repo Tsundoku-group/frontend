@@ -23,6 +23,7 @@ import {
 import {useSocket} from "@/context/socketContext";
 import PostDate from "@/components/post/post/PostDate";
 import ReactionCommentButton from "@/components/post/ReactionCommentButton";
+import SendFilled from "@/assets/icons/SendFilled";
 
 interface CommentSectionProps {
     postId: number;
@@ -170,7 +171,7 @@ export default function CommentSection({postId}: CommentSectionProps) {
                                 addComment({postId, authorId: profileId as number, content: commentContent});
                             }
                         }}>
-                    <Send className="w-4 h-4"/>
+                    <SendFilled className="w-5 h-5"/>
                 </Button>
             </div>
 

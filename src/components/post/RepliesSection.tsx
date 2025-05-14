@@ -10,6 +10,7 @@ import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";
 import PostDate from "@/components/post/post/PostDate";
 import ReactionCommentButton from "@/components/post/ReactionCommentButton";
+import SendFilled from "@/assets/icons/SendFilled";
 
 interface RepliesSectionProps {
     postId: number;
@@ -96,7 +97,7 @@ export default function RepliesSection({commentId, postId}: RepliesSectionProps)
                         }
                     }}
                 >
-                    <Send className="w-4 h-4"/>
+                    <SendFilled className="w-5 h-5"/>
                 </Button>
             </div>
 
