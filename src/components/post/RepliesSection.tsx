@@ -4,7 +4,7 @@ import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
 import {replyToComment, fetchRepliesForComment} from "@/server-actions/main/home/actions";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
-import {User, Send} from "lucide-react";
+import {User} from "lucide-react";
 import {useState, useEffect} from "react";
 import {useProfileContext} from "@/context/profileContext";
 import {ShowToast} from "@/components/ShowToast";
