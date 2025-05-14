@@ -21,6 +21,7 @@ import {useProfileContext} from "@/context/profileContext";
 import {Card} from "@/components/ui/card";
 import Image from "next/image";
 import {Button} from "@/components/ui/button";
+import ReshotIllustration from "@/assets/icons/ReshotIllustration";
 
 export default function Sidebar() {
     const [unreadMessages, setUnreadMessages] = useState(0);
@@ -157,13 +158,7 @@ export default function Sidebar() {
                 ))}
 
                 <div className="flex justify-center">
-                    <Image
-                        src="/reshot-illustration-nature-research.png"
-                        alt=""
-                        width={600}
-                        height={400}
-                        className="object-contain w-auto h-24"
-                    />
+                   <ReshotIllustration />
                 </div>
 
                 <div className="pt-3 text-center text-gray-500 text-[10px] italic">
