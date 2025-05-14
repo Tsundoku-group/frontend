@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import ReactionButton from "@/components/post/comment/ReactButton";
 import Image from "next/image";
+import CommentProcess from "@/assets/icons/CommentProcess";
+import SendFilled from "@/assets/icons/SendFilled";
 
 interface Post {
     id: number;
@@ -210,10 +212,10 @@ export default function PostCard({post, groupId, onDelete}: {
                         className="flex items-center gap-1 text-gray-400 hover:text-white"
                         onClick={() => setShowComments(!showComments)}
                     >
-                        <MessageSquareMore className="w-5 h-5 fill-current"/>Commenter
+                        <CommentProcess className="w-5 h-5 mr-1"/>Commenter
                     </button>
                     <button className="flex items-center gap-1 text-gray-400 hover:text-white">
-                        <Send className="w-5 h-5 fill-current"/> Partager
+                        <SendFilled className="w-5 h-5 mr-1"/> Partager
                     </button>
                 </div>
 

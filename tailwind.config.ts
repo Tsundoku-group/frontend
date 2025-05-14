@@ -78,6 +78,11 @@ const config = {
 					'70%': { transform: 'rotate(1deg)' },
 					'100%': { transform: 'rotate(0deg)' },
 				},
+				pingOnce: {
+					'0%': { transform: 'scale(1)' },
+					'50%': { transform: 'scale(1.4)' },
+					'100%': { transform: 'scale(1)' },
+				},
 			},
 			animation: {
 				"accordion-down": "accordion-down 0.2s ease-out",
@@ -85,6 +90,7 @@ const config = {
 				bounce: "bounce 1.5s infinite",
 				fadeIn: 'fadeIn 0.5s ease-out forwards',
 				shake: 'shake 2s ease-in-out',
+				pingOnce: 'pingOnce 0.4s ease-in-out',
 			},
 		},
     },
