@@ -6,6 +6,7 @@ import {fetchAllTags} from "@/server-actions/main/groups/clubs/actions";
 import {Card, CardContent} from "@/components/ui/card";
 import {useState} from "react";
 import FunnelFilled from "@/assets/icons/FunnelFilled";
+import {RotateCcw} from "lucide-react";
 
 interface SearchComponentProps {
     search: string;
@@ -68,9 +69,12 @@ export default function SearchComponent({
                                 </SelectTrigger>
                                 <SelectContent
                                     className="bg-primary-black text-white border border-secondary-black rounded-xl shadow-xl">
-                                    <SelectItem value="all" className="data-[highlighted]:bg-tertiary-black data-[highlighted]:text-white transition-colors duration-200">📂 Toutes les catégories</SelectItem>
+                                    <SelectItem value="all"
+                                                className="data-[highlighted]:bg-tertiary-black data-[highlighted]:text-white transition-colors duration-200">📂
+                                        Toutes les catégories</SelectItem>
                                     {!tagsLoading && tagsResponse?.tags?.map((tag) => (
-                                        <SelectItem key={tag.slug} value={tag.slug} className="data-[highlighted]:bg-tertiary-black data-[highlighted]:text-white transition-colors duration-200">
+                                        <SelectItem key={tag.slug} value={tag.slug}
+                                                    className="data-[highlighted]:bg-tertiary-black data-[highlighted]:text-white transition-colors duration-200">
                                             {tag.name}
                                         </SelectItem>
                                     ))}
@@ -106,6 +110,19 @@ export default function SearchComponent({
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
+                        <div className="w-full md:w-auto md:ml-auto">
+                            <button
+                                onClick={() => {
+                                    setSearch("");
+                                    setTagName("all");
+                                    setSort("newest");
+                                }}
+                                className="text-sm px-4 py-1.5 bg-primary-black text-white border border-secondary-black rounded-lg hover:bg-tertiary-black transition-all flex items-center gap-2"
+                            >
+                                <RotateCcw className="w-4 h-4"/>
+                                Réinitialiser
+                            </button>
+                        </div>
                         </div>
                     </CardContent>
                 )}
