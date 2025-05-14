@@ -6,8 +6,6 @@ import {
     Home,
     User,
     Trophy,
-    MessageCircle,
-    Users,
     Search,
     LibraryBig,
     Pencil,
@@ -20,7 +18,15 @@ import {useSocket} from "@/context/socketContext";
 import {useProfileContext} from "@/context/profileContext";
 import {Card} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
-import ReshotIllustration from "@/assets/icons/ReshotIllustration";
+import ReshotIllustration from "@/assets/images/ReshotIllustration";
+import IcBaselineWechat from "@/assets/icons/IcBaselineWechat";
+import UsersFilled from "@/assets/icons/UsersFilled";
+import TrophyFilled from "@/assets/icons/TrophyFilled";
+import FamiconsLibrary from "@/assets/icons/LibraryFilled";
+import PencilFilled from "@/assets/icons/PencilFilled";
+import LibraryFilled from "@/assets/icons/LibraryFilled";
+import HomeRoundedFilled from "@/assets/icons/HomeRoundedFilled";
+import UserFilled from "@/assets/icons/UserFilled";
 
 export default function Sidebar() {
     const [unreadMessages, setUnreadMessages] = useState(0);
@@ -87,14 +93,14 @@ export default function Sidebar() {
                         onClick={() => goTo('/home')}
                         className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
                     >
-                        <Home className="text-[#e1e1ec] w-5 h-5"/>
+                        <HomeRoundedFilled className="text-text-white w-5 h-5"/>
                     </button>
 
                     <button
                         onClick={() => goTo(`/profile/${profileId}`)}
                         className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
                     >
-                        <User className="text-[#e1e1ec] w-5 h-5"/>
+                        <UserFilled className="text-text-white w-5 h-5"/>
                     </button>
                 </div>
             </div>
@@ -102,21 +108,21 @@ export default function Sidebar() {
             <nav className="flex flex-col mt-12 mb-16 w-full">
                 <ul className="flex flex-col gap-y-2 pl-[6px]">
                     {[{
-                        path: '/shelves', icon: LibraryBig, label: 'Étagères'
+                        path: '/shelves', icon: LibraryFilled, label: 'Étagères'
                     }, {
-                        path: '/challenges', icon: Trophy, label: 'Défis'
+                        path: '/challenges', icon: TrophyFilled, label: 'Défis'
                     }, {
-                        path: '/conversations', icon: MessageCircle, label: 'Messages'
+                        path: '/conversations', icon: IcBaselineWechat, label: 'Messages'
                     }, {
-                        path: '/clubs', icon: Users, label: 'Clubs'
+                        path: '/clubs', icon: UsersFilled, label: 'Clubs'
                     }, {
-                        path: '/articles', icon: Pencil, label: 'Articles'
+                        path: '/articles', icon: PencilFilled, label: 'Articles'
                     }].map(({ path, icon: Icon, label }) => (
                         <li key={path} onClick={() => goTo(path)}>
                             <Button className="group w-full flex items-center justify-between bg-transparent hover:bg-tertiary-black px-3 py-2 rounded-2xl transition-all">
                                 <div className="flex items-center gap-3">
-                                    <Icon className="w-5 h-5 text-[#e1e1ec]"/>
-                                    <span className="text-[#e1e1ec] text-[13px] font-medium">{label}</span>
+                                    <Icon className="w-5 h-5 text-text-white"/>
+                                    <span className="text-text-white text-[13px] font-medium">{label}</span>
                                     {label === 'Messages' && unreadMessages > 0 && (
                                         <span className="ml-1 bg-red-500 text-[10px] rounded-full h-4 w-4 flex items-center justify-center text-white font-semibold">
                                             {unreadMessages}

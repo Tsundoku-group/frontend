@@ -17,8 +17,8 @@ import AddProfileButton from '@/components/AddProfileButton';
 import {useProfileContext} from '@/context/profileContext';
 import NotificationDropdown from '@/components/navbar/component/NotificationDropdown';
 import Image from 'next/image';
-import MinusRedCircle from "@/assets/icons/status/MinusRedCircle";
-import YellowMoon from "@/assets/icons/status/YellowMoon";
+import MinusRedCircle from "@/assets/status/MinusRedCircle";
+import YellowMoon from "@/assets/status/YellowMoon";
 
 type UserProfile = {
     id: number;

@@ -1,4 +1,6 @@
-const MinusRedCircle = ({ className }: { className?: string }) => (
+import {SVGProps} from "react";
+
+const MinusRedCircle = ({ className, ...props }: SVGProps<SVGSVGElement>) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         version="1.1"
@@ -6,6 +8,7 @@ const MinusRedCircle = ({ className }: { className?: string }) => (
         height="256"
         viewBox="0 0 256 256"
         className={className}
+        {...props}
     >
         <g
             transform="translate(1.4066 1.4066) scale(2.81 2.81)"
