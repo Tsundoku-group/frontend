@@ -5,15 +5,21 @@ import {useRouter} from 'next/navigation';
 import {
     Home,
     User,
-    BookOpen,
     Trophy,
     MessageCircle,
     Users,
-    PenTool, Search, LibraryBig, Pencil, Activity, MessageSquareText, Heart, Star
+    Search,
+    LibraryBig,
+    Pencil,
+    Activity,
+    MessageSquareText,
+    Heart,
+    Star
 } from 'lucide-react';
 import {useSocket} from "@/context/socketContext";
 import {useProfileContext} from "@/context/profileContext";
 import {Card} from "@/components/ui/card";
+import Image from "next/image";
 
 export default function Sidebar() {
     const [unreadMessages, setUnreadMessages] = useState(0);
@@ -92,7 +98,7 @@ export default function Sidebar() {
                 </div>
             </div>
 
-            <nav className="flex px-5 mt-12 mb-20">
+            <nav className="flex px-5 mt-12 mb-16">
                 <ul className="flex flex-col gap-y-8">
                     <li
                         onClick={() => goTo('/shelves')}
@@ -137,6 +143,57 @@ export default function Sidebar() {
                     </li>
                 </ul>
             </nav>
+            <div className="flex items-center mb-3 text-sm font-medium text-text-white justify-center">
+                <Activity className="w-4 h-4 mr-2"/>
+                Activité
+            </div>
+            <Card className="bg-tertiary-black p-4 space-y-2 rounded-3xl border border-secondary-black">
+                <div className="flex items-center text-[10px] text-gray-300">
+                    <MessageSquareText className="w-3 h-3 mr-2 mt-0.5 shrink-0" />
+                    <div>
+                        Vous avez commenté la publication de&nbsp;
+                        <span className="text-green-highlight">Chat Potelé</span>
+                    </div>
+                </div>
+
+                <div className="flex items-center text-[10px] text-gray-300">
+                    <Heart className="w-3 h-3 mr-2 mt-0.5 shrink-0" />
+                    <div>
+                        Vous avez aimé la publication de&nbsp;
+                        <span className="text-green-highlight">Alex Ception</span>
+                    </div>
+                </div>
+
+                <div className="flex items-center text-[10px] text-gray-300">
+                    <Pencil className="w-3 h-3 mr-2 mt-0.5 shrink-0" />
+                    <div>
+                        Vous avez publié l’article&nbsp;
+                        <span className="text-green-highlight">Mes 10 auteurs préférés...</span>
+                    </div>
+                </div>
+
+                <div className="flex items-center text-[10px] text-gray-300">
+                    <Star className="w-3 h-3 mr-2 mt-0.5 shrink-0" />
+                    <div>
+                        Vous avez laissé un avis sur&nbsp;
+                        <span className="text-green-highlight">La Cité Diaphane</span>
+                    </div>
+                </div>
+
+                <div className="flex justify-center">
+                    <Image
+                        src="/reshot-illustration-nature-research.png"
+                        alt=""
+                        width={600}
+                        height={400}
+                        className="object-contain w-auto h-24"
+                    />
+                </div>
+
+                <div className="pt-3 text-center text-gray-500 text-[10px] italic">
+                    Plus rien à signaler !
+                </div>
+            </Card>
         </div>
     );
 }
