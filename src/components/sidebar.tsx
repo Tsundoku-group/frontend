@@ -22,6 +22,7 @@ import PencilFilled from "@/assets/icons/PencilFilled";
 import LibraryFilled from "@/assets/icons/LibraryFilled";
 import HomeRoundedFilled from "@/assets/icons/HomeRoundedFilled";
 import UserFilled from "@/assets/icons/UserFilled";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 
 export default function Sidebar() {
     const [unreadMessages, setUnreadMessages] = useState(0);
@@ -84,19 +85,35 @@ export default function Sidebar() {
                 </div>
 
                 <div className="flex gap-4 justify-center items-center mt-12">
-                    <button
-                        onClick={() => goTo('/home')}
-                        className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
-                    >
-                        <HomeRoundedFilled className="text-text-white w-5 h-5"/>
-                    </button>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    onClick={() => goTo('/home')}
+                                    className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
+                                >
+                                    <HomeRoundedFilled className="text-text-white w-5 h-5" />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="bg-tertiary-black border border-secondary-black px-3 py-2 rounded-lg text-text-white text-xs">
+                                Accueil
+                            </TooltipContent>
+                        </Tooltip>
 
-                    <button
-                        onClick={() => goTo(`/profile/${profileId}`)}
-                        className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
-                    >
-                        <UserFilled className="text-text-white w-5 h-5"/>
-                    </button>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    onClick={() => goTo(`/profile/${profileId}`)}
+                                    className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
+                                >
+                                    <UserFilled className="text-text-white w-5 h-5" />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="bg-tertiary-black border border-secondary-black px-3 py-2 rounded-lg text-text-white text-xs">
+                                Profil
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
             </div>
 
