@@ -17,6 +17,8 @@ import AddProfileButton from '@/components/AddProfileButton';
 import {useProfileContext} from '@/context/profileContext';
 import NotificationDropdown from '@/components/navbar/component/NotificationDropdown';
 import Image from 'next/image';
+import MinusRedCircle from "@/assets/icons/status/MinusRedCircle";
+import YellowMoon from "@/assets/icons/status/YellowMoon";
 
 type UserProfile = {
     id: number;
@@ -69,19 +71,12 @@ function CustomDropDown(props: {
                             {status === ProfileStatus.Online &&
                                 <div className="w-full h-full rounded-full bg-green-highlight"/>}
                             {status === ProfileStatus.DoNotDisturb && (
-                                <Image src="/icons/status/minus-red-circle.svg" alt="Do not disturb" width={20}
-                                       height={20}/>
+                                <MinusRedCircle />
                             )}
                             {status === ProfileStatus.Away && (
                                 <div
                                     className="bg-tertiary-black rounded-full w-5 h-5 flex items-center justify-center overflow-hidden">
-                                    <Image
-                                        src="/icons/status/yellow-moon.svg"
-                                        alt="Away"
-                                        width={20}
-                                        height={20}
-                                        className="w-full h-full object-contain"
-                                    />
+                                    <YellowMoon />
                                 </div>
                             )}
                             {status === ProfileStatus.Offline && (
@@ -180,7 +175,9 @@ export default function Navbar() {
                 <div className="relative">
                     <Avatar className="w-12 h-12">
                         <AvatarImage src={getProfileImageUrl(profile.id, profileImageUrls)} alt={profile.username}/>
-                        <AvatarFallback><User className="w-6 h-6 text-gray-500"/></AvatarFallback>
+                        <AvatarFallback>
+                            <User className="w-6 h-6 text-gray-500"/>
+                        </AvatarFallback>
                     </Avatar>
                     {profile.activeProfile && <div
                         className="absolute top-9 -right-1 w-3.5 h-3.5 bg-green-highlight rounded-full border-2 border-gray-800"></div>}
@@ -206,11 +203,10 @@ export default function Navbar() {
                     <div className="w-4 h-4 rounded-full flex items-center justify-center">
                         {status === ProfileStatus.Online && <div className="w-full h-full bg-green-500 rounded-full"/>}
                         {status === ProfileStatus.DoNotDisturb && (
-                            <Image src="/icons/status/minus-red-circle.svg" alt="Do not disturb" width={20}
-                                   height={20}/>
+                            <MinusRedCircle />
                         )}
                         {status === ProfileStatus.Away && (
-                            <Image src="/icons/status/yellow-moon.svg" alt="Away" width={20} height={20}/>
+                            <YellowMoon />
                         )}
                         {status === ProfileStatus.Offline && (
                             <div className="w-full h-full bg-gray-400 rounded-full flex items-center justify-center">
