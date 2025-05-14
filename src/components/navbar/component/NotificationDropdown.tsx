@@ -93,7 +93,7 @@ export default function NotificationDropdown() {
         <DropdownMenu onOpenChange={(open) => {
             if (open) void handleMarkAsRead();
         }}>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
                 <Button className="relative cursor-pointer bg-transparent hover:bg-tertiary-black hover:border-secondary-black rounded-xl">
                     <Bell className="text-text-white w-6 h-6 fill-current hover:animate-shake transition-transform origin-top" />
                     {hasUnread && (
