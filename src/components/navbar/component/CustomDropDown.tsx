@@ -10,7 +10,7 @@ import LogoutButton from "@/components/navigateButton/logoutButton";
 import {RadioGroup} from "@/components/ui/radio-group";
 import {fetchUserProfiles, setActiveUserProfile, setUserProfileStatus} from "@/server-actions/navbar/actions";
 import {ShowToast} from "@/components/ShowToast";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {useAuthContext} from "@/context/authContext";
 import {useProfileContext} from "@/context/profileContext";
 import {ProfileList} from "@/components/navbar/component/ProfileList";
@@ -65,17 +65,19 @@ export function CustomDropDown({
 
     useEffect(() => {
         if (!userId || userProfiles.length > 0) return;
-        fetchUserProfiles(userId).then((data) => {
-            setUserProfiles(data.profiles);
+        fetchUserProfiles(userId).then(({ profiles }) => {
+            setUserProfiles((prev) => {
+                const prevIds = new Set(prev.map(p => p.id));
+                const nextIds = new Set(profiles.map(p => p.id));
+                return prevIds.size !== nextIds.size ? profiles : prev;
+            });
         }).catch(() => {
             ShowToast('destructive', 'Erreur lors de la récupération des profils', 'Erreur');
         });
     }, [userId, userProfiles.length]);
 
-
     useEffect(() => {
-        if (!id) return;
-        if (activeStatus !== ProfileStatus.Offline) return;
+        if (!id || activeStatus !== ProfileStatus.Offline) return;
 
         const currentStatus = status as ProfileStatus;
         const preserve = [ProfileStatus.DoNotDisturb, ProfileStatus.Away];
@@ -86,9 +88,9 @@ export function CustomDropDown({
         } else {
             setActiveStatus(currentStatus);
         }
-    }, [id]);
+    }, [id, activeStatus, status]);
 
-    const handleProfileChange = async (profileId: number) => {
+    const handleProfileChange = useCallback(async (profileId: number) => {
         if (!userId || !profileId) return;
         try {
             const profileData = await setActiveUserProfile(userId, profileId);
@@ -100,22 +102,24 @@ export function CustomDropDown({
         } catch {
             ShowToast('destructive', 'Erreur lors du changement de profil', 'Erreur');
         }
-    };
+    }, [userId, setActiveProfileInStorage]);
 
-    const handleStatusProfileChange = async (profileId: number, status: string) => {
+    const handleStatusProfileChange = useCallback(async (profileId: number, status: string) => {
         if (!userId || !status) return;
         try {
-            const {success} = await setUserProfileStatus(profileId, status);
+            const { success } = await setUserProfileStatus(profileId, status);
             if (success) {
                 setActiveStatus(status as ProfileStatus);
-                setActiveProfileInStorage({...activeProfileInStorage, status}, false);
+                setActiveProfileInStorage({ ...activeProfileInStorage, status }, false);
             }
         } catch {
             ShowToast('destructive', 'Erreur lors du changement de statut', 'Erreur');
         }
-    };
+    }, [userId, setActiveProfileInStorage, activeProfileInStorage]);
 
-    const currentValue = isSwitching === 'profiles' ? (activeProfile?.toString() ?? '') : activeStatus;
+    const currentValue = useMemo(() => {
+        return isSwitching === 'profiles' ? (activeProfile?.toString() ?? '') : activeStatus;
+    }, [isSwitching, activeProfile, activeStatus]);
 
     return (
         <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
@@ -134,7 +138,7 @@ export function CustomDropDown({
                             </AvatarFallback>
                         </Avatar>
                         <div className="absolute bottom-0 left-6 w-5 h-5 rounded-full border-2 border-tertiary-black flex items-center justify-center">
-                            {profileStatusConfig[status].icon}
+                            {status in profileStatusConfig ? profileStatusConfig[status].icon : null}
                         </div>
                     </div>
                     <span className="ml-2 text-text-white text-sm">

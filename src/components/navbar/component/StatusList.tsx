@@ -1,12 +1,13 @@
 import { RadioGroupItem } from "@/components/ui/radio-group";
 import { ProfileStatus } from "./UserStatusBadge";
 import {profileStatusConfig} from "@/types/ProfileStatus";
+import {memo} from "react";
 
 interface Props {
     activeStatus: ProfileStatus;
 }
 
-export function StatusList({ activeStatus }: Props) {
+function StatusListComponent({ activeStatus }: Props) {
     return (
         <>
             {Object.values(ProfileStatus).map((status) => (
@@ -32,3 +33,5 @@ export function StatusList({ activeStatus }: Props) {
         </>
     );
 }
+
+export const StatusList = memo(StatusListComponent);

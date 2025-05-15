@@ -9,8 +9,6 @@ export enum ProfileStatus {
     Offline = "offline",
 }
 
-export type ProfileStatusType = keyof typeof ProfileStatus;
-
 export const profileStatusConfig: Record<ProfileStatus, { label: string; icon: JSX.Element }> = {
     [ProfileStatus.Online]: {
         label: "Actif",

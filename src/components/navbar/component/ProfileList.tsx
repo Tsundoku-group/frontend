@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { RadioGroupItem } from "@/components/ui/radio-group";
@@ -9,15 +10,23 @@ interface Props {
     getProfileImageUrl: (urls: Record<string, string>, id?: number) => string;
 }
 
-export function ProfileList({ profiles, profileImageUrls, getProfileImageUrl }: Props) {
+function ProfileListComponent({ profiles, profileImageUrls, getProfileImageUrl }: Props) {
     return (
         <>
             {profiles.map((profile) => (
-                <div key={profile.id} className={`flex items-center space-x-1 text-white w-full hover:bg-gray-700 p-1 rounded-lg transition ${profile.activeProfile ? 'bg-gray-800 border border-green-500' : ''}`}>
+                <div
+                    key={profile.id}
+                    className={`flex items-center space-x-1 text-white w-full hover:bg-gray-700 p-1 rounded-lg transition ${
+                        profile.activeProfile ? 'bg-gray-800 border border-green-500' : ''
+                    }`}
+                >
                     <label htmlFor={`profile-${profile.id}`} className="flex items-center w-full cursor-pointer">
                         <div className="relative">
                             <Avatar className="w-12 h-12">
-                                <AvatarImage src={getProfileImageUrl(profileImageUrls, profile.id)} alt={profile.username} />
+                                <AvatarImage
+                                    src={getProfileImageUrl(profileImageUrls, profile.id)}
+                                    alt={profile.username}
+                                />
                                 <AvatarFallback>
                                     <User className="w-6 h-6 text-gray-500" />
                                 </AvatarFallback>
@@ -28,9 +37,15 @@ export function ProfileList({ profiles, profileImageUrls, getProfileImageUrl }: 
                         </div>
                         <span className="text-sm ml-4">{truncateString(profile.username, 10)}</span>
                     </label>
-                    <RadioGroupItem value={profile.id.toString()} id={`profile-${profile.id}`} className="h-5 w-5 border-gray-400 checked:bg-green-highlight" />
+                    <RadioGroupItem
+                        value={profile.id.toString()}
+                        id={`profile-${profile.id}`}
+                        className="h-5 w-5 border-gray-400 checked:bg-green-highlight"
+                    />
                 </div>
             ))}
         </>
     );
 }
+
+export const ProfileList = memo(ProfileListComponent);
