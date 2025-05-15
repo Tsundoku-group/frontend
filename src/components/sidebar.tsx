@@ -142,7 +142,7 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
     return (
         <div
             className={cn(
-                'fixed min-h-screen transition-all duration-300 flex flex-col py-6 px-5 text-text-white',
+                'fixed min-h-screen transition-all duration-300 flex flex-col py-6 px-5 text-text-white z-50',
                 isCollapsed ? 'w-20 items-center' : 'w-60'
             )}
             style={{background: 'linear-gradient(to bottom, #281f39 1%, #171C26 40%)'}}

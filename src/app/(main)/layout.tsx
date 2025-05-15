@@ -60,7 +60,7 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
                             </div>
                             <div className="col-span-10 ml-[3em] mr-[4em]">
                                 <div className="mb-32">
-                                    <Navbar />
+                                    <Navbar isCollapsed={isCollapsed} />
                                 </div>
                                 <main style={{fontSize: 'var(--text-size)'}}>
                                     {children}

@@ -6,8 +6,13 @@ import {useProfileContext} from '@/context/profileContext';
 import NotificationDropdown from '@/components/navbar/component/NotificationDropdown';
 import {CustomDropDown} from '@/components/navbar/component/CustomDropDown';
 import {ProfileStatus} from '@/types/ProfileStatus';
+import {cn} from "@/lib/utils";
 
-export default function Navbar() {
+interface NavbarProps {
+    isCollapsed: boolean;
+}
+
+export default function Navbar({isCollapsed}: NavbarProps) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isNavbarVisible, setIsNavbarVisible] = useState(true);
     const [hasScrolled, setHasScrolled] = useState(false);
@@ -31,22 +36,28 @@ export default function Navbar() {
             {hasScrolled && (
                 <div
                     onMouseEnter={() => setIsNavbarVisible(true)}
-                    className="fixed top-0 right-0 w-[calc(100%-16.66%)] h-4 z-50"
+                    className="fixed top-0 right-0 h-4 z-50"
+                    style={{
+                        left: isCollapsed ? '5.5rem' : '15.5rem',
+                        width: isCollapsed ? 'calc(100% - 5.5rem)' : 'calc(100% - 15.5rem)',
+                    }}
                 />
             )}
 
             <div
-                className={`fixed top-0 right-0 w-[calc(100%-14%)] transition-transform duration-300 z-40 px-12 ${
-                    isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
-                } ${hasScrolled ? 'bg-secondary-black/90 backdrop-blur-sm shadow-md' : 'bg-transparent'}`}
-                onMouseLeave={() => {
-                    if (hasScrolled && !isDropdownOpen) {
-                        setIsNavbarVisible(false);
-                    }
+                className={cn(
+                    'fixed top-0 right-0 z-40 transition-all duration-300 px-12',
+                    isNavbarVisible ? 'translate-y-0' : '-translate-y-full',
+                    hasScrolled ? 'bg-secondary-black/90 backdrop-blur-sm shadow-md' : 'bg-transparent'
+                )}
+                style={{
+                    paddingLeft: isCollapsed ? '5.5rem' : '15.5rem',
+                    transition: 'padding-left 0.3s ease, transform 0.3s ease',
+                    width: '100%',
                 }}
             >
                 <div className="h-28 flex justify-between items-center">
-                    <div className="cursor-default text-text-white text-xl font-extralight ml-12">
+                    <div className="cursor-default text-text-white text-xl font-extralight ml-20">
                         Bienvenue,{' '}
                         <span className="text-green-highlight">
                           {activeProfileInStorage?.firstName && activeProfileInStorage?.lastName
