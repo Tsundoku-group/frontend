@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {ReactNode, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {
     Search,
@@ -8,7 +8,7 @@ import {
     Activity,
     MessageSquareText,
     Heart,
-    Star, ChevronRight
+    Star, ChevronRight, ChevronDown
 } from 'lucide-react';
 import {useSocket} from "@/context/socketContext";
 import {useProfileContext} from "@/context/profileContext";
@@ -23,6 +23,65 @@ import LibraryFilled from "@/assets/icons/LibraryFilled";
 import HomeRoundedFilled from "@/assets/icons/HomeRoundedFilled";
 import UserFilled from "@/assets/icons/UserFilled";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import {cn} from "@/lib/utils";
+
+interface SidebarCollapseItem {
+    label: string;
+    icon?: ReactNode;
+    onClick?: () => void;
+}
+
+interface SidebarGroupsCollapsedProps {
+    title: string;
+    icon: ReactNode;
+    items: SidebarCollapseItem[];
+}
+
+export function SidebarGroupCollapse({title, icon, items}: SidebarGroupsCollapsedProps) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <li>
+            <button
+                onClick={() => setIsOpen((prev) => !prev)}
+                className="group w-full flex items-center justify-between bg-transparent hover:bg-tertiary-black px-3 py-2 rounded-2xl transition-all"
+            >
+                <div className="flex items-center gap-3">
+                    {icon}
+                    <span className="text-text-white text-[13px] font-medium">{title}</span>
+                </div>
+                {isOpen ? (
+                    <ChevronDown className="w-4 h-4 text-[#e1e1ec] transition-all"/>
+                ) : (
+                    <ChevronRight className="w-4 h-4 text-[#e1e1ec] transition-all"/>
+                )}
+            </button>
+
+            <ul
+                className={cn(
+                    "mt-2 space-y-1 pl-4 overflow-hidden transition-[max-height] duration-500 ease-in-out",
+                    isOpen ? "max-h-60" : "max-h-0"
+                )}
+            >
+                <div className="relative pl-4 mt-1">
+                    <div className="absolute left-1 top-0 h-full w-px bg-text-white opacity-30"/>
+                    {items.map((item, index) => (
+                        <li key={index}>
+                            <button
+                                onClick={item.onClick}
+                                className="group w-full flex items-center justify-between bg-transparent hover:bg-tertiary-black px-3 py-2 rounded-xl transition-all text-xs"
+                            >
+                                <span>{item.label}</span>
+                                <ChevronRight
+                                    className="w-3 h-3 text-white opacity-0 translate-x-[-4px] transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"/>
+                            </button>
+                        </li>
+                    ))}
+                </div>
+            </ul>
+        </li>
+    );
+}
 
 export default function Sidebar() {
     const [unreadMessages, setUnreadMessages] = useState(0);
@@ -75,7 +134,8 @@ export default function Sidebar() {
             </div>
 
             <div className="px-4">
-                <div className="flex items-center bg-secondary-black border border-secondary-black rounded-2xl px-3 py-2">
+                <div
+                    className="flex items-center bg-secondary-black border border-secondary-black rounded-2xl px-3 py-2">
                     <input
                         type="text"
                         placeholder="Explorer"
@@ -92,10 +152,11 @@ export default function Sidebar() {
                                     onClick={() => goTo('/home')}
                                     className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
                                 >
-                                    <HomeRoundedFilled className="text-text-white w-5 h-5" />
+                                    <HomeRoundedFilled className="text-text-white w-5 h-5"/>
                                 </button>
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="bg-tertiary-black border border-secondary-black px-3 py-2 rounded-lg text-text-white text-xs">
+                            <TooltipContent side="top"
+                                            className="bg-tertiary-black border border-secondary-black px-3 py-2 rounded-lg text-text-white text-xs">
                                 Accueil
                             </TooltipContent>
                         </Tooltip>
@@ -106,10 +167,11 @@ export default function Sidebar() {
                                     onClick={() => goTo(`/profile/${profileId}`)}
                                     className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
                                 >
-                                    <UserFilled className="text-text-white w-5 h-5" />
+                                    <UserFilled className="text-text-white w-5 h-5"/>
                                 </button>
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="bg-tertiary-black border border-secondary-black px-3 py-2 rounded-lg text-text-white text-xs">
+                            <TooltipContent side="top"
+                                            className="bg-tertiary-black border border-secondary-black px-3 py-2 rounded-lg text-text-white text-xs">
                                 Profil
                             </TooltipContent>
                         </Tooltip>
@@ -119,24 +181,21 @@ export default function Sidebar() {
 
             <nav className="flex flex-col mt-12 mb-16 w-full">
                 <ul className="flex flex-col gap-y-2 pl-[6px]">
-                    {[{
-                        path: '/shelves', icon: LibraryFilled, label: 'Étagères'
-                    }, {
-                        path: '/challenges', icon: TrophyFilled, label: 'Défis'
-                    }, {
-                        path: '/conversations', icon: IcBaselineWechat, label: 'Messages'
-                    }, {
-                        path: '/clubs', icon: UsersFilled, label: 'Clubs'
-                    }, {
-                        path: '/articles', icon: PencilFilled, label: 'Articles'
-                    }].map(({ path, icon: Icon, label }) => (
+                    {[
+                        {path: '/shelves', icon: LibraryFilled, label: 'Étagères'},
+                        {path: '/challenges', icon: TrophyFilled, label: 'Défis'},
+                        {path: '/conversations', icon: IcBaselineWechat, label: 'Messages'},
+                        {path: '/articles', icon: PencilFilled, label: 'Articles'},
+                    ].map(({path, icon: Icon, label}) => (
                         <li key={path} onClick={() => goTo(path)}>
-                            <Button className="group w-full flex items-center justify-between bg-transparent hover:bg-tertiary-black px-3 py-2 rounded-2xl transition-all">
+                            <Button
+                                className="group w-full flex items-center justify-between bg-transparent hover:bg-tertiary-black px-3 py-2 rounded-2xl transition-all">
                                 <div className="flex items-center gap-3">
                                     <Icon className="w-5 h-5 text-text-white"/>
                                     <span className="text-text-white text-[13px] font-medium">{label}</span>
                                     {label === 'Messages' && unreadMessages > 0 && (
-                                        <span className="ml-1 bg-red-500 text-[10px] rounded-full h-4 w-4 flex items-center justify-center text-white font-semibold">
+                                        <span
+                                            className="ml-1 bg-red-500 text-[10px] rounded-full h-4 w-4 flex items-center justify-center text-white font-semibold">
                                             {unreadMessages}
                                         </span>
                                     )}
@@ -147,6 +206,25 @@ export default function Sidebar() {
                             </Button>
                         </li>
                     ))}
+
+                    <SidebarGroupCollapse
+                        title="Clubs"
+                        icon={<UsersFilled className="w-5 h-5 text-text-white"/>}
+                        items={[
+                            {
+                                label: "Mes clubs",
+                                onClick: () => goTo("/clubs"),
+                            },
+                            {
+                                label: "Explorer",
+                                onClick: () => goTo("/clubs/explore"),
+                            },
+                            {
+                                label: "Créer un club",
+                                onClick: () => goTo("/clubs/new"),
+                            },
+                        ]}
+                    />
                 </ul>
             </nav>
 
@@ -164,7 +242,7 @@ export default function Sidebar() {
                     icon: Pencil, text: "Vous avez publié l’article", highlight: "Mes 10 auteurs préférés..."
                 }, {
                     icon: Star, text: "Vous avez laissé un avis sur", highlight: "La Cité Diaphane"
-                }].map(({ icon: Icon, text, highlight }, index) => (
+                }].map(({icon: Icon, text, highlight}, index) => (
                     <div key={index} className="flex items-center text-[10px] text-[#cfcfe1]">
                         <Icon className="w-3 h-3 mr-2 mt-0.5 shrink-0"/>
                         <div>
@@ -175,7 +253,7 @@ export default function Sidebar() {
                 ))}
 
                 <div className="flex justify-center">
-                   <ReshotIllustration />
+                    <ReshotIllustration/>
                 </div>
 
                 <div className="pt-3 text-center text-gray-500 text-[10px] italic">
