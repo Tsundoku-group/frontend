@@ -40,8 +40,13 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
                 <Suspense fallback={<GlobalLoader/>}>
                     <SocketProvider>
                         <button
-                            onClick={() => setIsCollapsed(!isCollapsed)}
-                            className="fixed top-4 left-4 z-50 p-2 rounded-xl bg-secondary-black hover:bg-tertiary-black transition"
+                            onClick={() => setIsCollapsed(prev => !prev)}
+                            className="fixed top-4 z-50 p-2 rounded-xl bg-secondary-black hover:bg-tertiary-black transition border-2 border-tertiary-black"
+                            style={{
+                                left: isCollapsed ? '5.5rem' : '15.5rem',
+                                transition: 'left 0.3s ease'
+                            }}
+                            aria-label="Collapse sidebar"
                         >
                             {isCollapsed ? (
                                 <PanelRight className="text-white w-5 h-5" />
