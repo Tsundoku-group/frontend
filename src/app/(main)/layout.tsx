@@ -58,10 +58,16 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
                             <div className="col-span-2">
                                 <Sidebar isCollapsed={isCollapsed}/>
                             </div>
-                            <div className="col-span-10 ml-[3em] mr-[4em]">
                                 <div className="mb-32">
                                     <Navbar isCollapsed={isCollapsed} />
                                 </div>
+                            <div
+                                className="col-span-12 transition-all duration-300"
+                                style={{
+                                    marginLeft: isCollapsed ? '10.5rem' : '20.5rem',
+                                    marginRight: '4em'
+                                }}
+                            >
                                 <main style={{fontSize: 'var(--text-size)'}}>
                                     {children}
                                 <InactivityDetector timeout={30000} />
