@@ -17,6 +17,7 @@ import {useAuthContext} from "@/context/authContext";
 import {useProfileContext} from "@/context/profileContext";
 import {ProfileList} from "@/components/navbar/component/ProfileList";
 import {StatusList} from "@/components/navbar/component/StatusList";
+import {profileStatusConfig} from "@/types/ProfileStatus";
 
 type UserProfile = {
     id: number;
@@ -56,7 +57,6 @@ export function CustomDropDown({
     const [isSwitching, setIsSwitching] = useState<'main' | 'profiles' | 'status'>('main');
     const {activeProfileInStorage, setActiveProfileInStorage, profileImageUrls} = useProfileContext();
     const [userProfiles, setUserProfiles] = useState<UserProfile[]>([]);
-    const [loading, setLoading] = useState(false);
     const {user} = useAuthContext();
     const userId = user?.userId as number;
 
@@ -67,13 +67,10 @@ export function CustomDropDown({
 
     useEffect(() => {
         if (!userId || userProfiles.length > 0) return;
-        setLoading(true);
         fetchUserProfiles(userId).then((data) => {
             setUserProfiles(data.profiles);
-            setLoading(false);
         }).catch(() => {
             ShowToast('destructive', 'Erreur lors de la récupération des profils', 'Erreur');
-            setLoading(false);
         });
     }, [userId, userProfiles.length]);
 
@@ -138,23 +135,8 @@ export function CustomDropDown({
                                 <User className="w-6 h-6 text-gray-500"/>
                             </AvatarFallback>
                         </Avatar>
-                        <div
-                            className="absolute bottom-0 left-6 w-5 h-5 rounded-full border-2 border-tertiary-black flex items-center justify-center">
-                            {status === ProfileStatus.Online &&
-                                <div className="w-full h-full rounded-full bg-green-highlight"/>}
-                            {status === ProfileStatus.DoNotDisturb && <MinusRedCircle/>}
-                            {status === ProfileStatus.Away && (
-                                <div
-                                    className="bg-tertiary-black rounded-full w-5 h-5 flex items-center justify-center overflow-hidden">
-                                    <YellowMoon/>
-                                </div>
-                            )}
-                            {status === ProfileStatus.Offline && (
-                                <div
-                                    className="w-full h-full flex items-center justify-center bg-gray-500 rounded-full">
-                                    <div className="w-2/4 h-2/4 bg-gray-900 rounded-full"/>
-                                </div>
-                            )}
+                        <div className="absolute bottom-0 left-6 w-5 h-5 rounded-full border-2 border-tertiary-black flex items-center justify-center">
+                            {profileStatusConfig[status].icon}
                         </div>
                     </div>
                     <span className="ml-2 text-text-white text-sm">
@@ -173,8 +155,11 @@ export function CustomDropDown({
                         }}
                     >
                         <div className="w-1/2 p-2 flex flex-col space-y-2">
-                            <ProfileButton profileId={id!} email={email}
-                                           onClose={() => setIsDropdownOpen(false)}/>
+                            <ProfileButton
+                                profileId={id!}
+                                email={email}
+                                onClose={() => setIsDropdownOpen(false)}
+                            />
                             <Button onClick={() => setIsSwitching('profiles')}
                                     className="flex justify-between w-full text-white bg-tertiary-black hover:bg-gray-700">
                                 <div className="flex items-center">
@@ -215,7 +200,7 @@ export function CustomDropDown({
                                 }}
                                 className="space-y-2"
                             >
-                                {isSwitching === 'profiles' && loading ? (
+                                {isSwitching === 'profiles' ? (
                                     <ProfileList
                                         profiles={userProfiles}
                                         profileImageUrls={profileImageUrls}
