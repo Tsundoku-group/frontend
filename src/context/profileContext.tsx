@@ -17,13 +17,7 @@ type ProfileContextType = {
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
-    const [activeProfileInStorage, setActiveProfileInStorageState] = useState<Profile | null>(() => {
-        if (typeof window !== "undefined") {
-            const storedProfile = localStorage.getItem("activeProfile");
-            return storedProfile ? (JSON.parse(storedProfile) as Profile) : null;
-        }
-        return null;
-    });
+    const [activeProfileInStorage, setActiveProfileInStorageState] = useState<Profile | null>(null);
     const [profileImageUrls, setProfileImageUrls] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
@@ -89,7 +83,6 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         if (storedProfile) {
             const parsedProfile = JSON.parse(storedProfile) as Profile;
             setActiveProfileInStorageState(parsedProfile);
-
             void loadProfileImages(parsedProfile.id);
         }
     }, [loadProfileImages]);

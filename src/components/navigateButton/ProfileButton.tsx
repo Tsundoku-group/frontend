@@ -8,7 +8,7 @@ import {useProfileContext} from "@/context/profileContext";
 
 type ProfileButtonProps = {
     profileId: number;
-    email: string;
+    email?: string;
     onClose: () => void;
 };
 
