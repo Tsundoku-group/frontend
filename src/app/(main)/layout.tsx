@@ -3,14 +3,16 @@
 import Navbar from "@/components/navbar/navbar";
 import Sidebar from "@/components/sidebar"
 import {SocketProvider} from "@/context/socketContext";
-import React, {Suspense, useEffect} from "react";
+import React, {Suspense, useEffect, useState} from "react";
 import {Toaster} from "@/components/ui/toaster";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import GlobalLoader from "@/components/loader/GlobalLoader";
 import InactivityDetector from "@/components/InactivityDetector";
+import {PanelLeft, PanelRight} from "lucide-react";
 
 export default function MainLayout({children}: { children: React.ReactNode }) {
     const queryClient = new QueryClient();
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     useEffect(() => {
         const savedFont = localStorage.getItem("selectedFont");
@@ -37,9 +39,19 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
             <QueryClientProvider client={queryClient}>
                 <Suspense fallback={<GlobalLoader/>}>
                     <SocketProvider>
+                        <button
+                            onClick={() => setIsCollapsed(!isCollapsed)}
+                            className="fixed top-4 left-4 z-50 p-2 rounded-xl bg-secondary-black hover:bg-tertiary-black transition"
+                        >
+                            {isCollapsed ? (
+                                <PanelRight className="text-white w-5 h-5" />
+                            ) : (
+                                <PanelLeft className="text-white w-5 h-5" />
+                            )}
+                        </button>
                         <div className="grid grid-cols-12">
                             <div className="col-span-2">
-                                <Sidebar/>
+                                <Sidebar isCollapsed={isCollapsed}/>
                             </div>
                             <div className="col-span-10 ml-[3em] mr-[4em]">
                                 <div className="mb-32">
