@@ -9,11 +9,10 @@ import ProfileButton from "@/components/navigateButton/ProfileButton";
 import {Button} from "@/components/ui/button";
 import SettingsButton from "@/components/navigateButton/SettingsButton";
 import LogoutButton from "@/components/navigateButton/logoutButton";
-import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
-import AddProfileButton from "@/components/AddProfileButton";
+import {RadioGroup} from "@/components/ui/radio-group";
 import {fetchUserProfiles, setActiveUserProfile, setUserProfileStatus} from "@/server-actions/navbar/actions";
 import {ShowToast} from "@/components/ShowToast";
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useAuthContext} from "@/context/authContext";
 import {useProfileContext} from "@/context/profileContext";
 import {ProfileList} from "@/components/navbar/component/ProfileList";
@@ -216,7 +215,7 @@ export function CustomDropDown({
                                 }}
                                 className="space-y-2"
                             >
-                                {isSwitching === 'profiles' ? (
+                                {isSwitching === 'profiles' && loading ? (
                                     <ProfileList
                                         profiles={userProfiles}
                                         profileImageUrls={profileImageUrls}
