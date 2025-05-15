@@ -152,8 +152,9 @@ export function CustomDropDown({
                     <ChevronDown className="text-text-white ml-2"/>
                 </div>
             </DropdownMenuTrigger>
-                <DropdownMenuContent
-                    className="overflow-hidden w-64 mt-2 bg-secondary-black border-tertiary-black shadow-xl mr-6">
+            <DropdownMenuContent
+                className="overflow-hidden w-64 mt-2 mr-6 rounded-xl border border-tertiary-black bg-secondary-black/95 backdrop-blur-md shadow-[0_12px_32px_rgba(0,0,0,0.45)] transition-all duration-300"
+            >
                     <div
                         className="flex transition-transform duration-200 ease-in-out"
                         style={{
