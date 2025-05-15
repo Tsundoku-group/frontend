@@ -123,7 +123,12 @@ export function CustomDropDown({
 
     return (
         <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-            <DropdownMenuTrigger onClick={toggleDropdown}>
+            <DropdownMenuTrigger
+                onClick={toggleDropdown}
+                aria-expanded={isDropdownOpen}
+                aria-label="Menu de profil"
+                tabIndex={0}
+            >
                 <div
                     className="flex items-center bg-secondary-black border-tertiary-black border-2 px-5 py-2 rounded-2xl cursor-pointer relative mr-4 hover:bg-tertiary-black transition-colors duration-300 ease-in-out">
                     <div className="relative">
