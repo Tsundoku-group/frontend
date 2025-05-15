@@ -2,8 +2,6 @@ import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/componen
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {ChevronDown, ChevronLeft, ChevronRight, User, UserPen} from "lucide-react";
 import {ProfileStatus} from "./UserStatusBadge";
-import YellowMoon from "@/assets/status/YellowMoon";
-import MinusRedCircle from "@/assets/status/MinusRedCircle";
 import {truncateString} from "@/utils/string-utils";
 import ProfileButton from "@/components/navigateButton/ProfileButton";
 import {Button} from "@/components/ui/button";

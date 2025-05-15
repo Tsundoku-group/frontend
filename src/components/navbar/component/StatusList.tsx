@@ -7,13 +7,6 @@ interface Props {
 }
 
 export function StatusList({ activeStatus }: Props) {
-    const labels: Record<ProfileStatus, string> = {
-        online: 'Actif',
-        do_not_disturb: 'Ne pas déranger',
-        away: 'Absent',
-        offline: 'Hors ligne',
-    };
-
     return (
         <>
             {Object.values(ProfileStatus).map((status) => (
