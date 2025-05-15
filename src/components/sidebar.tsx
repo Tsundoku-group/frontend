@@ -195,7 +195,7 @@ export default function Sidebar() {
                                     <span className="text-text-white text-[13px] font-medium">{label}</span>
                                     {label === 'Messages' && unreadMessages > 0 && (
                                         <span
-                                            className="ml-1 bg-red-500 text-[10px] rounded-full h-4 w-4 flex items-center justify-center text-white font-semibold">
+                                            className="ml-1 bg-red-highlight text-[10px] rounded-full h-4 w-4 flex items-center justify-center text-white font-semibold">
                                             {unreadMessages}
                                         </span>
                                     )}
