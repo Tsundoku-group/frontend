@@ -25,7 +25,6 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
         return null;
     });
     const [profileImageUrls, setProfileImageUrls] = useState<Record<string, string>>({});
-    const [initialLoading, setInitialLoading] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
 
@@ -93,7 +92,6 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
 
             void loadProfileImages(parsedProfile.id);
         }
-        setInitialLoading(false);
     }, [loadProfileImages]);
 
     const setActiveProfileInStorage = (
@@ -138,10 +136,6 @@ export const ProfileProvider = ({children}: { children: React.ReactNode }) => {
 
         void loadProfileImages(profileId);
     };
-
-    if (initialLoading) {
-        return <LoadingSkeleton/>;
-    }
 
     return (
         <ProfileContext.Provider
