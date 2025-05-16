@@ -13,7 +13,7 @@ interface BodyProps {
 
 const Body = ({profileId, activeTab, setActiveTab, isOwnProfile}: BodyProps) => {
     return (
-        <div className="mt-4 px-4">
+        <div className="mb-2">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="flex justify-start space-x-4 bg-primary-black pb-2">
                     <TabsTrigger

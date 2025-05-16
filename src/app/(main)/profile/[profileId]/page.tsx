@@ -61,7 +61,7 @@ const ProfilePage = React.memo(({params: {profileId}}: Props) => {
         : imagesOtherProfiles?.coverImageUrl || profile?.coverImageUrl;
 
     return (
-        <div className="min-h-screen grid grid-cols-12 grid-rows-[auto,1fr] gap-16 pt-8">
+        <div className="min-h-screen grid grid-cols-12 grid-rows-[auto,1fr] gap-6 gap-x-12 pt-8">
             <div className="col-span-8 row-span-1">
                 <ProfileHeader
                     id={profile?.id}

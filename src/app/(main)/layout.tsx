@@ -58,7 +58,7 @@ export default function MainLayout({children}: { children: React.ReactNode }) {
                             <div className="col-span-2">
                                 <Sidebar isCollapsed={isCollapsed}/>
                             </div>
-                                <div className="mb-32">
+                                <div className="mb-24">
                                     <Navbar isCollapsed={isCollapsed} />
                                 </div>
                             <div

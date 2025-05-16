@@ -41,7 +41,7 @@ export default function GroupPage({ params: {slug} }: Props) {
     if (error || !group) return <div className="text-red-500">{error ?? "Groupe introuvable"}</div>;
 
     return (
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+        <div className="max-w-7xl pt-8 grid grid-cols-1 lg:grid-cols-3">
             <div className="col-span-full">
                 <GroupHeader
                     name={group.name}
