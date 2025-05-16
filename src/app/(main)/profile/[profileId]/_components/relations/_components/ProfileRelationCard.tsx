@@ -25,6 +25,7 @@ import {useProfileContext} from "@/context/profileContext";
 import {getProfileImageUrl} from "@/utils/profileImageUtils";
 import {useRouter} from "next/navigation";
 import {useSocket} from "@/context/socketContext";
+import {truncateString} from "@/utils/string-utils";
 
 interface ProfileRelationCardProps {
     friendshipId: number | null;
@@ -128,16 +129,17 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
 
     return (
         <>
-            <Card className="w-full bg-secondary-black text-white border-none">
-                <CardHeader className="grid grid-cols-3 items-center p-4">
-                    <Avatar className="col-span-1 w-20 h-20">
+            <Card
+                className="w-full rounded-xl bg-secondary-black border border-gray-700 shadow-md text-text-white">
+                <CardHeader className="grid grid-cols-4 items-center p-4">
+                    <Avatar className="w-20 h-20">
                         <AvatarImage src={profileImageUrl} alt="Avatar"/>
                         <AvatarFallback className="bg-gray-600">
                             <User/>
                         </AvatarFallback>
                     </Avatar>
                     <div className="col-span-2 text-sm">
-                        <div className="font-semibold">{friend.lastname} {friend.firstname}</div>
+                        <div className="font-semibold">{truncateString(friend.lastname + friend.firstname, 25)}</div>
                         <div className="text-sm text-gray-400">@{friend.username}</div>
                         {relationType === "suggestions" && friend.commonFriendsCount && isOwnProfile ? (
                             <div className="text-sm text-gray-400 mt-1">
@@ -151,29 +153,29 @@ const ProfileRelationCard = ({friendshipId, friend, relationType, isOwnProfile}:
                         Voir le profil
                     </button>
                     <div className="flex space-x-2">
-                        {["friends", "followers", "followed", "suggestions"].includes(relationType) && !relationState.isFriend ? (
+                        {["friends", "followers", "followed", "suggestions"].includes(relationType) && !relationState.isFriend && (
                             <Button
-                                className="text-primary text-sm hover:text-blue-700"
                                 onClick={() => {
                                     setActionType("addFriend");
                                     setIsOpen(true);
                                 }}
+                                className="relative group px-4 py-1.5 text-sm text-purple-highlight border border-purple-highlight rounded-full overflow-hidden bg-transparent transition-all duration-300 hover:text-white hover:bg-purple-highlight"
                             >
                                 Ajouter en ami
                             </Button>
-                        ) : null}
+                        )}
 
-                        {relationType === "followers" && !relationState.isFollow ? (
+                        {relationType === "followers" && !relationState.isFollow && (
                             <Button
-                                className="text-blue-500 text-sm hover:text-blue-700"
                                 onClick={() => {
                                     setActionType("follow");
                                     setIsOpen(true);
                                 }}
+                                className="relative group px-4 py-1.5 text-sm text-green-highlight border border-green-highlight rounded-full overflow-hidden bg-transparent transition-all duration-300 hover:text-white hover:bg-green-highlight"
                             >
                                 Suivre
                             </Button>
-                        ) : null}
+                        )}
 
                         {isOwnProfile && (
                             <>

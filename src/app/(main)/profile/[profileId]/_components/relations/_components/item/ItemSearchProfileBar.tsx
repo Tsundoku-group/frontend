@@ -32,14 +32,14 @@ const ItemSearchProfileBar = <T extends {}>({placeholder = "Rechercher...", item
     };
 
     return (
-        <div className="flex items-center w-full bg-primary-black border-none rounded">
+        <div className="flex items-center w-full bg-tertiary-black border-none rounded">
             <Search className="text-gray-400 w-4 h-4 ml-3"/>
             <Input
                 type="text"
                 placeholder={placeholder}
                 value={searchTerm}
                 onChange={handleInputChange}
-                className="flex-1 p-2 text-sm bg-primary-black border-none focus:outline-none"
+                className="flex-1 p-2 text-sm bg-tertiary-black border-none focus:outline-none"
             />
         </div>
     );
