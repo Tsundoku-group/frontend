@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Library } from "lucide-react";
 import StatsIcon from "@/assets/icons/StatsIcon";
 
 const genresData = [
