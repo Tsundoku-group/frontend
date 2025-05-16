@@ -1,16 +1,18 @@
 "use client";
 
 import React from "react";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {Facebook, Instagram, Twitter, User, ZoomIn} from "lucide-react";
-import {
-    Dialog,
-    DialogContent,
-    DialogTrigger,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import Image from 'next/image';
+import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Facebook, Instagram, Twitter, User, ZoomIn } from "lucide-react";
+import CoverImage from "@/app/(main)/profile/[profileId]/_components/header/_components/CoverImage";
+import ContactCounts from "@/app/(main)/profile/[profileId]/_components/header/_components/ContactCounts";
+import ProfileAvatarWithDialog
+    from "@/app/(main)/profile/[profileId]/_components/header/_components/ProfileAvatarWithDialog";
+import SocialLinks from "@/app/(main)/profile/[profileId]/_components/header/_components/SocialLinks";
+import ProfileInfo from "@/app/(main)/profile/[profileId]/_components/header/_components/ProfileInfo";
+import LatestBadgesChallenges
+    from "@/app/(main)/profile/[profileId]/_components/header/_components/LatestBadgesChallenges";
 
 type ProfileHeaderProps = {
     id?: number;
@@ -30,148 +32,45 @@ type ProfileHeaderProps = {
     isOwnProfile: boolean;
 };
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({
-                                                         firstName,
-                                                         lastName,
-                                                         username,
-                                                         friendsCount,
-                                                         followersCount,
-                                                         bio,
-                                                         x,
-                                                         instagram,
-                                                         facebook,
-                                                         profileImageUrl,
-                                                         coverImageUrl,
-                                                         lastTwoFriends,
-                                                         setActiveTab,
-                                                     }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
     return (
         <div className="max-w-6xl mx-auto relative">
             <div className="bg-gray-900 rounded-t-2xl text-white shadow-lg overflow-hidden">
-                <div className="w-full h-24 bg-gray-700 rounded-t-2xl overflow-hidden">
-                    {coverImageUrl ? (
-                        <Image
-                            src={coverImageUrl}
-                            alt="Cover"
-                            width={300}
-                            height={400}
-                            className="object-cover"
-                        />
-                    ) : (
-                        <div className="w-full h-full bg-gradient-to-r from-indigo-600 to-purple-600"></div>
-                    )}
-                </div>
+                <CoverImage coverImageUrl={props.coverImageUrl} />
             </div>
 
             <div className="bg-gray-900 rounded-b-2xl text-white shadow-lg p-8 relative">
                 <div className="flex items-center justify-center w-full px-8 -mt-20 relative">
-                    <div className="absolute left-0 flex items-center space-x-2 pt-4 text-sm text-gray-200">
-                        <div
-                            onClick={() => setActiveTab("friends")}
-                            className="flex -space-x-3 cursor-pointer hover:text-blue-500 transition duration-200"
-                        >
-                            <div className="flex items-center space-x-[-15px]">
-                                {lastTwoFriends.map((friend, index) => (
-                                    <Avatar
-                                        key={`${friend.friendId}-${index}`}
-                                        className={`w-8 h-8 ring-2 ring-black z-${20 - index * 10}`}
-                                    >
-                                        <AvatarImage src={friend.profilePhotoUrl}
-                                                     alt={`Photo de l'ami ${friend.friendId}`}/>
-                                        <AvatarFallback className="bg-gray-400">
-                                            <User/>
-                                        </AvatarFallback>
-                                    </Avatar>
-                                ))}
-                            </div>
-                        </div>
-                        <span className="ml-2">{friendsCount} contacts</span>
-                        <div
-                            onClick={() => setActiveTab("followers")}
-                            className="flex items-center space-x-2 cursor-pointer hover:text-blue-500 transition duration-200"
-                        >
-                            <User className="w-5 h-5"/>
-                            <span>{followersCount} followers</span>
-                        </div>
+                    <div className="absolute left-0 pt-4">
+                        <ContactCounts
+                            lastTwoFriends={props.lastTwoFriends}
+                            friendsCount={props.friendsCount}
+                            followersCount={props.followersCount}
+                            setActiveTab={props.setActiveTab}
+                        />
                     </div>
 
                     <div className="flex items-center justify-center relative z-10">
-                        <div className="w-32 h-32 bg-gray-900 rounded-full flex items-center justify-center">
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <div className="relative group cursor-pointer">
-                                        <Avatar className="w-28 h-28 border-white rounded-full">
-                                            <AvatarImage
-                                                src={profileImageUrl}
-                                                alt={username || "Profile Image"}
-                                                className="object-cover object-center"
-                                            />
-                                            <AvatarFallback>
-                                                <User className="w-6 h-6 text-gray-500"/>
-                                            </AvatarFallback>
-                                        </Avatar>
-
-                                        <div
-                                            className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
-                                            <span className="text-white text-lg font-semibold"><ZoomIn/></span>
-                                        </div>
-                                    </div>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Photo de profil</DialogTitle>
-                                    </DialogHeader>
-                                    <div className="flex justify-center">
-                                        <Image
-                                            src={profileImageUrl || ""}
-                                            alt="Profile Image"
-                                            width={0}
-                                            height={0}
-                                            sizes="100vw"
-                                            className="w-auto max-w-full max-h-[80vh] object-contain rounded-lg shadow-lg"
-                                        />
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
+                        <ProfileAvatarWithDialog profileImageUrl={props.profileImageUrl} username={props.username} />
                     </div>
 
-                    <div className="absolute right-0 flex space-x-4 text-white pt-4">
-                        {x || instagram || facebook ? (
-                            <>
-                                <a href={x} target="_blank" rel="noopener noreferrer">
-                                    <Twitter className="w-6 h-6 hover:text-blue-400 transition-colors"/>
-                                </a>
-                                <a href={instagram} target="_blank" rel="noopener noreferrer">
-                                    <Instagram className="w-6 h-6 hover:text-pink-400 transition-colors"/>
-                                </a>
-                                <a href={facebook} target="_blank" rel="noopener noreferrer">
-                                    <Facebook className="w-6 h-6 hover:text-blue-700 transition-colors"/>
-                                </a>
-                            </>
-                        ) : null}
+                    <div className="absolute right-0 pt-4">
+                        <SocialLinks x={props.x} instagram={props.instagram} facebook={props.facebook} />
                     </div>
                 </div>
 
-                <div className="flex flex-col items-center text-center mt-4">
-                    <h5 className="text-2xl font-semibold">{firstName} {lastName}</h5>
-                    <p className="text-sm text-gray-500">@{username}</p>
-                    <p className="mt-2 text-sm text-gray-200">{bio}</p>
-                </div>
+                <ProfileInfo
+                    firstName={props.firstName}
+                    lastName={props.lastName}
+                    username={props.username}
+                    bio={props.bio}
+                />
 
-                <div className="my-4 border-t border-gray-500 opacity-50 w-full"></div>
-
-                <div className="mt-6 flex justify-center space-x-4">
-                    <span className="w-6 h-6 bg-red-500 rounded-full"></span>
-                    <span className="w-6 h-6 bg-green-500 rounded-full"></span>
-                    <span className="w-6 h-6 bg-blue-500 rounded-full"></span>
-                    <span className="w-6 h-6 bg-yellow-500 rounded-full"></span>
-                </div>
+                <div className="my-4 border-t border-gray-500 opacity-50 w-full" />
+                <LatestBadgesChallenges />
             </div>
         </div>
     );
 };
-
-ProfileHeader.displayName = 'ProfileHeader';
 
 export default ProfileHeader;
