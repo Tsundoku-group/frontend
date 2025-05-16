@@ -1,8 +1,7 @@
 import React from "react";
 import ViewMoreButton from "./ViewMoreButton";
 import {Card} from "@/components/ui/card";
-import {ChevronRight, User, Users} from "lucide-react";
-import Image from 'next/image';
+import {ChevronRight, User} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import UsersFilled from "@/assets/icons/UsersFilled";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";

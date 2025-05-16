@@ -1,7 +1,7 @@
 import React from "react";
 import ViewMoreButton from "./ViewMoreButton";
 import { Card } from "@/components/ui/card";
-import { ChevronRight, Pen } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Image from 'next/image';
 import PencilFilled from "@/assets/icons/PencilFilled";
 import {Button} from "@/components/ui/button";
