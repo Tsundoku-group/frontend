@@ -32,10 +32,15 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
     return (
         <div className="max-w-6xl mx-auto relative">
             <div className="bg-gray-900 rounded-t-2xl text-white shadow-lg overflow-hidden">
-                <CoverImage coverImageUrl={props.coverImageUrl} />
+                <CoverImage coverImageUrl={props.coverImageUrl}/>
             </div>
 
-            <div className="bg-gray-900 rounded-b-2xl text-white shadow-lg p-8 relative">
+            <div
+                className="rounded-b-2xl text-white shadow-lg p-8 relative"
+                style={{
+                    background: "linear-gradient(to right, #281f39 1%, #171C26 55%)",
+                }}
+            >
                 <div className="flex items-center justify-center w-full px-8 -mt-20 relative">
                     <div className="absolute left-0 pt-4">
                         <ContactCounts
@@ -47,11 +52,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
                     </div>
 
                     <div className="flex items-center justify-center relative z-10">
-                        <ProfileAvatarWithDialog profileImageUrl={props.profileImageUrl} username={props.username} />
+                        <ProfileAvatarWithDialog profileImageUrl={props.profileImageUrl} username={props.username}/>
                     </div>
 
                     <div className="absolute right-36 pt-4">
-                        <SocialLinks x={props.x} instagram={props.instagram} facebook={props.facebook} />
+                        <SocialLinks x={props.x} instagram={props.instagram} facebook={props.facebook}/>
                     </div>
                 </div>
 
@@ -62,8 +67,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
                     bio={props.bio}
                 />
 
-                <div className="my-4 border-t border-tertiary-black opacity-100 w-96 mx-auto" />
-                <LatestBadgesChallenges />
+                <div className="my-4 border-t border-tertiary-black opacity-100 w-96 mx-auto"/>
+                <LatestBadgesChallenges/>
             </div>
         </div>
     );
