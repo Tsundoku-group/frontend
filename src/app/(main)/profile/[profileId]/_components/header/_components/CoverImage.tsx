@@ -2,7 +2,7 @@ import Image from "next/image";
 import React from "react";
 
 const CoverImage = ({ coverImageUrl }: { coverImageUrl?: string }) => (
-    <div className="w-full h-24 bg-gray-700 rounded-t-2xl overflow-hidden">
+    <div className="w-full h-20 bg-gray-700 rounded-t-2xl overflow-hidden">
         {coverImageUrl ? (
             <Image src={coverImageUrl} alt="Cover" width={300} height={400} className="object-cover" />
         ) : (

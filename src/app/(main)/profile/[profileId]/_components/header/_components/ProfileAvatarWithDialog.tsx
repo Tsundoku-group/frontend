@@ -7,7 +7,7 @@ import React from "react";
 const ProfileAvatarWithDialog = ({ profileImageUrl, username }: { profileImageUrl?: string; username?: string }) => (
     <Dialog>
         <DialogTrigger asChild>
-            <div className="relative group cursor-pointer w-32 h-32 bg-gray-900 rounded-full flex items-center justify-center">
+            <div className="relative group cursor-pointer w-32 h-32 bg-gray-900 rounded-full flex items-center justify-center mt-2">
                 <Avatar className="w-28 h-28 border-white rounded-full">
                     <AvatarImage src={profileImageUrl} alt={username || "Profile"} className="object-cover object-center" />
                     <AvatarFallback>
