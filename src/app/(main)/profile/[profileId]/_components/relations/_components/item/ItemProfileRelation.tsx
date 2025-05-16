@@ -1,7 +1,9 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {Card} from "@/components/ui/card";
-import ProfileRelationList from "@/app/(main)/profile/[profileId]/_components/relations/_components/ProfileRelationList";
-import ItemSearchProfileBar from "@/app/(main)/profile/[profileId]/_components/relations/_components/item/ItemSearchProfileBar";
+import ProfileRelationList
+    from "@/app/(main)/profile/[profileId]/_components/relations/_components/ProfileRelationList";
+import ItemSearchProfileBar
+    from "@/app/(main)/profile/[profileId]/_components/relations/_components/item/ItemSearchProfileBar";
 import {
     fetchFollowedListFromProfile,
     fetchFollowersListFromProfile,
@@ -218,18 +220,20 @@ const ItemProfileRelation: React.FC<ItemProfileRelationProps> = ({profileId, rel
     );
 
     return (
-        <Card className="bg-tertiary-black border-none p-4">
+        <Card className="bg-transparent border-none p-4">
             {relationType === 'friends' ? (
                 <Tabs
                     defaultValue="friends"
                     onValueChange={(value) => setActiveTab(value as 'friends' | 'suggestions')}
                 >
-                    <TabsList className="bg-tertiary-black">
-                        <TabsTrigger value="friends"  className="text-gray-600 px-4 py-2 rounded-md focus:bg-secondary-black data-[state=active]:bg-secondary-black focus:text-white data-[state=active]:text-white">
+                    <TabsList className="bg-transparent">
+                        <TabsTrigger value="friends"
+                                     className="text-gray-600 px-4 py-2 rounded-md focus:bg-secondary-black data-[state=active]:bg-secondary-black focus:text-white data-[state=active]:text-white">
                             {isOwnProfile ? 'Tous mes ami(e)s' : 'Tous ses ami(e)s'}
                         </TabsTrigger>
                         {isOwnProfile && (
-                            <TabsTrigger value="suggestions" className="text-gray-600 px-4 py-2 rounded-md focus:bg-secondary-black data-[state=active]:bg-secondary-black focus:text-white data-[state=active]:text-white">Suggestions</TabsTrigger>
+                            <TabsTrigger value="suggestions"
+                                         className="text-gray-600 px-4 py-2 rounded-md focus:bg-secondary-black data-[state=active]:bg-secondary-black focus:text-white data-[state=active]:text-white">Suggestions</TabsTrigger>
                         )}
                     </TabsList>
                     <TabsContent value="friends">{renderContent('friends')}</TabsContent>

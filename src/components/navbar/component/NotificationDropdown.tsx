@@ -97,7 +97,7 @@ export default function NotificationDropdown() {
                 <Button className="relative cursor-pointer bg-transparent hover:bg-tertiary-black hover:border-secondary-black rounded-xl">
                     <Bell className="text-text-white w-6 h-6 fill-current hover:animate-shake transition-transform origin-top" />
                     {hasUnread && (
-                        <div className="absolute top-0 right-0 w-3 h-3 bg-red-highlight rounded-full"/>
+                        <div className="absolute top-1 right-3.5 w-3.5 h-3.5 bg-red-highlight rounded-full"/>
                     )}
                 </Button>
             </DropdownMenuTrigger>

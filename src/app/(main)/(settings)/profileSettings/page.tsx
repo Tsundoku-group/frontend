@@ -25,7 +25,7 @@ import {
     fetchUserProfileData,
     updateUserProfileData,
 } from "@/server-actions/main/settings/actions";
-import {Facebook, Instagram, Loader2, Twitter} from "lucide-react";
+import {Loader2} from "lucide-react";
 import {useAuthContext} from "@/context/authContext";
 import {ShowToast} from "@/components/ShowToast";
 import {storage} from "@/config/firebaseConfig";
@@ -41,6 +41,9 @@ import {
 import Cropper from "react-easy-crop";
 import getCroppedImg from "@/utils/croppedImg";
 import Image from "next/image";
+import FacebookAnimated from "@/assets/icons/social-medias/FacebookAnimated";
+import InstagramAnimated from "@/assets/icons/social-medias/InstagramAnimated";
+import OldTwitterFilled from "@/assets/icons/social-medias/OldTwitterFilled";
 
 interface ImageProps {
     profileImage: string | null;
@@ -150,14 +153,15 @@ const ProfileAndCoverImage: React.FC<ImageProps> = ({profileImage, coverImage, p
                     onClick={() => setIsCropDialogOpen({type: "cover"})}
                     className="cursor-pointer w-full max-w-3xl h-48 border-1 border-gray-300 hover:border-blue-500 transition-all"
                 >
-                   <Avatar className="w-full h-full rounded-lg border-1 border-gray-300 hover:border-blue-500 transition-all">
-                       <AvatarImage
-                           src={coverUrl}
-                           alt={activeProfileInStorage?.username || "Cover Image"}
-                           className="object-cover object-center"
-                           />
-                       <AvatarFallback className="bg-gray-400 rounded-none">600 x 400</AvatarFallback>
-                   </Avatar>
+                    <Avatar
+                        className="w-full h-full rounded-lg border-1 border-gray-300 hover:border-blue-500 transition-all">
+                        <AvatarImage
+                            src={coverUrl}
+                            alt={activeProfileInStorage?.username || "Cover Image"}
+                            className="object-cover object-center"
+                        />
+                        <AvatarFallback className="bg-gray-400 rounded-none">600 x 400</AvatarFallback>
+                    </Avatar>
                 </div>
             </div>
 
@@ -404,8 +408,8 @@ const ProfilePictureSection = React.memo(({imageUrl, coverUrl}: ProfilePictureSe
         const maxSize = 2 * 1024 * 1024; // 2 Mo
 
         const dimensions = type === 'profile'
-            ? { minWidth: 150, minHeight: 150, maxWidth: 150, maxHeight: 150 }
-            : { minWidth: 600, minHeight: 400, maxWidth: 1200, maxHeight: 800 };
+            ? {minWidth: 150, minHeight: 150, maxWidth: 150, maxHeight: 150}
+            : {minWidth: 600, minHeight: 400, maxWidth: 1200, maxHeight: 800};
 
         if (!allowedTypes.includes(file.type) || file.size > maxSize) {
             setErrorMessage(
@@ -813,7 +817,7 @@ export default function ProfileSettingsPage() {
                             <Input
                                 {...register("lastName")}
                                 placeholder="Dupont"
-                                className="text-sm text-black"
+                                className="text-sm text-text-white bg-gray-700 border-none"
                             />
                         </FormField>
 
@@ -821,7 +825,7 @@ export default function ProfileSettingsPage() {
                             <Input
                                 {...register("firstName")}
                                 placeholder="Louis"
-                                className="text-sm text-black"
+                                className="text-sm text-text-white bg-gray-700 border-none"
                             />
                         </FormField>
 
@@ -829,7 +833,7 @@ export default function ProfileSettingsPage() {
                             <Input
                                 {...register("username")}
                                 placeholder="Pseudo"
-                                className="text-sm text-black"
+                                className="text-sm text-text-white bg-gray-700 border-none"
                             />
                         </FormField>
 
@@ -838,14 +842,14 @@ export default function ProfileSettingsPage() {
                                 <Input
                                     {...register("birthday")}
                                     type="date"
-                                    className="text-sm text-gray-500 border border-gray-600 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-purple-600 appearance-none"
+                                    className="text-sm text-text-white bg-gray-700 border-none border-gray-600 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-purple-600 appearance-none"
                                 />
                             </FormField>
 
                             <FormField label="Genre" error={formState.errors.gender?.message}>
                                 <select
                                     {...register("gender")}
-                                    className="text-sm text-white bg-gray-700 border border-gray-600 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-purple-600 appearance-none"
+                                    className="text-sm text-text-white bg-gray-700 border-none border-gray-600 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-purple-600 appearance-none"
                                 >
                                     <option value="Masculin">Masculin</option>
                                     <option value="Féminin">Féminin</option>
@@ -856,12 +860,12 @@ export default function ProfileSettingsPage() {
                         <FormField label="Réseaux sociaux" error="">
                             <div className="space-y-3">
                                 <div className="relative">
-                                    <Facebook
+                                    <FacebookAnimated
                                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"/>
                                     <Input
                                         {...register("facebook")}
                                         placeholder="Lien vers ton Facebook"
-                                        className="pl-10 text-sm text-black"
+                                        className="pl-10 text-sm text-text-white bg-gray-700 border-none"
                                     />
                                     {formState.errors.facebook && (
                                         <p className="text-red-500 text-xs mt-1">
@@ -871,12 +875,12 @@ export default function ProfileSettingsPage() {
                                 </div>
 
                                 <div className="relative">
-                                    <Instagram
+                                    <InstagramAnimated
                                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"/>
                                     <Input
                                         {...register("instagram")}
                                         placeholder="Lien vers ton Instagram"
-                                        className="pl-10 text-sm text-black"
+                                        className="pl-10 text-sm text-text-white bg-gray-700 border-none"
                                     />
                                     {formState.errors.instagram && (
                                         <p className="text-red-500 text-xs mt-1">
@@ -886,12 +890,12 @@ export default function ProfileSettingsPage() {
                                 </div>
 
                                 <div className="relative">
-                                    <Twitter
+                                    <OldTwitterFilled
                                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"/>
                                     <Input
                                         {...register("x")}
                                         placeholder="Lien vers ton X"
-                                        className="pl-10 text-sm text-black"
+                                        className="pl-10 text-sm text-text-white bg-gray-700 border-none"
                                     />
                                     {formState.errors.x && (
                                         <p className="text-red-500 text-xs mt-1">
@@ -906,7 +910,7 @@ export default function ProfileSettingsPage() {
                             <Input
                                 {...register("phoneNumber")}
                                 placeholder="06 06 06 06 06"
-                                className="text-sm text-black"
+                                className="text-sm bg-gray-700 border-none text-text-white"
                             />
                         </FormField>
 
@@ -914,7 +918,7 @@ export default function ProfileSettingsPage() {
                     <textarea
                         {...register("bio")}
                         rows={3}
-                        className="w-full text-sm bg-gray-700 rounded-md p-2 text-white resize-none"
+                        className="w-full text-sm bg-gray-700 rounded-md p-2 text-text-white resize-none"
                     />
                         </FormField>
 

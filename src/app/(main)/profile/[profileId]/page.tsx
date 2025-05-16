@@ -10,6 +10,7 @@ import {getProfileImageUrl} from "@/utils/profileImageUtils";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useProfileContext} from "@/context/profileContext";
 import {notFound} from "next/navigation";
+import {Skeleton} from "@/components/ui/skeleton";
 
 type Props = {
     params: {
@@ -45,7 +46,19 @@ const ProfilePage = React.memo(({params: {profileId}}: Props) => {
         }
     }, [isOwnProfile, profileId]);
 
-    if (isLoading) return <div>Chargement du profil...</div>;
+    if (isLoading) {
+        return (
+            <div className="p-4 space-y-6">
+                {[...Array(4)].map((_, i) => (
+                    <div key={i} className="space-y-3">
+                        <Skeleton className="h-6 w-1/3" />
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-32 w-full rounded-lg" />
+                    </div>
+                ))}
+            </div>
+        );
+    }
 
     if (result?.error) {
         notFound();
@@ -61,7 +74,7 @@ const ProfilePage = React.memo(({params: {profileId}}: Props) => {
         : imagesOtherProfiles?.coverImageUrl || profile?.coverImageUrl;
 
     return (
-        <div className="min-h-screen grid grid-cols-12 grid-rows-[auto,1fr] gap-8 pt-8">
+        <div className="min-h-screen grid grid-cols-12 grid-rows-[auto,1fr] gap-6 gap-x-12 pt-8">
             <div className="col-span-8 row-span-1">
                 <ProfileHeader
                     id={profile?.id}
