@@ -50,7 +50,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
                         <ProfileAvatarWithDialog profileImageUrl={props.profileImageUrl} username={props.username} />
                     </div>
 
-                    <div className="absolute right-0 pt-4">
+                    <div className="absolute right-36 pt-4">
                         <SocialLinks x={props.x} instagram={props.instagram} facebook={props.facebook} />
                     </div>
                 </div>

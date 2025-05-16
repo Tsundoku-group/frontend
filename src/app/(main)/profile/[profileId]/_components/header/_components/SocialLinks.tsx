@@ -5,7 +5,7 @@ import InstagramAnimated from "@/assets/icons/social-medias/InstagramAnimated";
 
 const SocialLinks = ({ x, instagram, facebook }: { x?: string; instagram?: string; facebook?: string }) =>
     x || instagram || facebook ? (
-        <div className="flex space-x-4">
+        <div className="flex space-x-3 mt-1">
             {x && (
                 <a href={x} target="_blank" rel="noopener noreferrer">
                     <OldTwitterFilled className="w-6 h-6 hover:text-blue-400 transition-colors" />

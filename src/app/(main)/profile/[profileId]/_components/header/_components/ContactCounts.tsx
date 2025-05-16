@@ -1,6 +1,7 @@
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {User} from "lucide-react";
 import React from "react";
+import UserFilled from "@/assets/icons/UserFilled";
 
 const ContactCounts = ({
                            lastTwoFriends,
@@ -13,10 +14,14 @@ const ContactCounts = ({
     followersCount?: number;
     setActiveTab: (tab: string) => void;
 }) => (
-    <div className="flex items-center space-x-4 text-sm text-gray-200">
-        <div onClick={() => setActiveTab("friends")} className="flex items-center space-x-[-12px] cursor-pointer hover:text-blue-500 transition">
+    <div className="flex items-center space-x-4 text-sm text-gray-200 mt-1">
+        <div onClick={() => setActiveTab("friends")} className="flex items-center space-x-[-12px] cursor-pointer hover:text-blue-500 transition pl-6">
             {lastTwoFriends.map((friend, i) => (
-                <Avatar key={i} className="w-8 h-8 ring-2 ring-black">
+                <Avatar
+                    key={i}
+                    className="w-7 h-7 ring-2 ring-black"
+                    style={{ zIndex: lastTwoFriends.length - i }}
+                >
                     <AvatarImage src={friend.profilePhotoUrl} alt={`Ami ${friend.friendId}`} />
                     <AvatarFallback>
                         <User />
@@ -24,10 +29,10 @@ const ContactCounts = ({
                 </Avatar>
             ))}
         </div>
-        <span className="ml-2">{friendsCount} contacts</span>
-        <div onClick={() => setActiveTab("followers")} className="flex items-center space-x-2 cursor-pointer hover:text-blue-500 transition">
-            <User className="w-5 h-5" />
-            <span>{followersCount} followers</span>
+        <div className="text-xs">{friendsCount} contacts</div>
+        <div onClick={() => setActiveTab("followers")} className="flex items-center space-x-2 cursor-pointer hover:text-blue-500 transition pl-4">
+            <UserFilled className="w-7 h-7 text-text-white" />
+            <div className="text-xs">{followersCount} suivies</div>
         </div>
     </div>
 );
