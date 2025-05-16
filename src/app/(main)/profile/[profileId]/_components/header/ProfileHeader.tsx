@@ -1,10 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Facebook, Instagram, Twitter, User, ZoomIn } from "lucide-react";
 import CoverImage from "@/app/(main)/profile/[profileId]/_components/header/_components/CoverImage";
 import ContactCounts from "@/app/(main)/profile/[profileId]/_components/header/_components/ContactCounts";
 import ProfileAvatarWithDialog
