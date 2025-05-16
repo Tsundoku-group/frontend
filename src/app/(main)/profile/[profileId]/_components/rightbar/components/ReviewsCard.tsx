@@ -1,40 +1,43 @@
 import React from "react";
 import ViewMoreButton from "./ViewMoreButton";
-import { Card } from "@/components/ui/card";
-import { ChevronRight, ThumbsUp } from "lucide-react";
+import {Card} from "@/components/ui/card";
+import {ChevronRight} from "lucide-react";
 import Image from "next/image";
+import FatThumbUpFilled from "@/assets/icons/FatThumbUpFilled";
+import {Button} from "@/components/ui/button";
 
 const ReviewsCard = () => {
     return (
-        <Card className="bg-secondary-black p-4 border-spacing-1 border-gray-600">
-            <h2 className="text-text-white text-lg font-semibold flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                    <ThumbsUp className="w-5 h-5 mr-2" /> Avis (1)
+        <Card className="bg-secondary-black p-8 pb-4 border-spacing-1 border-tertiary-black">
+            <Button className="flex items-center justify-between w-full mb-6 bg-transparent hover:bg-tertiary-black">
+                <div className="flex items-center text-text-white text-lg font-semibold">
+                    <FatThumbUpFilled className="w-6 h-6 mr-2" />
+                    <span>Avis (1)</span>
                 </div>
-                <ChevronRight className="ml-auto" />
-            </h2>
-            <div className="mt-3 flex items-start">
+                <ChevronRight className="w-5 h-5 text-text-white" />
+            </Button>
+            <div className="flex items-start mb-3 space-y-3">
                 <Image
                     src="https://covers.openlibrary.org/b/id/8231991-L.jpg"
                     alt="image"
                     width={0}
                     height={0}
-                    className="w-16 h-16 object-cover rounded-lg mr-4"
+                    className="w-14 h-16 object-cover rounded-lg mr-4"
                 />
                 <div>
-                    <p className="text-text-white font-bold">Tonnerre après les ruines</p>
-                    <p className="text-text-white font-extralight">Floriane Soulas</p>
-                    <p className="text-green-500">Coup de cœur de fin d’année !</p>
-                    <p className="text-text-white mt-2 text-sm">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit...
-                    </p>
+                    <div className="text-text-white font-bold">Tonnerre après les ruines</div>
+                    <div className="text-text-white font-extralight text-sm mt-1">Floriane Soulas</div>
+                </div>
+            </div>
+
+            <div>
+                <div className="text-green-highlight font-semibold text-sm">Coup de cœur de fin d’année !</div>
+                <div className="text-text-white mt-2 text-sm leading-snug">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...
                 </div>
             </div>
             <div className="mt-6 flex flex-col items-center">
-                <ViewMoreButton />
+                <ViewMoreButton/>
             </div>
         </Card>
     );
