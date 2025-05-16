@@ -62,7 +62,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
                     bio={props.bio}
                 />
 
-                <div className="my-4 border-t border-gray-500 opacity-50 w-full" />
+                <div className="my-4 border-t border-tertiary-black opacity-100 w-96 mx-auto" />
                 <LatestBadgesChallenges />
             </div>
         </div>

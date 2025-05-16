@@ -12,9 +12,9 @@ const ProfileInfo = ({
     bio?: string;
 }) => (
     <div className="flex flex-col items-center text-center mt-4">
-        <h5 className="text-2xl font-semibold">{firstName} {lastName}</h5>
-        <p className="text-sm text-gray-500">@{username}</p>
-        <p className="mt-2 text-sm text-gray-200">{bio}</p>
+        <div className="text-xl text-text-white font-medium">{firstName} {lastName}</div>
+        <div className="text-sm text-gray-400 font-thin">@{username}</div>
+        <div className="mt-6 text-sm font-medium text-gray-200">{bio}</div>
     </div>
 );
 
