@@ -30,11 +30,11 @@ interface Post {
     };
     content: string;
     images: string[];
-    likes: number;
     commentsCount: number;
     createdAt: string;
     visibility: string;
     hasLiked: boolean;
+    likesCount: number;
 }
 
 export default function PostCard({post, groupId, onDelete}: {
@@ -50,8 +50,12 @@ export default function PostCard({post, groupId, onDelete}: {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [editedContent, setEditedContent] = useState(post.content);
-    const [commentsCount, setCommentsCount] = useState(post.commentsCount);
-    const [reactionsCount, setReactionsCount] = useState<number>(Number(post.likes) || 0);
+    const [commentsCount, setCommentsCount] = useState<number>(
+        Math.max(0, Number(post.commentsCount || 0))
+    );
+    const [reactionsCount, setReactionsCount] = useState<number>(
+        Math.max(0, Number(post.likesCount || 0))
+    );
     const [hasLiked, setHasLiked] = useState(post.hasLiked);
 
     const handleEditPost = async () => {
