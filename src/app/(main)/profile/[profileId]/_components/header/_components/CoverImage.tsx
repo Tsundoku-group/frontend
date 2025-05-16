@@ -6,7 +6,7 @@ const CoverImage = ({ coverImageUrl }: { coverImageUrl?: string }) => (
         {coverImageUrl ? (
             <Image src={coverImageUrl} alt="Cover" width={300} height={400} className="object-cover" />
         ) : (
-            <div className="w-full h-full bg-gradient-to-r from-indigo-600 to-purple-600" />
+            <div className="w-full h-full bg-gradient-to-r from-indigo-600 to-purple-600 opacity-50" />
         )}
     </div>
 );
