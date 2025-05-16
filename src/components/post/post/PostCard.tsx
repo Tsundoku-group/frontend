@@ -49,6 +49,7 @@ export default function PostCard({post, groupId, onDelete}: {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [editedContent, setEditedContent] = useState(post.content);
+    const [commentsCount, setCommentsCount] = useState(post.commentsCount);
 
     const handleEditPost = async () => {
         if (!profileId) return;
@@ -193,7 +194,7 @@ export default function PostCard({post, groupId, onDelete}: {
                         <span className="font-semibold">4</span>
                     </div>
                     <div className="text-gray-400">
-                        {post.commentsCount} commentaires
+                        {commentsCount} commentaire{commentsCount > 1 ? "s" : ""}
                     </div>
                 </div>
 
@@ -219,7 +220,11 @@ export default function PostCard({post, groupId, onDelete}: {
                     </button>
                 </div>
 
-                {showComments && <CommentSection postId={post.id}/>}
+                {showComments &&
+                    <div>
+                        <CommentSection postId={post.id} onNewComment={() => setCommentsCount((c) => c + 1)} />
+                    </div>
+                }
             </div>
 
             <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

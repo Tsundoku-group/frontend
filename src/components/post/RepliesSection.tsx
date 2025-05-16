@@ -105,7 +105,7 @@ export default function RepliesSection({commentId, postId}: RepliesSectionProps)
                 <p className="text-gray-400 text-xs">Chargement des réponses...</p>
             ) : localReplies.length > 0 ? (
                 <div className="space-y-3 mt-2 w-full">
-                    {localReplies.map((reply: any, index: number) => (
+                    {localReplies.toReversed().map((reply: any, index: number) => (
                         <div
                             key={reply.id ?? `temp-reply-${index}`}
                             className="flex flex-col text-xs w-full"
@@ -116,7 +116,7 @@ export default function RepliesSection({commentId, postId}: RepliesSectionProps)
                                     <AvatarFallback><User/></AvatarFallback>
                                 </Avatar>
 
-                                <div className="bg-secondary-black p-4 rounded-lg flex-1 w-full">
+                                <div className="bg-primary-black p-4 rounded-lg flex-1 w-full">
                                     <div className="text-white font-semibold">
                                         {reply?.authorFirstName} {reply?.authorLastName}
                                     </div>

@@ -27,9 +27,10 @@ import SendFilled from "@/assets/icons/SendFilled";
 
 interface CommentSectionProps {
     postId: number;
+    onNewComment?: () => void;
 }
 
-export default function CommentSection({postId}: CommentSectionProps) {
+export default function CommentSection({postId, onNewComment}: CommentSectionProps) {
     const {data, isLoading} = useQuery({
         queryKey: ["comments", postId],
         queryFn: () => fetchLastCommentsFromPost(postId, profileId as number),
@@ -46,6 +47,8 @@ export default function CommentSection({postId}: CommentSectionProps) {
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const [editedContent, setEditedContent] = useState<{ [key: string]: string }>({});
     const [localComments, setLocalComments] = useState<Array<any>>([]);
+
+    const [newCommentId, setNewCommentId] = useState<number | null>(null);
 
     useEffect(() => {
         if (data?.comments) {
@@ -90,11 +93,15 @@ export default function CommentSection({postId}: CommentSectionProps) {
                 replyCount: 0,
             };
 
+            setNewCommentId(hydratedComment.id);
+            setTimeout(() => setNewCommentId(null), 500);
             ShowToast("default", "Commentaire ajouté !");
             setCommentContent("");
             queryClient.setQueryData(["comments", postId], (old: any) => ({
                 comments: [hydratedComment, ...(old?.comments || [])],
             }));
+
+            onNewComment?.();
         },
         onError: () => {
             ShowToast("destructive", "Erreur lors de l'ajout du commentaire", "Erreur");
@@ -180,7 +187,12 @@ export default function CommentSection({postId}: CommentSectionProps) {
             ) : localComments.length > 0 ? (
                 <div className="space-y-3">
                     {localComments.map((comment: any, index: number) => (
-                        <div key={comment.id ?? `temp-reply-${index}`} className="flex gap-3 items-start text-sm">
+                        <div
+                            key={comment.id ?? `temp-reply-${index}`}
+                            className={`flex gap-3 items-start text-sm transition-all duration-500 ease-in-out transform ${
+                                newCommentId === comment.id ? 'opacity-0 translate-y-4 animate-fadeIn' : 'opacity-100'
+                            }`}
+                        >
                             <Avatar className="w-8 h-8 mt-4">
                                 <AvatarImage/>
                                 <AvatarFallback><User/></AvatarFallback>
