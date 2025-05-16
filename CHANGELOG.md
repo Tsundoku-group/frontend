@@ -102,3 +102,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [t-98] Corrections + ajout de fichier routables nextjs [#98](https://trello.com/c/nqA8QoR0/98-t-98-corrections-ajout-de-fichier-routables-nextjs)
 - [t-99] Ajout de fonctionnalités + css [#99](https://trello.com/c/bhk62m3I/99-t-99-ajout-de-fonctionnalit%C3%A9s-css)
 - [t-103] Correction UI + amélioration UI/UX #2 [#103](https://trello.com/c/80p5YUyV/103-t-103-correction-ui-am%C3%A9lioration-ui-ux-2)
+- [t-102] Correction fonctionnalités [#102](https://trello.com/c/CXj9Jrcb/102-correction-fonctionnalit%C3%A9s)

@@ -26,7 +26,7 @@ export default function Feed({ groupId }: Props) {
         staleTime: 60000,
         enabled: !!profileId,
     });
-
+    console.log(data)
     useEffect(() => {
         if (!socket) return;
 
