@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import StatsIcon from "@/assets/icons/StatsIcon";
+import {Button} from "@/components/ui/button";
 
 const genresData = [
     { name: "Fantaisie", color: "bg-yellow-500", percentage: 66 },
@@ -34,9 +35,9 @@ const PreferredGenresCard = () => {
 
     return (
         <Card className="bg-secondary-black p-8 border-spacing-1 border-tertiary-black">
-            <div className="text-text-white text-lg font-semibold flex items-center">
+            <Button className="text-text-white text-lg font-semibold flex items-center bg-transparent hover:bg-transparent">
                 <StatsIcon className="w-6 h-6 mr-2 fill-current text-text-white" /> Genres préférés
-            </div>
+            </Button>
             <div className="space-y-3 mt-3 p-2">
                 {genres.map((genre, index) => (
                     <div key={index} className="flex flex-col space-y-1">

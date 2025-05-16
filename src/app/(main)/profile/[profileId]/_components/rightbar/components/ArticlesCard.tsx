@@ -3,6 +3,8 @@ import ViewMoreButton from "./ViewMoreButton";
 import { Card } from "@/components/ui/card";
 import { ChevronRight, Pen } from "lucide-react";
 import Image from 'next/image';
+import PencilFilled from "@/assets/icons/PencilFilled";
+import {Button} from "@/components/ui/button";
 
 const articles = [
     {
@@ -19,13 +21,13 @@ const articles = [
 
 const ArticlesCard = () => {
     return (
-        <Card className="bg-secondary-black p-4 border-spacing-1 border-gray-600">
-            <h2 className="text-text-white text-lg font-semibold flex items-center mb-6">
-                <div className="flex items-center">
-                    <Pen className="w-4 h-4 mr-2"/> Articles ({articles.length})
+        <Card className="bg-secondary-black p-8 pb-4 border-spacing-1 border-tertiary-black">
+            <Button className="flex items-center justify-between w-full mb-6 bg-transparent hover:bg-tertiary-black">
+                <div className="flex items-center text-text-white text-lg font-semibold">
+                    <PencilFilled className="w-6 h-6 mr-2"/> Articles ({articles.length})
                 </div>
                 <ChevronRight className="ml-auto"/>
-            </h2>
+            </Button>
             <div className="mt-3 space-y-4">
                 {articles.map((article, index) => (
                     <div key={index} className="flex flex-col items-start space-y-2">
@@ -37,8 +39,8 @@ const ArticlesCard = () => {
                             className="w-full h-24 object-cover rounded-lg"
                         />
                         <div>
-                            <p className="text-green-500 font-semibold">{article.title}</p>
-                            <p className="text-text-white text-sm font-extralight">{article.date}</p>
+                            <div className="text-green-highlight font-semibold text-sm">{article.title}</div>
+                            <div className="text-text-white mt-1 text-xs leading-snug">{article.date}</div>
                         </div>
                     </div>
                 ))}

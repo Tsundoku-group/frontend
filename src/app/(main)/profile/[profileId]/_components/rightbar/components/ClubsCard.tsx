@@ -1,8 +1,12 @@
 import React from "react";
 import ViewMoreButton from "./ViewMoreButton";
-import { Card } from "@/components/ui/card";
-import { Users } from "lucide-react";
+import {Card} from "@/components/ui/card";
+import {ChevronRight, User, Users} from "lucide-react";
 import Image from 'next/image';
+import {Button} from "@/components/ui/button";
+import UsersFilled from "@/assets/icons/UsersFilled";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {cn} from "@/lib/utils";
 
 const clubs = [
     {
@@ -32,38 +36,46 @@ const clubs = [
 ];
 const ClubsCard = () => {
     return (
-        <Card className="bg-secondary-black p-4 border-spacing-1 border-gray-600">
-            <h2 className="text-text-white text-lg font-semibold flex items-center mb-4">
-                <Users className="w-5 h-5 mr-2" /> Clubs ({clubs.length})
-            </h2>
+        <Card className="bg-secondary-black p-8 pb-4 border-spacing-1 border-tertiary-black">
+            <Button className="flex items-center justify-between w-full mb-6 bg-transparent hover:bg-tertiary-black">
+                <div className="flex items-center text-text-white text-lg font-semibold">
+                    <UsersFilled className="w-6 h-6 mr-2"/>
+                    <span>Mes clubs</span>
+                </div>
+                <ChevronRight className="w-5 h-5 text-text-white"/>
+            </Button>
             <div className="space-y-4">
                 {clubs.map((club, index) => (
                     <div key={index} className="flex items-start space-x-3">
-                        <Image
-                            src={club.avatar}
-                            alt={club.name}
-                            width={0}
-                            height={0}
-                            className="w-10 h-10 rounded-full object-cover"
-                        />
+                        <Avatar className="w-12 h-12">
+                            <AvatarImage src={club.avatar} alt={club.name}/>
+                            <AvatarFallback>
+                                <User/>
+                            </AvatarFallback>
+                        </Avatar>
                         <div>
-                            <p className="text-text-white font-semibold">{club.name}</p>
-                            <p className="text-gray-400 text-xs font-extralight">
+                            <div className="text-text-white font-medium">{club.name}</div>
+                            <div className="text-gray-400 text-xs font-extralight">
                                 {club.members} • {club.contacts}
-                            </p>
-                            <div className="flex items-center space-x-1 mt-2">
+                            </div>
+                            <div className="flex items-center mt-2">
                                 {club.contactImages.map((img, i) => (
-                                    <Image
+                                    <Avatar
                                         key={i}
-                                        src={img}
-                                        alt={`Contact ${i + 1}`}
-                                        width={0}
-                                        height={0}
-                                        className="w-6 h-6 rounded-full object-cover"
-                                    />
+                                        className={cn(
+                                            "w-6 h-6 ring-2 ring-black",
+                                            i !== 0 && "-ml-3"
+                                        )}
+                                        style={{zIndex: club.contactImages.length - i}}
+                                    >
+                                        <AvatarImage src={img} alt={`Contact ${club.name}`}/>
+                                        <AvatarFallback>
+                                            <User/>
+                                        </AvatarFallback>
+                                    </Avatar>
                                 ))}
                                 {club.extraContacts && (
-                                    <span className="text-text-muted text-sm">{club.extraContacts}</span>
+                                    <span className="text-text-white text-sm ml-2">{club.extraContacts}</span>
                                 )}
                             </div>
                         </div>
