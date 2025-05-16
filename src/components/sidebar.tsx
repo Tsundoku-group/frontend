@@ -30,6 +30,7 @@ import {
     TooltipTrigger
 } from '@/components/ui/tooltip';
 import {cn} from '@/lib/utils';
+import OpenBook from "@/assets/icons/OpenBook";
 
 interface SidebarCollapseItem {
     label: string;
@@ -44,34 +45,56 @@ interface SidebarGroupsCollapsedProps {
     isCollapsed: boolean;
 }
 
-export function SidebarGroupCollapse({title, icon, items, isCollapsed}: SidebarGroupsCollapsedProps) {
+export function SidebarGroupCollapse({
+                                         title,
+                                         icon,
+                                         items,
+                                         isCollapsed,
+                                     }: SidebarGroupsCollapsedProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <li>
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="group w-full flex items-center justify-between bg-transparent hover:bg-tertiary-black px-3 py-2.5 rounded-2xl transition-all"
-            >
-                <div className="flex items-center gap-3">
-                    {icon}
-                    {!isCollapsed && <span className="text-text-white text-[13px] font-medium">{title}</span>}
-                </div>
-                {!isCollapsed && (
-                    isOpen ? (
-                        <ChevronDown className="w-4 h-4 text-[#e1e1ec] transition-all"/>
-                    ) : (
-                        <ChevronRight className="w-4 h-4 text-[#e1e1ec] transition-all"/>
-                    )
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className={cn(
+                            "group w-full flex items-center bg-transparent hover:bg-tertiary-black px-3 py-2.5 rounded-2xl transition-all",
+                            isCollapsed ? "justify-center" : "justify-between"
+                        )}
+                    >
+                        <div className="flex items-center gap-3">
+                            {icon}
+                            {!isCollapsed && (
+                                <span className="text-text-white text-[13px] font-medium">{title}</span>
+                            )}
+                        </div>
+                        {!isCollapsed &&
+                            (isOpen ? (
+                                <ChevronDown className="w-4 h-4 text-[#e1e1ec] transition-all" />
+                            ) : (
+                                <ChevronRight className="w-4 h-4 text-[#e1e1ec] transition-all" />
+                            ))}
+                    </button>
+                </TooltipTrigger>
+
+                {isCollapsed && (
+                    <TooltipContent side="right" className="bg-tertiary-black border-secondary-black text-text-white">
+                        {title}
+                    </TooltipContent>
                 )}
-            </button>
+            </Tooltip>
+
             {!isCollapsed && (
-                <ul className={cn(
-                    "mt-2 space-y-1 pl-4 overflow-hidden transition-[max-height] duration-500 ease-in-out",
-                    isOpen ? "max-h-60" : "max-h-0"
-                )}>
-                    <div className="relative pl-4 mt-1">
-                        <div className="absolute left-1 top-0 h-full w-px bg-text-white opacity-30"/>
+                <ul
+                    className={cn(
+                        "pl-4 overflow-hidden transition-[max-height] duration-500 ease-in-out",
+                        isOpen ? "max-h-60" : "max-h-0"
+                    )}
+                >
+                    <div className="relative pl-4">
+                        <div className="absolute left-1 top-0 h-full w-px bg-text-white opacity-30" />
                         {items.map((item, index) => (
                             <li key={index}>
                                 <button
@@ -79,15 +102,14 @@ export function SidebarGroupCollapse({title, icon, items, isCollapsed}: SidebarG
                                     className="group w-full flex items-center justify-between bg-transparent hover:bg-tertiary-black px-3 py-2 rounded-xl transition-all text-xs"
                                 >
                                     <span>{item.label}</span>
-                                    <ChevronRight
-                                        className="w-3 h-3 text-white opacity-0 translate-x-[-4px] transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"/>
+                                    <ChevronRight className="w-3 h-3 text-white opacity-0 translate-x-[-4px] transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
                                 </button>
                             </li>
                         ))}
                     </div>
                 </ul>
             )}
-        </li>
+        </TooltipProvider>
     );
 }
 
@@ -133,30 +155,42 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
     const goTo = (path: string) => router.push(path);
 
     const navItems = [
-        { path: '/shelves', icon: LibraryFilled, label: 'Étagères' },
-        { path: '/challenges', icon: TrophyFilled, label: 'Défis' },
-        { path: '/conversations', icon: IcBaselineWechat, label: 'Messages' },
-        { path: '/articles', icon: PencilFilled, label: 'Articles' },
+        {path: '/shelves', icon: LibraryFilled, label: 'Étagères'},
+        {path: '/challenges', icon: TrophyFilled, label: 'Défis'},
+        {path: '/conversations', icon: IcBaselineWechat, label: 'Messages'},
+        {path: '/articles', icon: PencilFilled, label: 'Articles'},
     ];
 
     return (
-        <div
-            className={cn(
-                'fixed min-h-screen transition-all duration-300 flex flex-col py-6 px-5 text-text-white z-50',
-                isCollapsed ? 'w-20 items-center' : 'w-60'
-            )}
-            style={{background: 'linear-gradient(to bottom, #281f39 1%, #171C26 40%)'}}
-        >
-            {!isCollapsed && (
-                <div className="flex items-center justify-center h-16">
-                    <div
-                        className="text-[20px] tracking-wide font-extralight text-[#e1e1ec] text-center">tsundoku
-                    </div>
+        <>
+            <div
+                className={cn(
+                    'fixed min-h-screen transition-all duration-500 flex flex-col py-6 px-5 text-text-white z-50',
+                    isCollapsed ? 'w-20 items-center' : 'w-60'
+                )}
+                style={{background: 'linear-gradient(to bottom, #281f39 1%, #171C26 40%)'}}
+            >
+                <div
+                    className={cn(
+                        "flex items-center justify-center h-16 transition-all duration-500",
+                        isCollapsed ? " scale-90 pointer-events-none" : "opacity-100 scale-100"
+                    )}
+                >
+                    {!isCollapsed ? (
+                        <div className="text-[20px] tracking-wide font-extralight text-[#e1e1ec] text-center">
+                            tsundoku
+                        </div>
+                    ) : (
+                        <OpenBook className="w-10 h-auto"/>
+                    )}
                 </div>
-            )}
 
-            {!isCollapsed && (
-                <div className="px-4">
+                <div
+                    className={cn(
+                        "px-4 transition-all duration-500",
+                        isCollapsed ? "opacity-0 scale-95 h-0 overflow-hidden" : "opacity-100 scale-100 h-auto"
+                    )}
+                >
                     <div
                         className="flex items-center bg-secondary-black border border-secondary-black rounded-2xl px-3 py-2">
                         <input
@@ -178,8 +212,10 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                                         <HomeRoundedFilled className="text-text-white w-5 h-5"/>
                                     </button>
                                 </TooltipTrigger>
-                                <TooltipContent side="top"
-                                                className="bg-tertiary-black border border-secondary-black px-3 py-2 rounded-lg text-text-white text-xs">
+                                <TooltipContent
+                                    side="top"
+                                    className="bg-tertiary-black border border-secondary-black px-3 py-2 rounded-lg text-text-white text-xs"
+                                >
                                     Accueil
                                 </TooltipContent>
                             </Tooltip>
@@ -203,55 +239,78 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                         </TooltipProvider>
                     </div>
                 </div>
-            )}
 
-            <nav className="flex flex-col mt-12 mb-12 w-full">
-                <ul className="flex flex-col gap-y-2 pl-[6px]">
-                    {navItems.map(({ path, icon: Icon, label }) => (
-                        <li key={path}>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            onClick={() => goTo(path)}
-                                            className="group w-full flex items-center justify-between bg-transparent hover:bg-tertiary-black px-3 py-2 rounded-2xl transition-all"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                            <Icon className="w-5 h-5"/>
-                                            {!isCollapsed && <span className="text-[13px] font-medium">{label}</span>}
-                                            {label === 'Messages' && unreadMessages > 0 && (
-                                                <span
-                                                    className="ml-1 bg-red-highlight text-[10px] rounded-full h-4 w-4 flex items-center justify-center text-white font-semibold">
-                                                  {unreadMessages}
-                                                </span>
-                                            )}
-                                            </div>
-                                            <ChevronRight
-                                                className="w-4 h-4 text-[#e1e1ec] opacity-0 translate-x-[-4px] transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
-                                            />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    {isCollapsed && <TooltipContent>{label}</TooltipContent>}
-                                </Tooltip>
-                            </TooltipProvider>
-                        </li>
-                    ))}
+                <nav
+                    className={cn(
+                        "transition-[max-height,opacity,transform] duration-500 ease-in-out mt-12 mb-12 w-full",
+                        isCollapsed ? "max-h-0 scale-y-95" : "max-h-[600px] scale-y-100"
+                    )}
+                >
+                    <ul className="flex flex-col gap-y-2 pl-[6px]">
+                        {navItems.map(({ path, icon: Icon, label }) => (
+                            <li key={path}>
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                onClick={() => goTo(path)}
+                                                className={cn(
+                                                    "group w-full flex items-center bg-transparent hover:bg-tertiary-black px-3 py-2.5 rounded-2xl transition-all",
+                                                    isCollapsed ? "justify-center" : "justify-between"
+                                                )}
+                                            >
+                                                <div className="flex items-center">
+                                                    <Icon className="w-5 h-5 shrink-0" />
+                                                    <div
+                                                        className={cn(
+                                                            "transition-all duration-300 transform origin-top",
+                                                            isCollapsed
+                                                                ? "opacity-0 scale-y-0 -translate-y-4 h-0 w-0"
+                                                                : "opacity-100 scale-y-100 translate-y-0 w-auto"
+                                                        )}
+                                                    >
+                                                        {label}
+                                                    </div>
+                                                    {label === 'Messages' && unreadMessages > 0 && (
+                                                        <span className="ml-1 bg-red-highlight text-[10px] rounded-full h-4 w-4 flex items-center justify-center text-white font-semibold">
+                                                      {unreadMessages}
+                                                    </span>
+                                                    )}
+                                                </div>
+                                                {!isCollapsed && (
+                                                    <ChevronRight className="w-4 h-4 text-[#e1e1ec] opacity-0 translate-x-[-4px] transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-0" />
+                                                )}
+                                            </Button>
+                                        </TooltipTrigger>
+                                        {isCollapsed &&
+                                            <TooltipContent side="right" className="bg-tertiary-black border-secondary-black text-text-white">
+                                                {label}
+                                            </TooltipContent>
+                                        }
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </li>
+                        ))}
 
-                    <SidebarGroupCollapse
-                        title="Clubs"
-                        icon={<UsersFilled className="w-5 h-5 text-white"/>}
-                        isCollapsed={isCollapsed}
-                        items={[
-                            {label: 'Mes clubs', onClick: () => goTo('/clubs')},
-                            {label: 'Explorer', onClick: () => goTo('/clubs/explore')},
-                            {label: 'Créer un club', onClick: () => goTo('/clubs/new')},
-                        ]}
-                    />
-                </ul>
-            </nav>
+                        <SidebarGroupCollapse
+                            title="Clubs"
+                            icon={<UsersFilled className="w-5 h-5 text-white" />}
+                            isCollapsed={isCollapsed}
+                            items={[
+                                { label: 'Mes clubs', onClick: () => goTo('/clubs') },
+                                { label: 'Explorer', onClick: () => goTo('/clubs/explore') },
+                                { label: 'Créer un club', onClick: () => goTo('/clubs/new') },
+                            ]}
+                        />
+                    </ul>
+                </nav>
 
-            {!isCollapsed && (
-                <>
+                <div
+                    className={cn(
+                        "transition-all duration-500",
+                        isCollapsed ? "opacity-0 scale-95 h-0 overflow-hidden" : "opacity-100 scale-100 h-auto"
+                    )}
+                >
                     <div className="flex items-center mb-3 text-xs font-medium text-[#e1e1ec] justify-center">
                         <Activity className="w-4 h-4 mr-2"/> Activité
                     </div>
@@ -280,8 +339,8 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                             Plus rien à signaler !
                         </div>
                     </Card>
-                </>
-            )}
-        </div>
+                </div>
+            </div>
+        </>
     );
 }
