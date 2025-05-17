@@ -3,9 +3,10 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {ArrowDownUp} from "lucide-react";
 import {BooksList} from "@/models/BooksList";
-import {fetchBooksLists} from "@/server-actions/main/shelves/action";
+import {fetchBooksLists, updateBooksLists} from "@/server-actions/main/shelves/action";
 import {useProfileContext} from "@/context/profileContext";
 import {formatDate} from "@/utils/dateUtils";
+import StarFilled from "@/assets/icons/StarFilled"
 
 const ShelvesPages = () => {
     const [booksLists, setBooksLists] = useState<BooksList[]>([]);
@@ -15,14 +16,14 @@ const ShelvesPages = () => {
 
     const loadBooksLists = useCallback(async () => {
         try {
-            const data = await fetchBooksLists()
+            const data = await fetchBooksLists(profileId)
             console.log("data", data)
             setBooksLists(data || []);
         } catch (error) {
             setBooksLists([]);
             console.error(error);
         }
-    }, []);
+    }, [profileId]);
 
     useEffect(() => {
         if (profileId) {
@@ -31,6 +32,25 @@ const ShelvesPages = () => {
             })
         }
     }, [profileId, loadBooksLists]);
+
+    console.log(booksLists.length);
+
+    const handleFavorite = async (booksList: BooksList) => {
+        const index = booksLists.findIndex(list => list.id === booksList.id);
+        let tempBooksList = booksLists.slice();
+
+        booksList.favorite = !booksList.favorite;
+
+        console.log(booksList);
+
+        let response = await updateBooksLists(booksList)
+        console.log("response", response)
+
+        if (response.status === 200) {
+            tempBooksList[index] = booksList
+            setBooksLists(tempBooksList)
+        }
+    }
 
     const tableHeaders: { label: string, field: string }[] = [
         {label: "Nom", field: "name"},
@@ -43,12 +63,13 @@ const ShelvesPages = () => {
         <div className="grid grid-cols-12 grid-rows-[auto,1fr] gap-8 pt-8">
             <div className="col-span-full">
                 <h2>Etagères</h2>
+
             </div>
 
             <div className="col-span-full">
-                <table className="p-5 w-full border-collapse">
+                <table className="p-5 w-full">
                     <thead>
-                    <tr>
+                    <tr className="">
                         <th>Favorite</th>
                         <th>Cover</th>
                         {tableHeaders.map((header, index) => (
@@ -68,7 +89,12 @@ const ShelvesPages = () => {
                     {booksLists.length > 0 ? (
                         booksLists.map((booksList: BooksList) => (
                             <tr key={booksList.id}>
-                                <td>{booksList.favorite}</td>
+                                <td>
+                                    <button onClick={() => handleFavorite(booksList)}>
+                                        {booksList.favorite ? <StarFilled className="text-yellow-highlight"/> :
+                                            <StarFilled className="text-primary"/>}
+                                    </button>
+                                </td>
                                 <td>{booksList.profile}</td>
                                 <td>{booksList.title}</td>
                                 <td></td>
