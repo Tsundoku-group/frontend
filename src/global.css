@@ -117,18 +117,18 @@ hr {
     border: 1px solid var(--bg-tertiary-dark);
 }
 
-.status-btn, .status-btn-list {
+.custom-select, .custom-select-list {
     background-color: var(--bg-tertiary-dark);
     transition: background-color 0.4s ease;
 }
-.status-btn:hover {
+.custom-select:hover {
     background-color: var(--bg-primary-dark);
 }
 
-.status-btn-list div {
+.custom-select-list div {
     transition: background-color 0.4s ease;
 }
 
-.status-btn-list div:hover {
+.custom-select-list div:hover {
     background-color: var(--bg-primary-dark);
 }

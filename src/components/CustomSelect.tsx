@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 interface Option {
@@ -102,7 +102,7 @@ export default function CustomSelect({
     return (
         <div className="relative inline-block w-40" ref={dropdownRef}>
             <div
-                className="status-btn rounded-full py-2 px-4 cursor-pointer flex items-center justify-between"
+                className="custom-select rounded-full py-2 px-4 cursor-pointer flex items-center justify-between"
                 onClick={toggleDropdown}
                 tabIndex={0}
                 role="button"
