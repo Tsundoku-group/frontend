@@ -1,19 +1,25 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 
+interface Option {
+    value: string;
+    label: string;
+    color: string;
+}
 interface CustomSelectProps {
-    selectedStatus: string;
-    onChange?: (newStatus: string) => void;
+    selectedValue: string;
+    onChange?: (newValue: string) => void;
+    options: Option[]
 }
 
-export default function CustomSelect({ selectedStatus, onChange }: CustomSelectProps) {
-    const options = useMemo(() => [
-        { value: 'brouillon', label: 'Brouillon', color: "var(--highlight-red)" },
-        { value: 'publie', label: 'Publié', color: "var(--highlight-green)" },
-    ], []);
+export default function CustomSelect({
+    selectedValue,
+    onChange,
+    options
+}: CustomSelectProps) {
 
     const [selectedOption, setSelectedOption] = useState(() =>
-        options.find(option => option.value === selectedStatus) || options[0]
+        options.find(option => option.value === selectedValue) || options[0]
     );
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -24,7 +30,7 @@ export default function CustomSelect({ selectedStatus, onChange }: CustomSelectP
         setIsOpen(prev => !prev);
     };
 
-    const handleOptionClick = (option: any, event: React.MouseEvent) => {
+    const handleOptionClick = (option: Option, event: React.MouseEvent) => {
         event.stopPropagation();
         setSelectedOption(option);
         setIsOpen(false);
@@ -47,11 +53,9 @@ export default function CustomSelect({ selectedStatus, onChange }: CustomSelectP
     }, []);
 
     useEffect(() => {
-        const newOption = options.find(option => option.value === selectedStatus);
-        if (newOption) {
-            setSelectedOption(newOption);
-        }
-    }, [selectedStatus, options]);
+        const option = options.find(option => option.value === selectedValue);
+        if (option) setSelectedOption(option);
+    }, [selectedValue, options]);
 
     useEffect(() => {
         if (isOpen && dropdownRef.current) {
@@ -66,7 +70,7 @@ export default function CustomSelect({ selectedStatus, onChange }: CustomSelectP
 
     const dropdown = (
         <div
-            className="status-btn-list rounded-md shadow-lg"
+            className="custom-select rounded-md shadow-lg"
             style={{
                 position: "absolute",
                 top: dropdownStyle.top,
@@ -85,7 +89,10 @@ export default function CustomSelect({ selectedStatus, onChange }: CustomSelectP
                     role="option"
                     aria-selected={selectedOption.value === option.value}
                 >
-                    <span className="inline-block w-2 h-2 mr-2 rounded-full" style={{ backgroundColor: option.color }}></span>
+                    <span 
+                        className="inline-block w-2 h-2 mr-2 rounded-full" 
+                        style={{ backgroundColor: option.color }}>
+                    </span>
                     {option.label}
                 </div>
             ))}
@@ -95,7 +102,7 @@ export default function CustomSelect({ selectedStatus, onChange }: CustomSelectP
     return (
         <div className="relative inline-block w-40" ref={dropdownRef}>
             <div
-                className="status-btn rounded-full py-2 px-4 cursor-pointer flex items-center justify-between"
+                className="custom-select rounded-full py-2 px-4 cursor-pointer flex items-center justify-between"
                 onClick={toggleDropdown}
                 tabIndex={0}
                 role="button"
@@ -104,8 +111,18 @@ export default function CustomSelect({ selectedStatus, onChange }: CustomSelectP
             >
                 <span className="inline-block w-2 h-2 mr-2 rounded-full" style={{ backgroundColor: selectedOption.color }}></span>
                 {selectedOption.label}
-                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                <svg 
+                    className="w-4 h-4 ml-2" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                >
+                    <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth="2" 
+                        d="M19 9l-7 7-7-7"
+                    ></path>
                 </svg>
             </div>
             {isOpen && ReactDOM.createPortal(dropdown, document.body)}

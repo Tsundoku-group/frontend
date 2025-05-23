@@ -116,8 +116,8 @@ export function SidebarGroupCollapse({
 export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [isClient, setIsClient] = useState(false);
-    const {socket} = useSocket();
-    const {activeProfileInStorage} = useProfileContext();
+    const { socket } = useSocket();
+    const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id;
     const router = useRouter();
 

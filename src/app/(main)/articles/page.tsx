@@ -2,13 +2,13 @@
 
 import { ArrowDownUp, Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
-import CustomSelect from "@/app/(main)/articles/_components/CustomSelect";
 import "@/app/(main)/articles/_styles/styles.css";
 import ArticleForm from "@/app/(main)/articles/_components/ArticleForm";
 import { fetchProfileArticles, deleteArticle, updateArticleStatus } from "@/server-actions/main/articles/actions";
 import { useProfileContext } from "@/context/profileContext";
 import { formatDate } from "@/utils/dateUtils";
 import { Article } from "@/models/Article";
+import CustomSelect from "@/components/CustomSelect";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Pagination from "@/components/Pagination";
 
@@ -25,6 +25,11 @@ export default function ArticlesPage() {
 
     const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id;
+
+    const statusOptions = [
+        { value: 'brouillon', label: 'Brouillon', color: 'var(--highlight-red)' },
+        { value: 'publie', label: 'Publié', color: 'var(--highlight-green)' }
+    ];
 
     const loadArticles = useCallback(async () => {
         try {
@@ -163,8 +168,9 @@ export default function ArticlesPage() {
                                     <tr key={article.id} className="border-y-4 border-red-500">
                                         <td>
                                             <CustomSelect
-                                                selectedStatus={article.status}
+                                                selectedValue={article.status}
                                                 onChange={(newStatus) => handleStatusChange(article.id, newStatus)}
+                                                options={statusOptions} 
                                             />
                                         </td>
                                         <td>{article.title}</td>

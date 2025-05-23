@@ -56,6 +56,10 @@ body {
     transition: background-color 0.4s ease;
 }
 
+.tertiary-btn:hover {
+    background-color: var(--bg-primary-dark);
+}
+
 .secondary-btn:hover {
     background-color: var(--hover-highlight-green);
 }
@@ -111,4 +115,20 @@ input::file-selector-button:hover {
 
 hr {
     border: 1px solid var(--bg-tertiary-dark);
+}
+
+.custom-select, .custom-select-list {
+    background-color: var(--bg-tertiary-dark);
+    transition: background-color 0.4s ease;
+}
+.custom-select:hover {
+    background-color: var(--bg-primary-dark);
+}
+
+.custom-select-list div {
+    transition: background-color 0.4s ease;
+}
+
+.custom-select-list div:hover {
+    background-color: var(--bg-primary-dark);
 }
