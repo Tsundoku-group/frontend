@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {BooksList} from "@/models/BooksList";
 import {useProfileContext} from "@/context/profileContext";
-import {fetchBooksLists, updateBooksList} from "@/server-actions/main/shelves/action";
-import {ArrowDownUp, Pencil, Plus} from "lucide-react";
+import {deleteBooksList, fetchBooksLists, updateBooksList} from "@/server-actions/main/shelves/action";
+import {ArrowDownUp, Pencil, Plus, Trash2} from "lucide-react";
 import StarFilled from "@/assets/icons/StarFilled";
 import {formatDate} from "@/utils/dateUtils";
 
@@ -35,13 +35,7 @@ const BooksListTable: React.FC<BooksListTableProps> = ({setDisplayForm, setBooks
         }
     }, [profileId, loadBooksLists]);
 
-
-    const handleNewBooksList = () => {
-        setBooksList()
-        setDisplayForm(true);
-    }
-
-    const handleEditBooksList = (booksList: BooksList) => {
+    const handleBooksListForm = (booksList?: BooksList) => {
         setBooksList(booksList)
         setDisplayForm(true);
     }
@@ -61,6 +55,17 @@ const BooksListTable: React.FC<BooksListTableProps> = ({setDisplayForm, setBooks
         }
     }
 
+    const handleDelete = async (booksList: BooksList) => {
+        const index = booksLists.findIndex(list => list.id === booksList.id);
+        let tempBooksLists = booksLists.toSpliced(index, 1);
+
+        let response = await deleteBooksList(booksList);
+
+        if(response.status === 204) {
+            setBooksLists(tempBooksLists)
+        }
+    }
+
     const tableHeaders: { label: string, field: string }[] = [
         {label: "Nom", field: "name"},
         {label: "Volume", field: "bookCount"},
@@ -73,7 +78,7 @@ const BooksListTable: React.FC<BooksListTableProps> = ({setDisplayForm, setBooks
             <div className="col-span-full flex justify-between">
                 <h2>Etagères</h2>
                 <button
-                    onClick={() => handleNewBooksList()}
+                    onClick={() => handleBooksListForm()}
                     className="primary-btn flex items-center gap-5 py-5 px-5 rounded-full"
                 >
                     <Plus width={20} height={20}/>
@@ -116,8 +121,14 @@ const BooksListTable: React.FC<BooksListTableProps> = ({setDisplayForm, setBooks
                                 <td>{formatDate(booksList.createdAt)}</td>
                                 <td>{formatDate(booksList.updatedAt)}</td>
                                 <td>
-                                    <button onClick={() => handleEditBooksList(booksList)}>
+                                    <button onClick={() => handleBooksListForm(booksList)}>
                                         <Pencil width={15} height={15} />
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleDelete(booksList)}
+                                    >
+                                        <Trash2 width={15} height={15} className="text-red-highlight" />
                                     </button>
                                 </td>
                             </tr>

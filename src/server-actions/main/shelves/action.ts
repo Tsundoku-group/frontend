@@ -18,15 +18,15 @@ export const fetchBooksLists = async (profileId: number | undefined) => {
     return response.data
 }
 
-export const updateBooksList = async (bookslist: BooksList) => {
-    let url = `${symfonyUrl}/api/v1/bookslist/${bookslist.id}`;
+export const updateBooksList = async (booksList: BooksList) => {
+    let url = `${symfonyUrl}/api/v1/bookslist/${booksList.id}`;
 
     const response = await fetchWithAuth(
         url,
         {
             method: "PUT",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(bookslist)
+            body: JSON.stringify(booksList)
         }
     );
 
@@ -41,7 +41,21 @@ export const createBooksList = async (profileId: number, title: string, visibili
         {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({profileId: profileId, title: title, visibility: visibility, favorite: false}),
+            body: JSON.stringify({profile: profileId, title: title, visibility: visibility, favorite: false}),
+        }
+    );
+
+    return response
+}
+
+export const deleteBooksList = async (booksList: BooksList) => {
+    let url = `${symfonyUrl}/api/v1/bookslist/${booksList.id}`;
+
+    const response = await fetchWithAuth(
+        url,
+        {
+            method: "DELETE",
+            headers: {"Content-Type": "application/json"}
         }
     );
 
