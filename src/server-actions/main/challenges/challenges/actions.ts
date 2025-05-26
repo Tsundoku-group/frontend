@@ -1,18 +1,18 @@
 'use server'
 
-import { fetchWithAuth } from "@/services/fetchWithAuth";
 import { symfonyUrl } from "@/constants/symfonyUrl";
-import { Badge } from "@/models/Challenge";
+import { Challenge } from "@/models/Challenge";
+import { fetchWithAuth } from "@/services/fetchWithAuth";
 
-export const fetchProfileBadges = async (
+export const fetchProfileActiveChallenges = async (
     profileId: number | undefined
-): Promise<Badge[]> => {
+): Promise<Challenge[]> => {
 
     if (!profileId) return [];
 
     try {
         const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/badges/${profileId}`,
+            `${symfonyUrl}/api/v1/challenges/${profileId}/active`,
             {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -20,13 +20,14 @@ export const fetchProfileBadges = async (
         );
 
         if (response.status !== 200 || !response.data) {
-            console.error("Error fetching badges:", response);
+            console.error("Error fetching challenges:", response);
             return [];
         }
 
-        return response.data as Badge[];
+        console.log(response);
+        return response.data as Challenge[];
     } catch (error) {
-        console.error("Error fetching badges:", error);
+        console.error("Error fetching challenges:", error);
         return [];
     }
 }

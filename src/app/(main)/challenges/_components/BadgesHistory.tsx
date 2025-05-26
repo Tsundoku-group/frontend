@@ -68,30 +68,32 @@ export default function BadgesHistory() {
         )}
       </div>
 
-      {badges.length > 0 ? (
-        badges.map((badge) => (
-          <div
-            key={badge.id}
-            className="flex gap-4 items-center mb-2"
-          >
-            <Image
-              src={`/badges/${badge.challengeType}-badge.svg`}
-              alt={`Badge ${badge.challengeName}`}
-              width={50}
-              height={50}
-            />
+      <div className="max-h-48 overflow-y-auto pr-2">
+        {badges.length > 0 ? (
+          badges.map((badge) => (
+            <div
+              key={badge.id}
+              className="flex gap-4 items-center mb-2"
+            >
+              <Image
+                src={`/badges/${badge.challengeType}-badge.svg`}
+                alt={`Badge ${badge.challengeName}`}
+                width={50}
+                height={50}
+              />
 
-            <div className="grid">
-              <span>{badge.challengeName}</span>
-              <span className="text-sm text-text-white text-opacity-50">
-                {formatDate(badge.awardedAt)}
-              </span>
+              <div className="grid">
+                <span>{badge.challengeName}</span>
+                <span className="text-sm text-text-white text-opacity-50">
+                  {formatDate(badge.awardedAt)}
+                </span>
+              </div>
             </div>
-          </div>
-        ))
-      ) : (
-        <p>Pas de badge gagné pour le moment.</p>
-      )}
+          ))
+        ) : (
+          <p>Pas de badge gagné pour le moment.</p>
+        )}
+      </div>
     </div>
   </div>
   )
