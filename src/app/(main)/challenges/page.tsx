@@ -8,10 +8,11 @@ import ChallengesStatistics from './_components/ChallengesStatistics'
 import ChallengesList from './_components/ChallengesList'
 import { Challenge } from '@/models/Challenge'
 import { useProfileContext } from '@/context/profileContext'
-import { fetchProfileActiveChallenges } from '@/server-actions/main/challenges/challenges/actions'
+import { fetchProfileActiveChallenges, fetchProfileInactiveChallenges } from '@/server-actions/main/challenges/challenges/actions'
 
 export default function ChallengesPage() {
     const [activeChallenges, setActiveChallenges] = useState<Challenge[]>([])
+    const [inactiveChallenges, setInactiveChallenges] = useState<Challenge[]>([])
 
     const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id;
@@ -26,14 +27,30 @@ export default function ChallengesPage() {
             const challenges = await fetchProfileActiveChallenges(profileId);
             setActiveChallenges(challenges ?? []);
         } catch (error) {
-            console.error('Erreur lors du chargement des défis en cours :', error);
+            console.error('Error loading current challenges:', error);
             setActiveChallenges([]);
+        }
+    }, [profileId]);
+
+    const loadInactiveChallenges = React.useCallback(async () => {
+        if (!profileId) {
+            setInactiveChallenges([]);
+            return;
+        }
+
+        try {
+            const challenges = await fetchProfileInactiveChallenges(profileId);
+            setInactiveChallenges(challenges ?? []);
+        } catch (error) {
+            console.error('Error loading archived challenges:', error);
+            setInactiveChallenges([]);
         }
     }, [profileId]);
 
     useEffect(() => {
         loadActiveChallenges();
-    }, [loadActiveChallenges]);
+        loadInactiveChallenges();
+    }, [loadActiveChallenges, loadInactiveChallenges]);
 
     return (
         <>
@@ -56,7 +73,9 @@ export default function ChallengesPage() {
 
                 <div className="grid gap-5">
                     <h2>Défis archivés</h2>
-                    {/* <ChallengesList /> */}
+                    <ChallengesList
+                        challenges={inactiveChallenges}
+                    />
                 </div>
             </div>
         </>

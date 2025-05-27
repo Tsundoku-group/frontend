@@ -4,15 +4,19 @@ import { symfonyUrl } from "@/constants/symfonyUrl";
 import { Challenge } from "@/models/Challenge";
 import { fetchWithAuth } from "@/services/fetchWithAuth";
 
-export const fetchProfileActiveChallenges = async (
-    profileId: number | undefined
-): Promise<Challenge[]> => {
+type ChallengeStatus = 'active' | 'inactive';
 
-    if (!profileId) return [];
+const fetchProfileChallengesByStatus = async (
+    profileId: number | undefined,
+    status: ChallengeStatus
+): Promise<Challenge[]> => {
+    if (!profileId) {
+        return [];
+    }
 
     try {
         const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/challenges/${profileId}/active`,
+            `${symfonyUrl}/api/v1/challenges/${profileId}/${status}`,
             {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -20,14 +24,25 @@ export const fetchProfileActiveChallenges = async (
         );
 
         if (response.status !== 200 || !response.data) {
-            console.error("Error fetching challenges:", response);
+            console.error(`Error fetching ${status} challenges:`, response);
             return [];
         }
 
-        console.log(response);
         return response.data as Challenge[];
     } catch (error) {
-        console.error("Error fetching challenges:", error);
+        console.error(`Error fetching ${status} challenges:`, error);
         return [];
     }
-}
+};
+
+export const fetchProfileActiveChallenges = async (
+    profileId: number | undefined
+): Promise<Challenge[]> => {
+    return fetchProfileChallengesByStatus(profileId, 'active');
+};
+
+export const fetchProfileInactiveChallenges = async (
+    profileId: number | undefined
+): Promise<Challenge[]> => {
+    return fetchProfileChallengesByStatus(profileId, 'inactive');
+};
