@@ -1,28 +1,35 @@
 import {ArrowLeft} from "lucide-react";
 import React from "react";
 import {BooksList} from "@/models/BooksList";
-import {createBooksList} from "@/server-actions/main/shelves/action";
-import {useProfileContext} from "@/context/profileContext";
+import {createBooksList, updateBooksList} from "@/server-actions/main/shelves/action";
 
 interface BooksListFormProps {
     setDisplayForm: (value: boolean) => void,
     booksList?: BooksList | undefined,
+    onClose: () => void,
+    profileId: number;
 }
 
-const BooksListForm: React.FC<BooksListFormProps> = ({setDisplayForm, booksList, bookslist}) => {
+const BooksListForm: React.FC<BooksListFormProps> = ({setDisplayForm, booksList, onClose, profileId}) => {
     const [title, setTitle] = React.useState(booksList?.title ?? "");
     const [visibility, setVisibility] = React.useState(booksList?.visibility ?? "private");
-
-    console.log(booksList);
-
-    const {activeProfileInStorage} = useProfileContext();
-    const profileId: number = activeProfileInStorage?.id as number;
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        let response = await createBooksList(profileId, title, visibility);
-        console.log(response);
+        let response
+
+        if(booksList) {
+            booksList.title = title
+            booksList.visibility = visibility
+            response = await updateBooksList(booksList);
+        } else {
+            response = await createBooksList(profileId, title, visibility);
+        }
+
+        if (response.success) {
+            onClose();
+        }
     }
 
     return (
@@ -75,7 +82,7 @@ const BooksListForm: React.FC<BooksListFormProps> = ({setDisplayForm, booksList,
                         className="secondary-btn flex"
                         type="submit"
                     >
-                        Créer
+                        {booksList ? "Editer" : "Créer"}
                     </button>
                 </div>
             </form>

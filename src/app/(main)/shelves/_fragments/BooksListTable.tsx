@@ -1,6 +1,5 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React from "react";
 import {BooksList} from "@/models/BooksList";
-import {useProfileContext} from "@/context/profileContext";
 import {deleteBooksList, fetchBooksLists, updateBooksList} from "@/server-actions/main/shelves/action";
 import {ArrowDownUp, Pencil, Plus, Trash2} from "lucide-react";
 import StarFilled from "@/assets/icons/StarFilled";
@@ -9,32 +8,12 @@ import {formatDate} from "@/utils/dateUtils";
 interface BooksListTableProps {
     setDisplayForm: (value: boolean) => void;
     setBooksList: (value?: BooksList) => void;
+    booksLists: BooksList[];
+    setBooksLists: (value: BooksList[]) => void;
+    profileId: number;
 }
 
-const BooksListTable: React.FC<BooksListTableProps> = ({setDisplayForm, setBooksList}) => {
-    const [booksLists, setBooksLists] = useState<BooksList[]>([]);
-
-    const {activeProfileInStorage} = useProfileContext();
-    const profileId: number = activeProfileInStorage?.id as number;
-
-    const loadBooksLists = useCallback(async () => {
-        try {
-            const data = await fetchBooksLists(profileId)
-            setBooksLists(data || []);
-        } catch (error) {
-            setBooksLists([]);
-            console.error(error);
-        }
-    }, [profileId]);
-
-    useEffect(() => {
-        if (profileId) {
-            loadBooksLists().catch((error) => {
-                console.log(error);
-            })
-        }
-    }, [profileId, loadBooksLists]);
-
+const BooksListTable: React.FC<BooksListTableProps> = ({setDisplayForm, setBooksList, booksLists, setBooksLists, profileId}) => {
     const handleBooksListForm = (booksList?: BooksList) => {
         setBooksList(booksList)
         setDisplayForm(true);
@@ -49,7 +28,7 @@ const BooksListTable: React.FC<BooksListTableProps> = ({setDisplayForm, setBooks
 
         let response = await updateBooksList(booksList)
 
-        if (response.status === 200) {
+        if (response.success) {
             tempBooksLists[index] = booksList
             setBooksLists(tempBooksLists)
         }
@@ -61,7 +40,7 @@ const BooksListTable: React.FC<BooksListTableProps> = ({setDisplayForm, setBooks
 
         let response = await deleteBooksList(booksList);
 
-        if(response.status === 204) {
+        if (response.success) {
             setBooksLists(tempBooksLists)
         }
     }
@@ -87,8 +66,8 @@ const BooksListTable: React.FC<BooksListTableProps> = ({setDisplayForm, setBooks
             </div>
 
             <div className="col-span-full">
-                <table className="p-5 w-full">
-                    <thead>
+                <table className="p-5 w-full border-spacing-y-4">
+                    <thead className="">
                     <tr className="">
                         <th>Favorite</th>
                         <th>Cover</th>
@@ -120,16 +99,15 @@ const BooksListTable: React.FC<BooksListTableProps> = ({setDisplayForm, setBooks
                                 <td></td>
                                 <td>{formatDate(booksList.createdAt)}</td>
                                 <td>{formatDate(booksList.updatedAt)}</td>
-                                <td>
-                                    <button onClick={() => handleBooksListForm(booksList)}>
-                                        <Pencil width={15} height={15} />
-                                    </button>
+                                <td className="flex justify-center gap-4">
+                                        <button onClick={() => handleBooksListForm(booksList)}>
+                                            <Pencil width={15} height={15}/>
+                                        </button>
 
-                                    <button
-                                        onClick={() => handleDelete(booksList)}
-                                    >
-                                        <Trash2 width={15} height={15} className="text-red-highlight" />
-                                    </button>
+                                        <button onClick={() => handleDelete(booksList)}>
+                                            <Trash2 width={15} height={15} className="text-red-highlight" />
+                                        </button>
+
                                 </td>
                             </tr>
                         ))
