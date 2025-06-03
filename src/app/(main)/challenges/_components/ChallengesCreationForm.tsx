@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useState, ChangeEvent } from 'react' // adapte le path si besoin
+import React, { useState, ChangeEvent, useMemo, useEffect } from 'react' // adapte le path si besoin
 import Image from 'next/image'
-import CustomSelect from '@/components/CustomSelect'
-import { CustomSelectOption } from '@/models/Challenge'
+import CustomSelect, { CustomSelectOption } from '@/components/CustomSelect'
 import { Plus, X } from 'lucide-react'
+import { useConstraints } from '@/context/constraintsContext'
 
 interface PredefChallenge {
   id: number
@@ -19,22 +19,70 @@ interface ChallengesCreationFormProps {
 }
 
 export default function ChallengesCreationForm({ onClose }: ChallengesCreationFormProps) {
+  const constraints = useConstraints();
+
+  const actionLabels: Record<string, string> = {
+    read: 'Lire',
+    write: 'Écrire',
+    have: 'Posséder',
+  }
+
+  const frequencyLabels: Record<string, string> = {
+    daily: 'Quotidienne',
+    weekly: 'Hebdomadaire',
+    monthly: 'Mensuelle',
+    yearly: 'Annuelle',
+    once: 'Unique',
+  }
+
   const typeOptions: CustomSelectOption[] = [
     { value: 'personnalise', label: 'Personnalisé', color: 'var(--highlight-purple)' },
     { value: 'predefini', label: 'Prédéfini', color: 'var(--highlight-red)' }
-  ]
+  ];
 
-  const [type, setType] = useState<string>(typeOptions[0].value)
+  const [type, setType] = useState<string>(typeOptions[0].value);
 
-  const [startDate, setStartDate] = useState<string>('')
-  const [endDate, setEndDate] = useState<string>('')
-  const [participantSearch, setParticipantSearch] = useState<string>('')
-  const [selectedObjectives, setSelectedObjectives] = useState<string[]>([])
-  const objectifOptions = [
-    { value: 'objectif1', label: 'Objectif 1' },
-    { value: 'objectif2', label: 'Objectif 2' },
-    { value: 'objectif3', label: 'Objectif 3' },
-  ]
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+
+  const [actionType, setActionType] = useState<string>('');
+  const [contentType, setContentType] = useState<string>('');
+  const [frequency, setFrequency] = useState<string>('');
+  const [targetCount, setTargetCount] = useState<number>(1);
+
+  useEffect(() => {
+    if (constraints.actionTypes.length > 0) {
+      setActionType(constraints.actionTypes[0])
+    }
+    if (constraints.frequencies.length > 0) {
+      setFrequency(constraints.frequencies[0])
+    }
+  }, [constraints.actionTypes, constraints.frequencies])
+
+  useEffect(() => {
+    const allowed = constraints.allowedContent[actionType] || []
+    if (allowed.length > 0) {
+      setContentType(allowed[0])
+    } else {
+      setContentType('')
+    }
+  }, [actionType, constraints.allowedContent])
+
+  const contentOptions = useMemo(() => {
+    const contentLabels: Record<string, string> = {
+      book: 'Livre',
+      page: 'Page',
+      chapter: 'Chapitre',
+      article: 'Article',
+      book_review: 'Critique de livre',
+      book_description: 'Fiche de livre',
+    }
+
+    return (constraints.allowedContent[actionType] || []).map(c => ({
+      value: c,
+      label: contentLabels[c] || c,
+    }))
+  }, [actionType, constraints.allowedContent])
 
   const predefinedChallenges: PredefChallenge[] = [
     {
@@ -52,11 +100,6 @@ export default function ChallengesCreationForm({ onClose }: ChallengesCreationFo
       duration: '30 j.'
     }
   ]
-
-  const handleObjectivesChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const vals = Array.from(e.target.selectedOptions, opt => opt.value)
-    setSelectedObjectives(vals)
-  }
 
   return (
     <div className="fixed inset-0 bg-primary-black bg-opacity-50 flex items-center justify-center z-50">
@@ -80,7 +123,17 @@ export default function ChallengesCreationForm({ onClose }: ChallengesCreationFo
           {type === 'personnalise' && (
             <div className="space-y-4">
               <div>
-                <label className="block mb-1 font-medium">Début du défi</label>
+                <label className="mb-1 font-medium">Nom du défi</label>
+                <input
+                  type="text"
+                  placeholder="Le nom de ton défi…"
+                  value={startDate}
+                  onChange={e => setStartDate(e.target.value)}
+                  className="w-full px-4 py-2 bg-secondary-black border border-tertiary-black rounded-3xl mb-4"
+                />
+              </div>
+              <div>
+                <label className="mb-1 font-medium">Début du défi</label>
                 <input
                   type="date"
                   value={startDate}
@@ -89,7 +142,7 @@ export default function ChallengesCreationForm({ onClose }: ChallengesCreationFo
                 />
               </div>
               <div>
-                <label className="block mb-1 font-medium">Fin du défi</label>
+                <label className="mb-1 font-medium">Fin du défi</label>
                 <input
                   type="date"
                   value={endDate}
@@ -97,30 +150,61 @@ export default function ChallengesCreationForm({ onClose }: ChallengesCreationFo
                   className="w-full px-4 py-2 bg-secondary-black border border-tertiary-black rounded-3xl mb-4"
                 />
               </div>
+
               <div>
-                <label className="block mb-1 font-medium">Participants</label>
-                <input
-                  type="text"
-                  placeholder="Rechercher parmi vos amis…"
-                  value={participantSearch}
-                  onChange={e => setParticipantSearch(e.target.value)}
-                  className="w-full px-4 py-2 bg-secondary-black border border-tertiary-black rounded-3xl mb-4"
-                />
-              </div>
-              <div>
-                <label className="block mb-1 font-medium">Objectifs</label>
+                <label className="mb-1 font-medium">Type d&apos;action</label>
                 <select
-                  multiple
-                  value={selectedObjectives}
-                  onChange={handleObjectivesChange}
-                  className="w-full border rounded px-3 py-2 h-32"
+                  value={actionType}
+                  onChange={e => setActionType(e.target.value)}
+                  className="w-full px-4 py-2 bg-secondary-black border border-tertiary-black rounded-3xl mb-4"
                 >
-                  {objectifOptions.map(opt => (
+                  {constraints.actionTypes.map(at => (
+                    <option key={at} value={at}>
+                      {actionLabels[at] || at}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-1 font-medium">Type de contenu</label>
+                <select
+                  value={contentType}
+                  onChange={e => setContentType(e.target.value)}
+                  className="w-full px-4 py-2 bg-secondary-black border border-tertiary-black rounded-3xl mb-4"
+                >
+                  {contentOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div>
+                <label className="mb-1 font-medium">Fréquence</label>
+                <select
+                  value={frequency}
+                  onChange={e => setFrequency(e.target.value)}
+                  className="w-full px-4 py-2 bg-secondary-black border border-tertiary-black rounded-3xl mb-4"
+                >
+                  {constraints.frequencies.map(freq => (
+                    <option key={freq} value={freq}>
+                      {frequencyLabels[freq] || freq}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-1 font-medium">Objectif (nombre)</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={targetCount}
+                  onChange={e => setTargetCount(Number(e.target.value))}
+                  className="w-full px-4 py-2 bg-secondary-black border border-tertiary-black rounded-3xl mb-4"
+                />
               </div>
             </div>
           )}

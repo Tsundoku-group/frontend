@@ -6,6 +6,13 @@ import { fetchWithAuth } from "@/services/fetchWithAuth";
 
 type ChallengeStatus = 'active' | 'inactive';
 
+export type ConstraintResponse = {
+    actionTypes: string[]
+    contentTypes: string[]
+    frequencies: string[]
+    allowedContent: Record<string, string[]>
+}
+
 const fetchProfileChallengesByStatus = async (
     profileId: number | undefined,
     status: ChallengeStatus
@@ -45,4 +52,36 @@ export const fetchProfileInactiveChallenges = async (
     profileId: number | undefined
 ): Promise<Challenge[]> => {
     return fetchProfileChallengesByStatus(profileId, 'inactive');
+};
+
+export async function fetchConstraints(): Promise<ConstraintResponse> {
+    try {
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/v1/challenges/constraints`,
+            {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            }
+        )
+
+        if (response.status !== 200 || !response.data) {
+            console.error('Error fetching constraints:', response);
+            return {
+                actionTypes: [],
+                contentTypes: [],
+                frequencies: [],
+                allowedContent: {}
+            };
+        }
+
+        return response.data as ConstraintResponse
+    } catch (error) {
+        console.error('Error fetching constraints: ', error);
+        return {
+            actionTypes: [],
+            contentTypes: [],
+            frequencies: [],
+            allowedContent: {}
+        };
+    }
 };

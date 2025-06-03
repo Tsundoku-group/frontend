@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 
-interface Option {
-    value: string;
-    label: string;
-    color: string;
-}
 interface CustomSelectProps {
     selectedValue: string;
     onChange?: (newValue: string) => void;
-    options: Option[]
+    options: CustomSelectOption[]
+}
+
+export interface CustomSelectOption {
+    value: string;
+    label: string;
+    color: string;
 }
 
 export default function CustomSelect({
@@ -30,7 +31,7 @@ export default function CustomSelect({
         setIsOpen(prev => !prev);
     };
 
-    const handleOptionClick = (option: Option, event: React.MouseEvent) => {
+    const handleOptionClick = (option: CustomSelectOption, event: React.MouseEvent) => {
         event.stopPropagation();
         setSelectedOption(option);
         setIsOpen(false);
@@ -89,8 +90,8 @@ export default function CustomSelect({
                     role="option"
                     aria-selected={selectedOption.value === option.value}
                 >
-                    <span 
-                        className="inline-block w-2 h-2 mr-2 rounded-full" 
+                    <span
+                        className="inline-block w-2 h-2 mr-2 rounded-full"
                         style={{ backgroundColor: option.color }}>
                     </span>
                     {option.label}
@@ -102,7 +103,7 @@ export default function CustomSelect({
     return (
         <div className="relative inline-block w-40" ref={dropdownRef}>
             <div
-                className="custom-select rounded-full py-2 px-4 cursor-pointer flex items-center justify-between"
+                className="custom-select rounded-full w-fit py-2 px-4 cursor-pointer flex items-center justify-between"
                 onClick={toggleDropdown}
                 tabIndex={0}
                 role="button"
@@ -111,16 +112,16 @@ export default function CustomSelect({
             >
                 <span className="inline-block w-2 h-2 mr-2 rounded-full" style={{ backgroundColor: selectedOption.color }}></span>
                 {selectedOption.label}
-                <svg 
-                    className="w-4 h-4 ml-2" 
-                    fill="none" 
-                    stroke="currentColor" 
+                <svg
+                    className="w-4 h-4 ml-2"
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                 >
-                    <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth="2" 
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
                         d="M19 9l-7 7-7-7"
                     ></path>
                 </svg>
