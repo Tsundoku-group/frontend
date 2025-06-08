@@ -22,8 +22,7 @@ const fetchProfileChallengesByStatus = async (
     }
 
     try {
-        const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/challenges/${profileId}/${status}`,
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/challenges/${profileId}/${status}`,
             {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -54,7 +53,7 @@ export const fetchProfileInactiveChallenges = async (
     return fetchProfileChallengesByStatus(profileId, 'inactive');
 };
 
-export async function fetchConstraints(): Promise<ConstraintResponse> {
+export const fetchConstraints = async (): Promise<ConstraintResponse> => {
     try {
         const response = await fetchWithAuth(
             `${symfonyUrl}/api/v1/challenges/constraints`,
@@ -85,3 +84,46 @@ export async function fetchConstraints(): Promise<ConstraintResponse> {
         };
     }
 };
+
+export const submitChallenge = async (
+    payload: {
+        name: string;
+        type: string;
+        startAt: string;
+        endAt: string;
+        action: string;
+        contentType: string;
+        frequency: string;
+        targetCount: number;
+        inviteeIds: number[];
+    },
+    profileId: number | undefined
+): Promise<{ success: boolean; message: string; data?: any }> => {
+    if (!profileId) {
+        return { success: false, message: "Profile ID is required" };
+    }
+
+    console.log(payload);
+
+    try {
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/v1/challenges`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            }
+        );
+
+        console.log(response);
+
+        if (response.status !== 200 || !response.data) {
+            return { success: false, message: "Failed to submit challenge" };
+        }
+
+        return { success: true, message: "Challenge submitted successfully", data: response.data };
+    } catch (error) {
+        console.error("Error submitting challenge:", error);
+        return { success: false, message: `Error submitting challenge: ${error}` };
+    }
+}
