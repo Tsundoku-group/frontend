@@ -161,7 +161,7 @@ export default function ChallengesCreationForm({ onClose }: ChallengesCreationFo
       frequency: type === 'customised' ? frequency : '',
       targetCount: type === 'customised' ? targetCount : 0,
       creatorId: profileId,
-      // inviteeIds: [],
+      inviteeIds: [],
     }
 
     console.log(payload);

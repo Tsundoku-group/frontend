@@ -25,7 +25,7 @@ export default function ChallengesPage() {
 
         try {
             const challenges = await fetchProfileActiveChallenges(profileId);
-            setActiveChallenges(challenges ?? []);
+            setActiveChallenges(challenges);
         } catch (error) {
             console.error('Error loading current challenges:', error);
             setActiveChallenges([]);
@@ -40,7 +40,7 @@ export default function ChallengesPage() {
 
         try {
             const challenges = await fetchProfileInactiveChallenges(profileId);
-            setInactiveChallenges(challenges ?? []);
+            setInactiveChallenges(challenges);
         } catch (error) {
             console.error('Error loading archived challenges:', error);
             setInactiveChallenges([]);
@@ -85,6 +85,7 @@ export default function ChallengesPage() {
                     <h2>Défis en cours</h2>
                     <ChallengesList
                         challenges={activeChallenges}
+                        onRemove={() => loadActiveChallenges()}
                     />
                 </div>
 
@@ -92,6 +93,7 @@ export default function ChallengesPage() {
                     <h2>Défis archivés</h2>
                     <ChallengesList
                         challenges={inactiveChallenges}
+                        onRemove={() => loadActiveChallenges()}
                     />
                 </div>
             </div>

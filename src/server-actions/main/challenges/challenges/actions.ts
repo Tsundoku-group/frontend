@@ -103,8 +103,6 @@ export const submitChallenge = async (
         return { success: false, message: "Profile ID is required" };
     }
 
-    console.log(payload);
-
     try {
         const response = await fetchWithAuth(
             `${symfonyUrl}/api/v1/challenges`,
@@ -115,8 +113,6 @@ export const submitChallenge = async (
             }
         );
 
-        console.log(response);
-
         if (response.status !== 200 || !response.data) {
             return { success: false, message: "Failed to submit challenge" };
         }
@@ -125,5 +121,33 @@ export const submitChallenge = async (
     } catch (error) {
         console.error("Error submitting challenge:", error);
         return { success: false, message: `Error submitting challenge: ${error}` };
+    }
+}
+
+export const deleteChallenge = async (
+    challengeId: number,
+    profileId: number | undefined
+): Promise<{ success: boolean; message: string }> => {
+    if (!profileId) {
+        return { success: false, message: "Profile ID is required" };
+    }
+
+    try {
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/v1/challenges/${challengeId}`,
+            {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+            }
+        );
+
+        if (response.status !== 200) {
+            return { success: false, message: "Failed to delete challenge" };
+        }
+
+        return { success: true, message: "Challenge deleted successfully" };
+    } catch (error) {
+        console.error("Error deleting challenge:", error);
+        return { success: false, message: `Error deleting challenge: ${error}` };
     }
 }
