@@ -25,7 +25,7 @@ export default function ChallengesPage() {
 
         try {
             const challenges = await fetchProfileActiveChallenges(profileId);
-            setActiveChallenges(challenges);
+            setActiveChallenges(challenges.data);
         } catch (error) {
             console.error('Error loading current challenges:', error);
             setActiveChallenges([]);
@@ -40,7 +40,7 @@ export default function ChallengesPage() {
 
         try {
             const challenges = await fetchProfileInactiveChallenges(profileId);
-            setInactiveChallenges(challenges);
+            setInactiveChallenges(challenges.data);
         } catch (error) {
             console.error('Error loading archived challenges:', error);
             setInactiveChallenges([]);
@@ -84,7 +84,15 @@ export default function ChallengesPage() {
                 <div className="grid gap-5">
                     <h2>Défis en cours</h2>
                     <ChallengesList
-                        challenges={activeChallenges}
+                        initialData={{
+                            data: activeChallenges,
+                            pagination: {
+                                offset: 0,
+                                limit: activeChallenges.length,
+                                total: activeChallenges.length,
+                                hasMore: false
+                            }
+                        }}
                         onRemove={() => loadActiveChallenges()}
                     />
                 </div>
@@ -92,8 +100,16 @@ export default function ChallengesPage() {
                 <div className="grid gap-5">
                     <h2>Défis archivés</h2>
                     <ChallengesList
-                        challenges={inactiveChallenges}
-                        onRemove={() => loadActiveChallenges()}
+                        initialData={{
+                            data: inactiveChallenges,
+                            pagination: {
+                                offset: 0,
+                                limit: inactiveChallenges.length,
+                                total: inactiveChallenges.length,
+                                hasMore: false
+                            }
+                        }}
+                        onRemove={() => loadInactiveChallenges()}
                     />
                 </div>
             </div>

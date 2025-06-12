@@ -13,16 +13,36 @@ export type ConstraintResponse = {
     allowedContent: Record<string, string[]>
 }
 
+export type PaginatedChallengesResponse = {
+    data: Challenge[];
+    pagination: {
+        offset: number;
+        limit: number;
+        total: number;
+        hasMore: boolean;
+    };
+}
+
 const fetchProfileChallengesByStatus = async (
     profileId: number | undefined,
-    status: ChallengeStatus
-): Promise<Challenge[]> => {
+    status: ChallengeStatus,
+    offset: number = 0,
+    limit: number = 5
+): Promise<PaginatedChallengesResponse> => {
     if (!profileId) {
-        return [];
+        return {
+            data: [],
+            pagination: { offset: 0, limit: 5, total: 0, hasMore: false }
+        };
     }
 
     try {
-        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/challenges/${profileId}/${status}`,
+        const params = new URLSearchParams({
+            offset: offset.toString(),
+            limit: limit.toString(),
+        });
+
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/challenges/${profileId}/${status}?${params}`,
             {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -31,26 +51,36 @@ const fetchProfileChallengesByStatus = async (
 
         if (response.status !== 200 || !response.data) {
             console.error(`Error fetching ${status} challenges:`, response);
-            return [];
+            return {
+                data: [],
+                pagination: { offset: 0, limit: 5, total: 0, hasMore: false }
+            };
         }
 
-        return response.data as Challenge[];
+        return response.data as PaginatedChallengesResponse;
     } catch (error) {
         console.error(`Error fetching ${status} challenges:`, error);
-        return [];
+        return {
+            data: [],
+            pagination: { offset: 0, limit: 5, total: 0, hasMore: false }
+        };
     }
 };
 
 export const fetchProfileActiveChallenges = async (
-    profileId: number | undefined
-): Promise<Challenge[]> => {
-    return fetchProfileChallengesByStatus(profileId, 'active');
+    profileId: number | undefined,
+    offset: number = 0,
+    limit: number = 5
+): Promise<PaginatedChallengesResponse> => {
+    return fetchProfileChallengesByStatus(profileId, 'active', offset, limit);
 };
 
 export const fetchProfileInactiveChallenges = async (
-    profileId: number | undefined
-): Promise<Challenge[]> => {
-    return fetchProfileChallengesByStatus(profileId, 'inactive');
+    profileId: number | undefined,
+    offset: number = 0,
+    limit: number = 5
+): Promise<PaginatedChallengesResponse> => {
+    return fetchProfileChallengesByStatus(profileId, 'inactive', offset, limit);
 };
 
 export const fetchConstraints = async (): Promise<ConstraintResponse> => {
