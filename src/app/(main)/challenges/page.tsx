@@ -8,66 +8,77 @@ import ChallengesStatistics, { ChallengeStats } from './_components/ChallengesSt
 import ChallengesList from './_components/ChallengesList'
 import { Challenge } from '@/models/Challenge'
 import { useProfileContext } from '@/context/profileContext'
-import { fetchProfileActiveChallenges, fetchProfileInactiveChallenges } from '@/server-actions/main/challenges/challenges/actions'
+import { fetchProfileActiveChallenges, fetchProfileInactiveChallenges, PaginatedChallengesResponse } from '@/server-actions/main/challenges/challenges/actions'
 
 export default function ChallengesPage() {
-    const [activeChallenges, setActiveChallenges] = useState<Challenge[]>([])
-    const [inactiveChallenges, setInactiveChallenges] = useState<Challenge[]>([])
+    const [activeChallenges, setActiveChallenges] = useState<Challenge[]>([]);
+    const [inactiveChallenges, setInactiveChallenges] = useState<Challenge[]>([]);
+    const [activePage, setActivePage] = useState<PaginatedChallengesResponse>();
+    const [inactivePage, setInactivePage] = useState<PaginatedChallengesResponse>();
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id;
 
-    const loadActiveChallenges = React.useCallback(async () => {
-        if (!profileId) {
-            setActiveChallenges([]);
-            return;
-        }
-
-        try {
-            const challenges = await fetchProfileActiveChallenges(profileId);
-            setActiveChallenges(challenges.data);
-        } catch (error) {
-            console.error('Error loading current challenges:', error);
-            setActiveChallenges([]);
-        }
-    }, [profileId]);
-
-    const loadInactiveChallenges = React.useCallback(async () => {
-        if (!profileId) {
-            setInactiveChallenges([]);
-            return;
-        }
-
-        try {
-            const challenges = await fetchProfileInactiveChallenges(profileId);
-            setInactiveChallenges(challenges.data);
-        } catch (error) {
-            console.error('Error loading archived challenges:', error);
-            setInactiveChallenges([]);
-        }
-    }, [profileId]);
-
     useEffect(() => {
-        loadActiveChallenges();
-        loadInactiveChallenges();
-    }, [loadActiveChallenges, loadInactiveChallenges]);
+        if (!profileId) return;
+
+        setLoading(true);
+        setError(null);
+
+        Promise.all([
+            fetchProfileActiveChallenges(profileId, 0, 5),
+            fetchProfileInactiveChallenges(profileId, 0, 5)
+        ]).then(([active, inactive]) => {
+            setActivePage(active)
+            setInactivePage(inactive)
+            setActiveChallenges(active.data);
+            setInactiveChallenges(inactive.data);
+        }).catch(error => {
+            console.error('Error fetching challenges:', error);
+            setError('Erreur lors du chargement des défis');
+        })
+        .finally(() => {
+            setLoading(false);
+        });
+    }, [profileId])
 
     const stats: ChallengeStats = useMemo(() => {
-        const acceptedCount = activeChallenges.length
-        const successCount = inactiveChallenges.filter(c => c.status === 'success').length
-        const allChallenges = [...activeChallenges, ...inactiveChallenges]
+        const acceptedCount = activeChallenges.length;
+        const successCount = inactiveChallenges.filter(c => c.status === 'success').length;
+        const failedCount = inactiveChallenges.filter(c => c.status === 'failed').length;
+        const allChallenges = [...activeChallenges, ...inactiveChallenges];
         const createdCount = allChallenges.filter(c => c.creator.id === profileId).length
-        const successRate = acceptedCount > 0
-            ? Math.round((successCount / acceptedCount) * 100)
+
+        const completedChallenges = successCount + failedCount;
+        const successRate = completedChallenges > 0
+            ? Math.round((successCount / completedChallenges) * 100)
             : 0
 
         return {
-            acceptedCount,
+            acceptedCount: acceptedCount,
             successRate,
             createdCount,
             badgesCount: successCount,
         }
     }, [activeChallenges, inactiveChallenges, profileId])
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center min-h-[200px]">
+                <div className="text-lg">Chargement des défis...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex justify-center items-center min-h-[200px]">
+                <div className="text-lg text-red-500">{error}</div>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -83,34 +94,36 @@ export default function ChallengesPage() {
             <div className="grid gap-5">
                 <div className="grid gap-5">
                     <h2>Défis en cours</h2>
-                    <ChallengesList
-                        initialData={{
-                            data: activeChallenges,
-                            pagination: {
-                                offset: 0,
-                                limit: activeChallenges.length,
-                                total: activeChallenges.length,
-                                hasMore: false
-                            }
-                        }}
-                        onRemove={() => loadActiveChallenges()}
-                    />
+                    {activePage ? (
+                        activePage.data.length > 0 ? (
+                            <ChallengesList
+                                initialData={activePage}
+                                fetchPage={fetchProfileActiveChallenges}
+                                onRemove={() => {/* … */ }}
+                            />
+                        ) : (
+                            <div className="text-text-white text-center py-8">
+                                Aucun défi en cours
+                            </div>
+                        )
+                    ) : null}
                 </div>
 
                 <div className="grid gap-5">
                     <h2>Défis archivés</h2>
-                    <ChallengesList
-                        initialData={{
-                            data: inactiveChallenges,
-                            pagination: {
-                                offset: 0,
-                                limit: inactiveChallenges.length,
-                                total: inactiveChallenges.length,
-                                hasMore: false
-                            }
-                        }}
-                        onRemove={() => loadInactiveChallenges()}
-                    />
+                    {inactivePage ? (
+                        inactivePage.data.length > 0 ? (
+                            <ChallengesList
+                                initialData={inactivePage}
+                                fetchPage={fetchProfileInactiveChallenges}
+                                onRemove={() => {/* … */ }}
+                            />
+                        ) : (
+                            <div className="text-text-white text-center py-8">
+                                Aucun défi archivé
+                            </div>
+                        )
+                    ) : null}
                 </div>
             </div>
         </>

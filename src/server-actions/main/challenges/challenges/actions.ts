@@ -49,8 +49,16 @@ const fetchProfileChallengesByStatus = async (
             }
         );
 
-        if (response.status !== 200 || !response.data) {
-            console.error(`Error fetching ${status} challenges:`, response);
+        if (response.status !== 200) {
+            console.error(`HTTP ${response.status} error fetching ${status} challenges:`, response);
+            return {
+                data: [],
+                pagination: { offset: 0, limit: 5, total: 0, hasMore: false }
+            };
+        }
+
+        if (!response.data) {
+            console.error(`No data in response for ${status} challenges`);
             return {
                 data: [],
                 pagination: { offset: 0, limit: 5, total: 0, hasMore: false }

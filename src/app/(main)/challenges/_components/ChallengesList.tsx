@@ -3,19 +3,25 @@
 import ConfirmDialog from '@/components/ConfirmDialog'
 import { useProfileContext } from '@/context/profileContext'
 import { Challenge } from '@/models/Challenge'
-import { deleteChallenge, fetchProfileActiveChallenges, PaginatedChallengesResponse } from '@/server-actions/main/challenges/challenges/actions'
+import { deleteChallenge, PaginatedChallengesResponse } from '@/server-actions/main/challenges/challenges/actions'
 import { formatDate } from '@/utils/dateUtils'
 import { Hourglass, Plus, Trash2 } from 'lucide-react'
 import Image from 'next/image'
-import React from 'react'
+import React, { useCallback } from 'react'
 
 type ChallengesListProps = {
     initialData: PaginatedChallengesResponse;
+    fetchPage: (
+        profileId: number, 
+        offset: number, 
+        limit: number
+    ) => Promise<PaginatedChallengesResponse>;
     onRemove?: (id: number) => void;
 }
 
 export default function ChallengesList({
     initialData,
+    fetchPage,
     onRemove
 }: ChallengesListProps) {
     const { activeProfileInStorage } = useProfileContext();
@@ -51,22 +57,26 @@ export default function ChallengesList({
         }
     };
 
-    const loadMoreChallenges = async () => {
+    const loadMoreChallenges = useCallback(async () => {
         if (!profileId || isLoadingMore || !pagination.hasMore) return;
 
         setIsLoadingMore(true);
         try {
             const newOffset = pagination.offset + pagination.limit;
-            const response = await fetchProfileActiveChallenges(profileId, newOffset, pagination.limit);
+            const response = await fetchPage(profileId, newOffset, pagination.limit);
 
-            setChallenges(prev => [...prev, ...response.data]);
+            const unique = response.data.filter(
+                ch => !challenges.some(prev => prev.id === ch.id)
+            );
+
+            setChallenges(prev => [...prev, ...unique]);
             setPagination(response.pagination);
         } catch (error) {
             console.error("Error loading more challenges: ", error);
         } finally {
             setIsLoadingMore(false);
         }
-    };
+    }, [profileId, isLoadingMore, pagination, challenges, fetchPage]);
 
     const renderChallenge = (challenge: Challenge) => {
         const gradientClasses: Record<string, string> = {
