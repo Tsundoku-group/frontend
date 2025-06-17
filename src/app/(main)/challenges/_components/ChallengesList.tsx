@@ -4,7 +4,7 @@ import ConfirmDialog from '@/components/ConfirmDialog'
 import { useProfileContext } from '@/context/profileContext'
 import { Challenge } from '@/models/Challenge'
 import { deleteChallenge, PaginatedChallengesResponse } from '@/server-actions/main/challenges/challenges/actions'
-import { formatDate } from '@/utils/dateUtils'
+import { formatDate, getRemainingTime } from '@/utils/dateUtils'
 import { Hourglass, Plus, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import React, { useCallback } from 'react'
@@ -12,8 +12,8 @@ import React, { useCallback } from 'react'
 type ChallengesListProps = {
     initialData: PaginatedChallengesResponse;
     fetchPage: (
-        profileId: number, 
-        offset: number, 
+        profileId: number,
+        offset: number,
         limit: number
     ) => Promise<PaginatedChallengesResponse>;
     onRemove?: (id: number) => void;
@@ -158,7 +158,7 @@ export default function ChallengesList({
                         </div>
                         <div className="flex items-center">
                             <Hourglass width={15} />
-                            <span className="ml-1 text-sm">13 j.</span>
+                            <span className="ml-1 text-sm">{getRemainingTime(challenge.endAt)}</span>
                         </div>
                     </div>
                 </div>

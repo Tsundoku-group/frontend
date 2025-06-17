@@ -1,5 +1,7 @@
+type SymfonyDate = { date: string; timezone_type: number; timezone: string }
+
 export const formatDate = (
-    input: string | { date: string; timezone_type: number; timezone: string }
+    input: string | SymfonyDate
 ): string => {
     const dateString = typeof input === "string" ? input : input.date;
     const date = new Date(dateString);
@@ -27,3 +29,28 @@ export const formatDate = (
         }).format(date);
     }
 };
+
+export const getRemainingTime = (endAt: string | SymfonyDate): string => {
+    const now = new Date();
+    const endDate = new Date(typeof endAt === "string" ? endAt : endAt.date);
+    const diffMs = endDate.getTime() - now.getTime();
+
+    if (diffMs <= 0) {
+        return 'terminé'
+    }
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+    if (days >= 1) {
+        return `${days} j.`
+    }
+
+    const hours = Math.floor(diffMs / (1000 * 60 * 60))
+
+    if (hours >= 1) {
+        return `${hours} h.`
+    }
+
+    const minutes = Math.floor(diffMs / (1000 * 60))
+
+    return `${minutes} min.`
+}
