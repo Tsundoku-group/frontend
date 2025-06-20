@@ -54,7 +54,7 @@ const ProfileRelationList = React.memo(({relations, loading, relationType, isOwn
     }
 
     return (
-        <Card className="bg-tertiary-black border-none p-2">
+        <Card className="bg-transparent border-none">
             <div className="grid grid-cols-2 gap-4">
                 {Array.isArray(relations) && relations.length > 0 ? (
                     relations.map((item) => {

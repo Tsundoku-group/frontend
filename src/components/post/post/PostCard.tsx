@@ -18,6 +18,7 @@ import ReactionButton from "@/components/post/comment/ReactButton";
 import Image from "next/image";
 import CommentProcess from "@/assets/icons/CommentProcess";
 import SendFilled from "@/assets/icons/SendFilled";
+import {clsx} from "clsx";
 
 interface Post {
     id: number;
@@ -29,11 +30,11 @@ interface Post {
     };
     content: string;
     images: string[];
-    likes: number;
     commentsCount: number;
     createdAt: string;
     visibility: string;
     hasLiked: boolean;
+    likesCount: number;
 }
 
 export default function PostCard({post, groupId, onDelete}: {
@@ -49,6 +50,13 @@ export default function PostCard({post, groupId, onDelete}: {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [editedContent, setEditedContent] = useState(post.content);
+    const [commentsCount, setCommentsCount] = useState<number>(
+        Math.max(0, Number(post.commentsCount || 0))
+    );
+    const [reactionsCount, setReactionsCount] = useState<number>(
+        Math.max(0, Number(post.likesCount || 0))
+    );
+    const [hasLiked, setHasLiked] = useState(post.hasLiked);
 
     const handleEditPost = async () => {
         if (!profileId) return;
@@ -189,11 +197,11 @@ export default function PostCard({post, groupId, onDelete}: {
 
                 <div className="flex justify-between items-center mt-3 px-16 text-xs">
                     <div className="flex items-center gap-1 text-gray-400">
-                        <Heart className="w-4 h-4 text-red-400"/>
-                        <span className="font-semibold">4</span>
+                        <Heart className={clsx("w-4 h-4", hasLiked ? "fill-current text-red-400" : "text-red-400")} />
+                        <span className="font-semibold">{reactionsCount}</span>
                     </div>
                     <div className="text-gray-400">
-                        {post.commentsCount} commentaires
+                        {commentsCount} commentaire{commentsCount > 1 ? "s" : ""}
                     </div>
                 </div>
 
@@ -207,6 +215,10 @@ export default function PostCard({post, groupId, onDelete}: {
                         receiverId={post.author.id}
                         resourceType="POST"
                         initialHasLiked={post.hasLiked}
+                        onNewReaction={(added) =>
+                            setReactionsCount((c) => Number(c || 0) + (added ? 1 : -1))
+                        }
+                        onToggleLike={() => setHasLiked(liked => !liked)}
                     />
                     <button
                         className="flex items-center gap-1 text-gray-400 hover:text-white"
@@ -219,7 +231,11 @@ export default function PostCard({post, groupId, onDelete}: {
                     </button>
                 </div>
 
-                {showComments && <CommentSection postId={post.id}/>}
+                {showComments &&
+                    <div>
+                        <CommentSection postId={post.id} onNewComment={() => setCommentsCount((c) => c + 1)} />
+                    </div>
+                }
             </div>
 
             <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

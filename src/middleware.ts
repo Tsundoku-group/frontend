@@ -14,6 +14,7 @@ export default async function middleware(req: NextRequest) {
         '/appearanceSettings',
         '/notificationSettings',
         '/profile',
+        '/challenges',
         '/articles',
         '/clubs'
     ]);

@@ -1,8 +1,8 @@
 import {useRef, useState} from "react";
-import { Heart } from "lucide-react";
-import { ShowToast } from "@/components/ShowToast";
-import { likePost } from "@/server-actions/main/home/actions";
-import { useSocket } from "@/context/socketContext";
+import {Heart} from "lucide-react";
+import {ShowToast} from "@/components/ShowToast";
+import {likePost} from "@/server-actions/main/home/actions";
+import {useSocket} from "@/context/socketContext";
 import clsx from "clsx";
 
 interface ReactionButtonProps {
@@ -12,6 +12,8 @@ interface ReactionButtonProps {
     receiverId: number;
     resourceType: "POST" | "COMMENT";
     initialHasLiked: boolean;
+    onNewReaction?: (added: boolean) => void;
+    onToggleLike?: (liked: boolean) => void;
 }
 
 export default function ReactionButton({
@@ -21,11 +23,13 @@ export default function ReactionButton({
                                            receiverId,
                                            resourceType,
                                            initialHasLiked,
+                                           onNewReaction,
+                                           onToggleLike
                                        }: ReactionButtonProps) {
     const [hasLiked, setHasLiked] = useState(initialHasLiked);
     const [isAnimating, setIsAnimating] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    const { socket } = useSocket();
+    const {socket} = useSocket();
 
     const handleLikeToggle = async () => {
         if (!profileId) return;
@@ -36,7 +40,8 @@ export default function ReactionButton({
 
         if (audioRef.current && newHasLiked) {
             audioRef.current.currentTime = 0;
-            audioRef.current.play().catch(() => {});
+            audioRef.current.play().catch(() => {
+            });
         }
 
         setTimeout(() => setIsAnimating(false), 500);
@@ -52,7 +57,8 @@ export default function ReactionButton({
                 createdAt: new Date().toISOString(),
             });
         }
-
+        onNewReaction?.(newHasLiked);
+        onToggleLike?.(newHasLiked);
         try {
             await likePost(profileId, receiverId, resourceType, postId, "LIKE");
         } catch (error) {
@@ -68,11 +74,11 @@ export default function ReactionButton({
         >
             {isAnimating && (
                 <span className="absolute inset-0 flex items-center justify-center z-[-1]">
-                    <span className="animate-ping-pulse w-6 h-6 rounded-full bg-red-400 opacity-50" />
+                    <span className="animate-ping-pulse w-6 h-6 rounded-full bg-red-400 opacity-50"/>
                 </span>
             )}
 
-            <audio ref={audioRef} src="/sounds/like-pop.mp3" preload="auto" />
+            <audio ref={audioRef} src="/sounds/like-pop.mp3" preload="auto"/>
             <Heart
                 className={clsx(
                     "w-5 h-5 transition-transform duration-300 mr-1",

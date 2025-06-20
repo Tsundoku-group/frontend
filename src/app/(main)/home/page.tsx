@@ -12,7 +12,7 @@ export default function Home() {
 
     return (
         <>
-            <div className="py-6 grid grid-cols-12 gap-[50px] mt-6">
+            <div className="py-6 grid grid-cols-12 gap-[50px] mt-2">
                 <div className="col-span-8 pr-12">
                     <CreatePost groupId={groupId} profileImageUrl={profileImageUrl}/>
                     <Feed groupId={groupId}/>
