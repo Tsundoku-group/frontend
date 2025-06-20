@@ -2,6 +2,7 @@
 
 import React, {ReactNode, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
+=======
 import {
     Search,
     Activity,
@@ -120,6 +121,7 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
     const { activeProfileInStorage } = useProfileContext();
     const profileId = activeProfileInStorage?.id;
     const router = useRouter();
+    const [search, setSearch] = useState<string>('');
 
     useEffect(() => setIsClient(true), []);
 
@@ -160,7 +162,6 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
         {path: '/conversations', icon: IcBaselineWechat, label: 'Messages'},
         {path: '/articles', icon: PencilFilled, label: 'Articles'},
     ];
-
     return (
         <>
             <div
@@ -198,7 +199,12 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                             placeholder="Explorer"
                             className="bg-transparent focus:outline-none text-white w-full placeholder:text-[#cfcfe1] text-sm"
                         />
+                                           <button onClick={() => {
+                        goTo('/search?term=' + search)
+                        setSearch('')
+                    }}>
                         <Search className="text-[#cfcfe1] w-4 h-4 ml-2"/>
+                    </button>
                     </div>
 
                     <div className="flex gap-4 justify-center items-center mt-12">
@@ -239,7 +245,6 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                         </TooltipProvider>
                     </div>
                 </div>
-
                 <nav
                     className={cn(
                         "transition-[max-height,opacity,transform] duration-500 ease-in-out mt-12 mb-12 w-full",
@@ -291,7 +296,6 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                                 </TooltipProvider>
                             </li>
                         ))}
-
                         <SidebarGroupCollapse
                             title="Clubs"
                             icon={<UsersFilled className="w-5 h-5 text-white" />}
@@ -304,7 +308,6 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                         />
                     </ul>
                 </nav>
-
                 <div
                     className={cn(
                         "transition-all duration-500",
@@ -314,7 +317,6 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                     <div className="flex items-center mb-3 text-xs font-medium text-[#e1e1ec] justify-center">
                         <Activity className="w-4 h-4 mr-2"/> Activité
                     </div>
-
                     <Card className="bg-tertiary-black p-3 space-y-2 rounded-2xl border border-secondary-black">
                         {[{
                             icon: MessageSquareText,

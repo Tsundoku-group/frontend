@@ -1,10 +1,10 @@
 'use server';
 
-import { fetchWithAuth } from "@/services/fetchWithAuth";
-import { GroupData } from "@/models/GroupData";
+import {fetchWithAuth} from "@/services/fetchWithAuth";
+import {GroupData} from "@/models/GroupData";
 import {GroupMember} from "@/models/GroupMember";
 import {Tag} from "@/models/Tag";
-import { symfonyUrl } from "@/constants/symfonyUrl";
+import {symfonyUrl} from "@/constants/symfonyUrl";
 
 const roleLabelMap: Record<string, string> = {
     admin: "Administrateur",
@@ -45,12 +45,12 @@ export const fetchPrivateGroups = async (
         );
 
         if (!response.response || response.status !== 200) {
-            return { groups: [], nextPage: null };
+            return {groups: [], nextPage: null};
         }
 
         return response.data;
     } catch (error) {
-        return { groups: [], nextPage: null };
+        return {groups: [], nextPage: null};
     }
 };
 
@@ -133,7 +133,7 @@ export const joinPrivateGroup = async (
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ groupId, profileId, role }),
+            body: JSON.stringify({groupId, profileId, role}),
         });
 
         if (!response.response || response.status !== 201) {
