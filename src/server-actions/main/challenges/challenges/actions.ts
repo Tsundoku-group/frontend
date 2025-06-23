@@ -189,3 +189,38 @@ export const deleteChallenge = async (
         return { success: false, message: `Error deleting challenge: ${error}` };
     }
 }
+
+export const updateChallenge = async (
+    challengeId: number,
+    payload: {
+        name: string;
+        type: string;
+        startAt: string;
+        endAt: string;
+        action: string;
+        contentType: string;
+        frequency: string;
+        targetCount: number;
+        inviteeIds: number[];
+    }
+): Promise<{ success: boolean; message: string }> => {
+    try {
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/v1/challenges/${challengeId}`,
+            {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            }
+        );
+
+        if (response.status !== 200) {
+            return { success: false, message: "Failed to update challenge" };
+        }
+
+        return { success: true, message: "Challenge updated successfully" };
+    } catch (error) {
+        console.error("Error updating challenge:", error);
+        return { success: false, message: `Error updating challenge: ${error}` };
+    }
+}

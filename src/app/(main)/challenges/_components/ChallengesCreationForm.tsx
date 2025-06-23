@@ -6,7 +6,9 @@ import CustomSelect, { CustomSelectOption } from '@/components/CustomSelect'
 import { Plus, X } from 'lucide-react'
 import { useConstraints } from '@/context/constraintsContext'
 import { useProfileContext } from '@/context/profileContext'
-import { submitChallenge } from '@/server-actions/main/challenges/challenges/actions'
+import { submitChallenge, updateChallenge } from '@/server-actions/main/challenges/challenges/actions'
+import { Challenge } from '@/models/Challenge'
+import { formatDate } from '@/utils/dateUtils'
 
 interface PredefChallenge {
   id: number
@@ -18,9 +20,10 @@ interface PredefChallenge {
 
 interface ChallengesCreationFormProps {
   onClose: () => void;
+  initialChallenge?: Challenge;
 }
 
-export default function ChallengesCreationForm({ onClose }: ChallengesCreationFormProps) {
+export default function ChallengesCreationForm({ onClose, initialChallenge }: ChallengesCreationFormProps) {
   const constraints = useConstraints();
 
   const actionLabels: Record<string, string> = {
@@ -110,43 +113,19 @@ export default function ChallengesCreationForm({ onClose }: ChallengesCreationFo
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted");
-    console.log("Type:", type);
-    console.log("Profile ID:", profileId);
 
     if (!profileId) {
       setError("Profile id is missing");
       return;
     }
 
-    if (!challengeName && type === 'customised') {
-      setError("Le nom du défi est requis.");
-      return;
-    }
-
-    if (!startDate && type === 'customised') {
-      setError("La date de début du défi est requise.");
-      return;
-    }
-
-    if (!endDate && type === 'customised') {
-      setError("La date de fin du défi est requise.");
-      return;
-    }
-
-    if (!actionType && type === 'customised') {
-      setError("Le type d'action est requis.");
-      return;
-    }
-
-    if (!contentType && type === 'customised') {
-      setError("Le type de contenu est requis.");
-      return;
-    }
-
-    if (targetCount < 1 && type === 'customised') {
-      setError("L'objectif doit être supérieur à 0.");
-      return;
+    if (type === 'customised') {
+      if (!challengeName) { setError("Le nom du défi est requis."); return; }
+      if (!startDate) { setError("La date de début du défi est requise."); return; }
+      if (!endDate) { setError("La date de fin du défi est requise."); return; }
+      if (!actionType) { setError("Le type d'action est requis."); return; }
+      if (!contentType) { setError("Le type de contenu est requis."); return; }
+      if (targetCount < 1) { setError("L'objectif doit être supérieur à 0."); return; }
     }
 
     setError(null);
@@ -164,18 +143,32 @@ export default function ChallengesCreationForm({ onClose }: ChallengesCreationFo
       inviteeIds: [],
     }
 
-    console.log(payload);
-
     try {
-      console.log("Submitting challenge with payload:", payload);
-      await submitChallenge(payload, profileId);
-      console.log("Challenge submitted successfully");
-      onClose();
+      if (initialChallenge) {
+        await updateChallenge(initialChallenge.id, payload);
+      } else {
+        await submitChallenge(payload, profileId);
+      }
     } catch (error) {
       console.error("Error submitting challenge: ", error);
+      setError("Une erreur est survenue lors de la création du défi.");
     }
-    console.log("Form submission completed");
   };
+
+  useEffect(() => {
+    if (initialChallenge) {
+      setType(initialChallenge.type);
+      setChallengeName(initialChallenge.name);
+
+      setStartDate(formatDate(initialChallenge.startAt));
+      setEndDate(formatDate(initialChallenge.endAt));
+
+      setActionType(initialChallenge.constraint.action);
+      setContentType(initialChallenge.constraint.contentType);
+      setFrequency(initialChallenge.constraint.frequency);
+      setTargetCount(initialChallenge.constraint.targetCount);
+    }
+  }, [initialChallenge]);
 
   return (
     <div className="fixed inset-0 bg-primary-black bg-opacity-50 flex items-center justify-center z-50">

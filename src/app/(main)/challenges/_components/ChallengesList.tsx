@@ -5,9 +5,10 @@ import { useProfileContext } from '@/context/profileContext'
 import { Challenge } from '@/models/Challenge'
 import { deleteChallenge, PaginatedChallengesResponse } from '@/server-actions/main/challenges/challenges/actions'
 import { formatDate, getRemainingTime } from '@/utils/dateUtils'
-import { Hourglass, Plus, Trash2 } from 'lucide-react'
+import { Edit2, Hourglass, Plus, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import React, { useCallback } from 'react'
+import ChallengesCreationForm from './ChallengesCreationForm'
 
 type ChallengesListProps = {
     initialData: PaginatedChallengesResponse;
@@ -30,6 +31,7 @@ export default function ChallengesList({
     const [challenges, setChallenges] = React.useState<Challenge[]>(initialData.data);
     const [pagination, setPagination] = React.useState(initialData.pagination);
     const [isLoadingMore, setIsLoadingMore] = React.useState(false);
+    const [challengeToEdit, setChallengeToEdit] = React.useState<Challenge | null>(null);
 
     const [showConfirmDelete, setShowConfirmDelete] = React.useState(false);
     const [challengeToDelete, setChallengeToDelete] = React.useState<Challenge | null>(null);
@@ -116,6 +118,17 @@ export default function ChallengesList({
                     <Trash2 width={15} height={15} className="text-primary-black" />
                 </button>
 
+                {challenge.status !== 'success' && challenge.status !== 'failed' && challenge.status !== "canceled" && (
+                    <button
+                        onClick={() => {
+                            setChallengeToEdit(challenge);
+                        }}
+                        className="absolute top-4 left-12 z-20 bg-text-white px-1 py-1 rounded-full"
+                    >
+                        <Edit2 width={15} height={15} className="text-primary-black" />
+                    </button>
+                )}
+
                 {/* Badge type */}
                 <div className="absolute top-4 right-4 z-20">
                     <span className={`bg-text-white ${textColor} text-xs font-bold px-3 py-1 rounded-full`}>
@@ -191,6 +204,13 @@ export default function ChallengesList({
                     }}
                     onConfirm={confirmDelete}
                     message="Supprimer ce défi ? Cette action est irréversible."
+                />
+            )}
+
+            {challengeToEdit && (
+                <ChallengesCreationForm
+                    onClose={() => setChallengeToEdit(null)}
+                    initialChallenge={challengeToEdit}
                 />
             )}
         </>
