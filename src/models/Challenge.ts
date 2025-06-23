@@ -28,7 +28,7 @@ export interface Challenge {
         timezone_type: number;
         timezone: string;
     };
-    constraints: {
+    constraint: {
         action: string;
         contentType: string;
         frequency: string;

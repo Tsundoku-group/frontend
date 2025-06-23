@@ -6,43 +6,221 @@ import { fetchWithAuth } from "@/services/fetchWithAuth";
 
 type ChallengeStatus = 'active' | 'inactive';
 
+export type ConstraintResponse = {
+    actionTypes: string[]
+    contentTypes: string[]
+    frequencies: string[]
+    allowedContent: Record<string, string[]>
+}
+
+export type PaginatedChallengesResponse = {
+    data: Challenge[];
+    pagination: {
+        offset: number;
+        limit: number;
+        total: number;
+        hasMore: boolean;
+    };
+}
+
 const fetchProfileChallengesByStatus = async (
     profileId: number | undefined,
-    status: ChallengeStatus
-): Promise<Challenge[]> => {
+    status: ChallengeStatus,
+    offset: number = 0,
+    limit: number = 5
+): Promise<PaginatedChallengesResponse> => {
     if (!profileId) {
-        return [];
+        return {
+            data: [],
+            pagination: { offset: 0, limit: 5, total: 0, hasMore: false }
+        };
     }
 
     try {
-        const response = await fetchWithAuth(
-            `${symfonyUrl}/api/v1/challenges/${profileId}/${status}`,
+        const params = new URLSearchParams({
+            offset: offset.toString(),
+            limit: limit.toString(),
+        });
+
+        const response = await fetchWithAuth(`${symfonyUrl}/api/v1/challenges/${profileId}/${status}?${params}`,
             {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             }
         );
 
-        if (response.status !== 200 || !response.data) {
-            console.error(`Error fetching ${status} challenges:`, response);
-            return [];
+        if (response.status !== 200) {
+            console.error(`HTTP ${response.status} error fetching ${status} challenges:`, response);
+            return {
+                data: [],
+                pagination: { offset: 0, limit: 5, total: 0, hasMore: false }
+            };
         }
 
-        return response.data as Challenge[];
+        if (!response.data) {
+            console.error(`No data in response for ${status} challenges`);
+            return {
+                data: [],
+                pagination: { offset: 0, limit: 5, total: 0, hasMore: false }
+            };
+        }
+
+        return response.data as PaginatedChallengesResponse;
     } catch (error) {
         console.error(`Error fetching ${status} challenges:`, error);
-        return [];
+        return {
+            data: [],
+            pagination: { offset: 0, limit: 5, total: 0, hasMore: false }
+        };
     }
 };
 
 export const fetchProfileActiveChallenges = async (
-    profileId: number | undefined
-): Promise<Challenge[]> => {
-    return fetchProfileChallengesByStatus(profileId, 'active');
+    profileId: number | undefined,
+    offset: number = 0,
+    limit: number = 5
+): Promise<PaginatedChallengesResponse> => {
+    return fetchProfileChallengesByStatus(profileId, 'active', offset, limit);
 };
 
 export const fetchProfileInactiveChallenges = async (
-    profileId: number | undefined
-): Promise<Challenge[]> => {
-    return fetchProfileChallengesByStatus(profileId, 'inactive');
+    profileId: number | undefined,
+    offset: number = 0,
+    limit: number = 5
+): Promise<PaginatedChallengesResponse> => {
+    return fetchProfileChallengesByStatus(profileId, 'inactive', offset, limit);
 };
+
+export const fetchConstraints = async (): Promise<ConstraintResponse> => {
+    try {
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/v1/challenges/constraints`,
+            {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            }
+        )
+
+        if (response.status !== 200 || !response.data) {
+            console.error('Error fetching constraints:', response);
+            return {
+                actionTypes: [],
+                contentTypes: [],
+                frequencies: [],
+                allowedContent: {}
+            };
+        }
+
+        return response.data as ConstraintResponse
+    } catch (error) {
+        console.error('Error fetching constraints: ', error);
+        return {
+            actionTypes: [],
+            contentTypes: [],
+            frequencies: [],
+            allowedContent: {}
+        };
+    }
+};
+
+export const submitChallenge = async (
+    payload: {
+        name: string;
+        type: string;
+        startAt: string;
+        endAt: string;
+        action: string;
+        contentType: string;
+        frequency: string;
+        targetCount: number;
+        inviteeIds: number[];
+    },
+    profileId: number | undefined
+): Promise<{ success: boolean; message: string; data?: any }> => {
+    if (!profileId) {
+        return { success: false, message: "Profile ID is required" };
+    }
+
+    try {
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/v1/challenges`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            }
+        );
+
+        if (response.status !== 200 || !response.data) {
+            return { success: false, message: "Failed to submit challenge" };
+        }
+
+        return { success: true, message: "Challenge submitted successfully", data: response.data };
+    } catch (error) {
+        console.error("Error submitting challenge:", error);
+        return { success: false, message: `Error submitting challenge: ${error}` };
+    }
+}
+
+export const deleteChallenge = async (
+    challengeId: number,
+    profileId: number | undefined
+): Promise<{ success: boolean; message: string }> => {
+    if (!profileId) {
+        return { success: false, message: "Profile ID is required" };
+    }
+
+    try {
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/v1/challenges/${challengeId}`,
+            {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+            }
+        );
+
+        if (response.status !== 200) {
+            return { success: false, message: "Failed to delete challenge" };
+        }
+
+        return { success: true, message: "Challenge deleted successfully" };
+    } catch (error) {
+        console.error("Error deleting challenge:", error);
+        return { success: false, message: `Error deleting challenge: ${error}` };
+    }
+}
+
+export const updateChallenge = async (
+    challengeId: number,
+    payload: {
+        name: string;
+        type: string;
+        startAt: string;
+        endAt: string;
+        action: string;
+        contentType: string;
+        frequency: string;
+        targetCount: number;
+        inviteeIds: number[];
+    }
+): Promise<{ success: boolean; message: string }> => {
+    try {
+        const response = await fetchWithAuth(
+            `${symfonyUrl}/api/v1/challenges/${challengeId}`,
+            {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            }
+        );
+
+        if (response.status !== 200) {
+            return { success: false, message: "Failed to update challenge" };
+        }
+
+        return { success: true, message: "Challenge updated successfully" };
+    } catch (error) {
+        console.error("Error updating challenge:", error);
+        return { success: false, message: `Error updating challenge: ${error}` };
+    }
+}

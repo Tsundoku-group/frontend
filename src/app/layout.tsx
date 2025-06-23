@@ -1,10 +1,11 @@
-import type {Metadata} from "next";
+import type { Metadata } from "next";
 import "./globals.css";
-import {AuthProvider} from "@/context/authContext";
-import {TooltipProvider} from "@/components/ui/tooltip";
+import { AuthProvider } from "@/context/authContext";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import "@/global.css";
-import {ProfileProvider} from "@/context/profileContext";
+import { ProfileProvider } from "@/context/profileContext";
 import React from "react";
+import { ConstraintsProvider } from "@/context/constraintsContext";
 
 export const metadata: Metadata = {
     title: "Tsundoku",
@@ -14,18 +15,20 @@ export const metadata: Metadata = {
     },
 };
 
-export default function RootLayout({children}: Readonly<{ children: React.ReactNode; }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
     return (
         <html lang="en">
-        <body>
-        <AuthProvider>
-            <ProfileProvider>
-                <TooltipProvider>
-                    {children}
-                </TooltipProvider>
-            </ProfileProvider>
-        </AuthProvider>
-        </body>
+            <body>
+                <AuthProvider>
+                    <ProfileProvider>
+                        <TooltipProvider>
+                            <ConstraintsProvider>
+                                {children}
+                            </ConstraintsProvider>
+                        </TooltipProvider>
+                    </ProfileProvider>
+                </AuthProvider>
+            </body>
         </html>
     );
 }
