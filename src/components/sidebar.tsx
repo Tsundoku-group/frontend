@@ -1,8 +1,7 @@
 'use client';
 
-import React, {ReactNode, useEffect, useState} from 'react';
-import {useRouter} from 'next/navigation';
-=======
+import React, { ReactNode, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
     Search,
     Activity,
@@ -12,10 +11,10 @@ import {
     ChevronRight,
     ChevronDown, Pencil
 } from 'lucide-react';
-import {useSocket} from '@/context/socketContext';
-import {useProfileContext} from '@/context/profileContext';
-import {Card} from '@/components/ui/card';
-import {Button} from '@/components/ui/button';
+import { useSocket } from '@/context/socketContext';
+import { useProfileContext } from '@/context/profileContext';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import ReshotIllustration from '@/assets/images/ReshotIllustration';
 import IcBaselineWechat from '@/assets/icons/IcBaselineWechat';
 import UsersFilled from '@/assets/icons/UsersFilled';
@@ -30,7 +29,7 @@ import {
     TooltipProvider,
     TooltipTrigger
 } from '@/components/ui/tooltip';
-import {cn} from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import OpenBook from "@/assets/icons/OpenBook";
 
 interface SidebarCollapseItem {
@@ -47,11 +46,11 @@ interface SidebarGroupsCollapsedProps {
 }
 
 export function SidebarGroupCollapse({
-                                         title,
-                                         icon,
-                                         items,
-                                         isCollapsed,
-                                     }: SidebarGroupsCollapsedProps) {
+    title,
+    icon,
+    items,
+    isCollapsed,
+}: SidebarGroupsCollapsedProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -114,7 +113,7 @@ export function SidebarGroupCollapse({
     );
 }
 
-export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
+export default function Sidebar({ isCollapsed }: { isCollapsed: boolean }) {
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [isClient, setIsClient] = useState(false);
     const { socket } = useSocket();
@@ -157,10 +156,10 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
     const goTo = (path: string) => router.push(path);
 
     const navItems = [
-        {path: '/shelves', icon: LibraryFilled, label: 'Étagères'},
-        {path: '/challenges', icon: TrophyFilled, label: 'Défis'},
-        {path: '/conversations', icon: IcBaselineWechat, label: 'Messages'},
-        {path: '/articles', icon: PencilFilled, label: 'Articles'},
+        { path: '/shelves', icon: LibraryFilled, label: 'Étagères' },
+        { path: '/challenges', icon: TrophyFilled, label: 'Défis' },
+        { path: '/conversations', icon: IcBaselineWechat, label: 'Messages' },
+        { path: '/articles', icon: PencilFilled, label: 'Articles' },
     ];
     return (
         <>
@@ -169,7 +168,7 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                     'fixed min-h-screen transition-all duration-500 flex flex-col py-6 px-5 text-text-white z-50',
                     isCollapsed ? 'w-20 items-center' : 'w-60'
                 )}
-                style={{background: 'linear-gradient(to bottom, #281f39 1%, #171C26 40%)'}}
+                style={{ background: 'linear-gradient(to bottom, #281f39 1%, #171C26 40%)' }}
             >
                 <div
                     className={cn(
@@ -182,7 +181,7 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                             tsundoku
                         </div>
                     ) : (
-                        <OpenBook className="w-10 h-auto"/>
+                        <OpenBook className="w-10 h-auto" />
                     )}
                 </div>
 
@@ -199,12 +198,12 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                             placeholder="Explorer"
                             className="bg-transparent focus:outline-none text-white w-full placeholder:text-[#cfcfe1] text-sm"
                         />
-                                           <button onClick={() => {
-                        goTo('/search?term=' + search)
-                        setSearch('')
-                    }}>
-                        <Search className="text-[#cfcfe1] w-4 h-4 ml-2"/>
-                    </button>
+                        <button onClick={() => {
+                            goTo('/search?term=' + search)
+                            setSearch('')
+                        }}>
+                            <Search className="text-[#cfcfe1] w-4 h-4 ml-2" />
+                        </button>
                     </div>
 
                     <div className="flex gap-4 justify-center items-center mt-12">
@@ -215,7 +214,7 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                                         onClick={() => goTo('/home')}
                                         className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
                                     >
-                                        <HomeRoundedFilled className="text-text-white w-5 h-5"/>
+                                        <HomeRoundedFilled className="text-text-white w-5 h-5" />
                                     </button>
                                 </TooltipTrigger>
                                 <TooltipContent
@@ -232,7 +231,7 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                                         onClick={() => goTo(`/profile/${profileId}`)}
                                         className="w-12 h-12 bg-secondary-black rounded-2xl flex items-center justify-center shadow-md transition-all duration-150 ease-in-out hover:bg-tertiary-black active:scale-95"
                                     >
-                                        <UserFilled className="text-text-white w-5 h-5"/>
+                                        <UserFilled className="text-text-white w-5 h-5" />
                                     </button>
                                 </TooltipTrigger>
                                 <TooltipContent
@@ -278,8 +277,8 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                                                     </div>
                                                     {label === 'Messages' && unreadMessages > 0 && (
                                                         <span className="ml-1 bg-red-highlight text-[10px] rounded-full h-4 w-4 flex items-center justify-center text-white font-semibold">
-                                                      {unreadMessages}
-                                                    </span>
+                                                            {unreadMessages}
+                                                        </span>
                                                     )}
                                                 </div>
                                                 {!isCollapsed && (
@@ -315,7 +314,7 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                     )}
                 >
                     <div className="flex items-center mb-3 text-xs font-medium text-[#e1e1ec] justify-center">
-                        <Activity className="w-4 h-4 mr-2"/> Activité
+                        <Activity className="w-4 h-4 mr-2" /> Activité
                     </div>
                     <Card className="bg-tertiary-black p-3 space-y-2 rounded-2xl border border-secondary-black">
                         {[{
@@ -328,14 +327,14 @@ export default function Sidebar({isCollapsed}: { isCollapsed: boolean }) {
                             icon: Pencil, text: "Vous avez publié l’article", highlight: "Mes 10 auteurs préférés..."
                         }, {
                             icon: Star, text: "Vous avez laissé un avis sur", highlight: "La Cité Diaphane"
-                        }].map(({icon: Icon, text, highlight}, i) => (
+                        }].map(({ icon: Icon, text, highlight }, i) => (
                             <div key={i} className="flex items-center text-[10px] text-[#cfcfe1]">
-                                <Icon className="w-3 h-3 mr-2"/>
+                                <Icon className="w-3 h-3 mr-2" />
                                 <span>{text} <span className="text-green-highlight">{highlight}</span></span>
                             </div>
                         ))}
                         <div className="flex justify-center">
-                            <ReshotIllustration/>
+                            <ReshotIllustration />
                         </div>
                         <div className="pt-3 text-center text-gray-500 text-[10px] italic">
                             Plus rien à signaler !
